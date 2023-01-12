@@ -1,0 +1,2 @@
+-keep class com.xq.dialoglogshow.** { *; }
+-dontnote com.xq.dialoglogshow.**

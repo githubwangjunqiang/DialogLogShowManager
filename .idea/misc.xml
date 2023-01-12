@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/as/work/DialogLogShowManager/app/src/main/res/layout/activity_main.xml" value="0.35052083333333334" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/drawable/app_btn_empty_back.xml" value="0.1675" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/drawable/show_sdk_id_dialog_http_log_tvback.xml" value="0.1675" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/layout/show_log_sdk_httplog_layout.xml" value="0.3651041666666667" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/layout/show_sdk_httplog_item_one_layout.xml" value="0.36614583333333334" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/layout/show_sdk_httplog_item_three_layout.xml" value="0.35052083333333334" />
+        <entry key="..\:/as/work/DialogLogShowManager/dialoglogshow/src/main/res/layout/show_sdk_httplog_item_tow_layout.xml" value="0.27291666666666664" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
