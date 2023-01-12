@@ -155,7 +155,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
                 List<BaseShowData> list = data.getList();
                 if (list != null) {
                     int size = list.size() - 1;
-                    for (int i = size; i >= 0; i--) {
+                    for (int i = size-1; i >= 0; i--) {
                         BaseShowData data1 = list.get(i);
                         mList.add(layoutPosition + 1, data1);
                     }
