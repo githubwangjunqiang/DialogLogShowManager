@@ -1,6 +1,8 @@
 package com.xq.dialoglogshow;
 
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.PushData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public interface IShowLoadDataCallback {
      * @param endTime
      * @return
      */
-    ArrayList<BaseShowData> loadHttpLog(long startTime, long endTime);
+    ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime);
 
     /**
      * 获取个人信息
@@ -37,7 +39,7 @@ public interface IShowLoadDataCallback {
      * 获取本地 PUSH
      * @return
      */
-    ArrayList<BaseShowData> loadPush();
+    ArrayList<PushData> loadPush();
 
 
 

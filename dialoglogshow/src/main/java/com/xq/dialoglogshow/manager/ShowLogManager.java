@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
 
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
 
 
     @Override
-    public ArrayList<BaseShowData> loadHttpLog(long startTime, long endTime) {
+    public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
         if (showLoadDataCallback != null) {
             return showLoadDataCallback.loadHttpLog(startTime, endTime);
         }
@@ -78,7 +80,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     }
 
     @Override
-    public ArrayList<BaseShowData> loadPush() {
+    public ArrayList<PushData> loadPush() {
         if (showLoadDataCallback != null) {
             return showLoadDataCallback.loadPush();
         }

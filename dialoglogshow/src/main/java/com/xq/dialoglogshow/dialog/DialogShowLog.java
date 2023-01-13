@@ -19,6 +19,8 @@ import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.DateUtils;
 import com.xq.dialoglogshow.utils.MyItemDecoration;
@@ -172,11 +174,13 @@ public class DialogShowLog extends Dialog {
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
 
-                ArrayList<BaseShowData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
+                ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
                         .loadHttpLog(startTime, endTime);
+
+
                 if (list != null && !list.isEmpty()) {
                     Map<String, ArrayList<BaseShowData>> map = new HashMap<>();
-                    for (BaseShowData data : list) {
+                    for (HttpLogData data : list) {
                         data.setItemType(BaseShowData.TYE_THREE);
                         String url = data.getUrl();
                         if (map.containsKey(url)) {
@@ -189,7 +193,7 @@ public class DialogShowLog extends Dialog {
                         }
                     }
                     list.clear();
-
+                    ArrayList<BaseShowData> retUrnList = new ArrayList<>();
                     for (Map.Entry<String, ArrayList<BaseShowData>> data : map.entrySet()) {
                         String key = data.getKey();
                         ArrayList<BaseShowData> value = data.getValue();
@@ -209,17 +213,16 @@ public class DialogShowLog extends Dialog {
                         for (int i = 0; i < value.size(); i++) {
                             value.get(i).setIndex(i + 1);
                         }
-                        BaseShowData fu = new BaseShowData();
-                        fu.setUrl(key);
+                        BaseShowData fu = new HttpLogData(
+                                key, 0, null, null, value, false, 0);
                         fu.setItemType(BaseShowData.TYE_TOW);
-                        fu.setList(value);
-                        list.add(fu);
+                        retUrnList.add(fu);
                     }
 
                     for (int i = 0; i < list.size(); i++) {
-                        list.get(i).setIndex(i + 1);
+                        retUrnList.get(i).setIndex(i + 1);
                     }
-                    return list;
+                    return retUrnList;
                 }
 
 
@@ -283,11 +286,32 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<BaseShowData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadPush();
+                ArrayList<PushData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadPush();
                 if (isCancelled()) {
                     return null;
                 }
-                return baseShowData;
+                if (baseShowData == null) {
+                    return null;
+                }
+                Collections.sort(baseShowData, new Comparator<PushData>() {
+                    @Override
+                    public int compare(PushData o1, PushData o2) {
+                        if (o1.getTime() > o2.getTime()) {
+                            return -1;
+                        } else if (o1.getTime() < o2.getTime()) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
+                ArrayList<BaseShowData> returnList = new ArrayList<>();
+
+                for (int i = 0; i < baseShowData.size(); i++) {
+                    PushData pushData = baseShowData.get(i);
+                    returnList.add(pushData);
+                }
+                return returnList;
             }
 
             @Override

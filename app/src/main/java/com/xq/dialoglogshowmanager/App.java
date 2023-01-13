@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class App extends Application {
         ShowLogManager.show_http_dialog = true;
         ShowLogManager.getInstance().setDataCallback(new IShowLoadDataCallback() {
             @Override
-            public ArrayList<BaseShowData> loadHttpLog(long startTime, long endTime) {
+            public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
 
 
                 return null;
@@ -30,7 +32,9 @@ public class App extends Application {
             @Override
             public ArrayList<BaseShowData> loadUserInfo() {
 
-                BaseShowData data = new BaseShowData();
+                BaseShowData data = new BaseShowData() {
+
+                };
 
                 data.setContent("{\n" +
                         "            \"id\":261219073,\n" +
@@ -68,7 +72,7 @@ public class App extends Application {
             }
 
             @Override
-            public ArrayList<BaseShowData> loadPush() {
+            public ArrayList<PushData> loadPush() {
                 return null;
             }
         });

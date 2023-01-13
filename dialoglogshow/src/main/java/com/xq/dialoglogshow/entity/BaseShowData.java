@@ -18,61 +18,45 @@ public class BaseShowData {
     /**
      * item 类型
      */
-    private int itemType = 0;
+    protected int itemType = 0;
     /**
      * 数据
      */
-    private String content;
+    protected String content;
     /**
      * 网络链接
      */
-    private String url;
+    protected String url;
     /**
      * 时间戳
      */
-    private long time;
+    protected long time;
     /**
      * 结果信息 简述
      */
-    private String resMsg;
+    protected String resMsg;
 
     /**
      * 子类
      */
-    private List<BaseShowData> mList;
+    protected List<BaseShowData> mList;
 
     /**
      * 是否已经展开
      */
-    private boolean expansion;
+    protected boolean expansion;
 
     /**
      * 子类使用的下标
      */
-    private int index;
+    protected int index;
 
-    public int getIndex() {
-        return index;
+    public String getUrl() {
+        return url;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public boolean isExpansion() {
-        return expansion;
-    }
-
-    public void setExpansion(boolean expansion) {
-        this.expansion = expansion;
-    }
-
-    public String getResMsg() {
-        return resMsg;
-    }
-
-    public void setResMsg(String resMsg) {
-        this.resMsg = resMsg;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public long getTime() {
@@ -83,6 +67,37 @@ public class BaseShowData {
         this.time = time;
     }
 
+    public String getResMsg() {
+        return resMsg;
+    }
+
+    public void setResMsg(String resMsg) {
+        this.resMsg = resMsg;
+    }
+
+    public List<BaseShowData> getList() {
+        return mList;
+    }
+
+    public void setList(List<BaseShowData> list) {
+        mList = list;
+    }
+
+    public boolean isExpansion() {
+        return expansion;
+    }
+
+    public void setExpansion(boolean expansion) {
+        this.expansion = expansion;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
     public int getItemType() {
         return itemType;
@@ -98,21 +113,5 @@ public class BaseShowData {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public List<BaseShowData> getList() {
-        return mList;
-    }
-
-    public void setList(List<BaseShowData> list) {
-        mList = list;
     }
 }
