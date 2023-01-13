@@ -81,6 +81,22 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         return null;
     }
 
+    @Override
+    public String loadAllData() {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.loadAllData();
+        }
+        return null;
+    }
+
+    @Override
+    public ArrayList<BaseShowData> loadRestData() {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.loadRestData();
+        }
+        return null;
+    }
+
     private static class Holder {
         private static volatile ShowLogManager showLogManager = new ShowLogManager();
     }

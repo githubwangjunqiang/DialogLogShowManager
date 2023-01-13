@@ -32,17 +32,30 @@ public interface IShowLoadDataCallback {
 
     /**
      * 获取本地key-value
+     *
      * @return
      */
     ArrayList<BaseShowData> loadKeyValue();
+
     /**
      * 获取本地 PUSH
+     *
      * @return
      */
     ArrayList<PushData> loadPush();
 
-
-
+    /**
+     * 获取全部缓存日志文件数据
+     *
+     * @return 文件路径
+     */
+    String loadAllData();
+    /**
+     * 获取全部缓存日志文件数据
+     *
+     * @return 文件路径
+     */
+    ArrayList<BaseShowData> loadRestData();
 
 
 }

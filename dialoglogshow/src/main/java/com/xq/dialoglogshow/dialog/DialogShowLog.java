@@ -3,6 +3,7 @@ package com.xq.dialoglogshow.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
+import com.xq.dialoglogshow.activity.FileShareActivity;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
@@ -45,7 +47,7 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mTab2, mTab3, mTab4, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
+    private TextView mTab1, mTab2, mTab3, mTab4,mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
 
@@ -72,6 +74,7 @@ public class DialogShowLog extends Dialog {
         mTab2 = findViewById(R.id.show_sdk_id_dialog_http_log_tv2);
         mTab3 = findViewById(R.id.show_sdk_id_dialog_http_log_tv3);
         mTab4 = findViewById(R.id.show_sdk_id_dialog_http_log_tv4);
+        mTab5 = findViewById(R.id.show_sdk_id_dialog_http_log_tv5);
         mProgressBar = findViewById(R.id.show_app_dialog_httplog_loading);
         mCurrentDate = findViewById(R.id.show_app_dialog_httplog_currentdate);
         mPrevious = findViewById(R.id.show_app_dialog_httplog_previous);
@@ -94,7 +97,11 @@ public class DialogShowLog extends Dialog {
         //关闭
         mBtnClose.setOnClickListener(v -> cancel());
         //分享
-        mShare.setOnClickListener(v -> mMyAdapter.share());
+        mShare.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), FileShareActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+        });
 
         //网络日志
         mTab1.setOnClickListener(v -> {
@@ -128,6 +135,14 @@ public class DialogShowLog extends Dialog {
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
         });
+        //其他信息
+        mTab5.setOnClickListener(v -> {
+            loadOtherInformation();
+            changeTabState(v);
+            mCurrentDate.setVisibility(View.GONE);
+            mPrevious.setVisibility(View.GONE);
+            mNext.setVisibility(View.GONE);
+        });
         mPrevious.setOnClickListener(v -> {
             //上一天
             startTime -= 1000 * 60 * 60 * 24;
@@ -145,6 +160,13 @@ public class DialogShowLog extends Dialog {
                 loadDataHttp();
             }
         });
+
+    }
+
+    /**
+     * 其他信息
+     */
+    private void loadOtherInformation() {
 
     }
 

@@ -8,6 +8,12 @@ import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -73,6 +79,40 @@ public class App extends Application {
             @Override
             public ArrayList<PushData> loadPush() {
                 return null;
+            }
+
+            @Override
+            public String loadAllData() {
+
+                File cache = getExternalFilesDir("cache");
+                if (!cache.exists()) {
+                    cache.mkdirs();
+                }
+                File file = new File(cache, "cache.txt");
+                try {
+
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    writer.write("我是缓存我哦 哈哈哈哈哈 你好\n我好我是第二行");
+                    writer.flush();
+                    writer.close();
+                    return file.getAbsolutePath();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+
+            @Override
+            public ArrayList<BaseShowData> loadRestData() {
+                ArrayList<BaseShowData> list = new ArrayList<>();
+                BaseShowData data = new BaseShowData();
+                data.setContent("哈喽 你好");
+                list.add(data);
+                return list;
             }
         });
         ShowLogManager.getInstance().start(this);

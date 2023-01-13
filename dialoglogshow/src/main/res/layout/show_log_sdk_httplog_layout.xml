@@ -64,6 +64,17 @@
                 android:textSize="14dp" />
 
             <TextView
+                android:id="@+id/show_sdk_id_dialog_http_log_tv5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="其他信息"
+                android:textColor="@color/sdk_item_dialog_http_tab_text_color"
+                android:textSize="14dp" />
+
+            <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
