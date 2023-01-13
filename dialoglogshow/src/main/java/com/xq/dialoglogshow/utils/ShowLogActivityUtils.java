@@ -52,9 +52,6 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
     @Override
     public void onActivityPostResumed(@NonNull Activity activity) {
         Application.ActivityLifecycleCallbacks.super.onActivityPostResumed(activity);
-        if (!ShowLogManager.show_http_dialog) {
-            return;
-        }
         try {
             View root = activity.findViewById(android.R.id.content);
             if (root != null) {

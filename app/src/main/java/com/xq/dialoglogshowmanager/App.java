@@ -20,7 +20,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        ShowLogManager.show_http_dialog = true;
         ShowLogManager.getInstance().setDataCallback(new IShowLoadDataCallback() {
             @Override
             public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {

@@ -21,10 +21,6 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
      */
     private volatile IShowLoadDataCallback showLoadDataCallback;
 
-    /**
-     * 是否显示
-     */
-    public static volatile boolean show_http_dialog = false;
 
     private ShowLogManager() {
     }
@@ -40,17 +36,15 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
 
     @Override
     public void start(Application application) {
-        if (show_http_dialog) {
-            try {
-                application.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                application.registerActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            application.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            application.registerActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
