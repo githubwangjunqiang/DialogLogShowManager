@@ -166,8 +166,39 @@ public class DialogShowLog extends Dialog {
     /**
      * 其他信息
      */
+    @SuppressLint("StaticFieldLeak")
     private void loadOtherInformation() {
+        if (mAsyncTask != null) {
+            mAsyncTask.cancel(true);
+        }
+        mAsyncTask = new ShowTask<ArrayList<BaseShowData>>() {
+            @Override
+            protected void postMainData(ArrayList<BaseShowData> o) {
+                hideLoading();
+                mMyAdapter.setList(o);
+                mMyAdapter.notifyDataSetChanged();
+            }
 
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showLoading();
+            }
+
+            @Override
+            protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
+
+                ArrayList<BaseShowData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadRestData();
+                if (isCancelled()) {
+                    return null;
+                }
+                if (baseShowData == null) {
+                    return null;
+                }
+                return baseShowData;
+            }
+        };
+        mAsyncTask.execute();
     }
 
     /**

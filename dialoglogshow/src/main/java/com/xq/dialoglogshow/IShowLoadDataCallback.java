@@ -51,7 +51,7 @@ public interface IShowLoadDataCallback {
      */
     String loadAllData();
     /**
-     * 获取全部缓存日志文件数据
+     * 获取其他数据
      *
      * @return 文件路径
      */
