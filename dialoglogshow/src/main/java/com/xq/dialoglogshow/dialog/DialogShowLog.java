@@ -272,7 +272,7 @@ public class DialogShowLog extends Dialog {
                         retUrnList.add(fu);
                     }
 
-                    for (int i = 0; i < list.size(); i++) {
+                    for (int i = 0; i < retUrnList.size(); i++) {
                         retUrnList.get(i).setIndex(i + 1);
                     }
                     return retUrnList;
