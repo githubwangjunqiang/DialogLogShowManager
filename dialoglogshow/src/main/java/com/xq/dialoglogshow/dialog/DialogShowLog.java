@@ -29,6 +29,8 @@ import com.xq.dialoglogshow.utils.MyItemDecoration;
 import com.xq.dialoglogshow.utils.ShowTask;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

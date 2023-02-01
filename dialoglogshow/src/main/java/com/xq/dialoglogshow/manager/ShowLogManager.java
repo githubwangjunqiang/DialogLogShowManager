@@ -36,6 +36,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
 
     @Override
     public void start(Application application) {
+        ShowLogActivityUtils.getInstance().open = true;
         try {
             application.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
         } catch (Exception e) {
@@ -46,6 +47,11 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        ShowLogActivityUtils.getInstance().open = false;
     }
 
 

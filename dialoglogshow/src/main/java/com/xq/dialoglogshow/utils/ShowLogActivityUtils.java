@@ -24,6 +24,10 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
     private ShowLogActivityUtils() {
     }
 
+    /**
+     * 是否开启和关闭
+     */
+    public volatile boolean open = false;
     private static String viewTag = "FullViewHttpLog";
 
     public static ShowLogActivityUtils getInstance() {
@@ -65,10 +69,15 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
                             if (root instanceof FrameLayout) {
                                 View viewWithTag = root.findViewWithTag(viewTag);
-                                if (viewWithTag != null) {
-                                    return;
+                                if (open) {
+                                    if (viewWithTag == null) {
+                                        loadFullView(activity, root);
+                                    }
+                                } else {
+                                    if (viewWithTag != null) {
+                                        ((FrameLayout) root).removeView(viewWithTag);
+                                    }
                                 }
-                                loadFullView(activity, root);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

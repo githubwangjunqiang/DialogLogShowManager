@@ -23,4 +23,9 @@ public interface IShowLogManager {
      * @param application
      */
     void start(Application application);
+
+    /**
+     * 关闭
+     */
+    void stop();
 }
