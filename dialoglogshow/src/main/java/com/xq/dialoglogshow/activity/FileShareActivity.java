@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -67,7 +68,7 @@ public class FileShareActivity extends Activity {
         intent.setType("text/*");
         long l = System.currentTimeMillis();
         String format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(l);
-        format = "cache_log_file_debug_log_" + format + ".txt";
+        format = "cache_log_file_debug_log_" + format;
         intent.putExtra(Intent.EXTRA_TITLE, format);
 
         // Optionally, specify a URI for the directory that should be opened in

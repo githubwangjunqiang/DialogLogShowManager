@@ -98,7 +98,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         int layoutPosition = holder.getLayoutPosition();
         if (holder instanceof MyViewHolderData) {
             //普通
-            ((MyViewHolderData) holder).setData(mList.get(layoutPosition));
+            ((MyViewHolderData) holder).setData(mList.get(layoutPosition), mList);
         }
         if (holder instanceof MyViewHolderHttpFather) {
             //父亲
@@ -285,8 +285,12 @@ class MyViewHolderData extends RecyclerView.ViewHolder {
         mTextView = itemView.findViewById(R.id.show_sdk_id_item_http_log_one_tv_content);
     }
 
-    public void setData(BaseShowData data) {
-        mTextView.setText(data.getContent());
+    public void setData(BaseShowData data, List<BaseShowData> list) {
+        int layoutPosition = getLayoutPosition();
+        int size = list.size();
+        int i = size - layoutPosition;
+        String msg = "Index：" + i + "\n" + data.getContent();
+        mTextView.setText(msg);
     }
 }
 
