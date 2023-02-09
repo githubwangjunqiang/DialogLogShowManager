@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 
+import java.util.concurrent.Executor;
+
 /**
  * Created by Android-小强 on 2023/1/10.
  * mailbox:980766134@qq.com
@@ -22,10 +24,18 @@ public interface IShowLogManager {
      *
      * @param application
      */
-    void start(Application application);
+    void start(Application application, Executor executor);
 
     /**
      * 关闭
      */
     void stop();
+
+    /**
+     * 获取线程池
+     *
+     * @return
+     */
+    Executor loadExecutor();
+
 }

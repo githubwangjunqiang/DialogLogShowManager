@@ -115,6 +115,6 @@ public class App extends Application {
                 return list;
             }
         });
-        ShowLogManager.getInstance().start(this);
+//        ShowLogManager.getInstance().start(this);
     }
 }

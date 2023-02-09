@@ -49,7 +49,7 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mTab2, mTab3, mTab4,mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
+    private TextView mTab1, mTab2, mTab3, mTab4, mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
 
@@ -200,7 +200,7 @@ public class DialogShowLog extends Dialog {
                 return baseShowData;
             }
         };
-        mAsyncTask.execute();
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
     /**
@@ -228,10 +228,12 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
+                Log.d("DialogShowLog", "doInBackground:-1 ");
+
 
                 ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
                         .loadHttpLog(startTime, endTime);
-
+                Log.d("DialogShowLog", "doInBackground:-2 ");
 
                 if (list != null && !list.isEmpty()) {
                     Map<String, ArrayList<BaseShowData>> map = new HashMap<>();
@@ -284,7 +286,7 @@ public class DialogShowLog extends Dialog {
                 return null;
             }
         };
-        mAsyncTask.execute();
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
     /**
@@ -321,7 +323,7 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.execute();
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
     /**
@@ -376,7 +378,7 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.execute();
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
     @Override
@@ -436,7 +438,7 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.execute();
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
     private void showLoading() {

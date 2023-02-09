@@ -9,6 +9,7 @@ import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 /**
  * Created by Android-小强 on 2023/1/10.
@@ -20,6 +21,10 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
      * 数据回调 接口
      */
     private volatile IShowLoadDataCallback showLoadDataCallback;
+    /**
+     * 外部传入的线程池
+     */
+    private volatile Executor executor;
 
 
     private ShowLogManager() {
@@ -35,8 +40,14 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     }
 
     @Override
-    public void start(Application application) {
+    public void start(Application application, Executor executor) {
         ShowLogActivityUtils.getInstance().open = true;
+        if (application == null) {
+            throw new NullPointerException("application为空");
+        }
+        if (executor == null) {
+            throw new NullPointerException("线程池为空");
+        }
         try {
             application.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
         } catch (Exception e) {
@@ -47,11 +58,17 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.executor = executor;
     }
 
     @Override
     public void stop() {
         ShowLogActivityUtils.getInstance().open = false;
+    }
+
+    @Override
+    public Executor loadExecutor() {
+        return executor;
     }
 
 

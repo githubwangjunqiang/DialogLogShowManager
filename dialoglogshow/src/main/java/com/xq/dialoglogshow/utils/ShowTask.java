@@ -8,6 +8,9 @@ import android.os.AsyncTask;
  * description:
  */
 public abstract class ShowTask<T> extends AsyncTask<Object, Void, T> {
+    public ShowTask() {
+    }
+
     @Override
     protected void onPostExecute(T t) {
 
@@ -20,4 +23,5 @@ public abstract class ShowTask<T> extends AsyncTask<Object, Void, T> {
     }
 
     protected abstract void postMainData(T t);
+
 }
