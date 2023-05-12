@@ -11,7 +11,7 @@
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginEnd="10dp"
-        android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
+        android:src="@drawable/show_ic_baseline_arrow_forward_ios_24" />
 
     <TextView
         android:id="@+id/show_sdk_id_item_http_log_one_tv_content"

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
+import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
 
@@ -178,17 +179,28 @@ public class ShowEntranceFullView extends View {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == View.VISIBLE) {
-            animator.start();
-        } else {
-            animator.end();
+        if (ShowLogManager.getInstance().loadShowAnimation()) {
+            try {
+                if (visibility == View.VISIBLE) {
+                    animator.start();
+                } else {
+                    animator.end();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        animator.end();
+        try {
+            animator.end();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     float downX;

@@ -25,6 +25,10 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
      * 外部传入的线程池
      */
     private volatile Executor executor;
+    /**
+     * 是否显示动画
+     */
+    private volatile boolean showAnimation = false;
 
 
     private ShowLogManager() {
@@ -41,6 +45,12 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
 
     @Override
     public void start(Application application, Executor executor) {
+        start(application, executor, false);
+    }
+
+    @Override
+    public void start(Application application, Executor executor, boolean showAnimation) {
+        this.showAnimation = showAnimation;
         ShowLogActivityUtils.getInstance().open = true;
         if (application == null) {
             throw new NullPointerException("application为空");
@@ -69,6 +79,11 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     @Override
     public Executor loadExecutor() {
         return executor;
+    }
+
+    @Override
+    public boolean loadShowAnimation() {
+        return showAnimation;
     }
 
 

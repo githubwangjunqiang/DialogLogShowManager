@@ -27,6 +27,14 @@ public interface IShowLogManager {
     void start(Application application, Executor executor);
 
     /**
+     * 开始
+     * @param application
+     * @param executor
+     * @param showAnimation
+     */
+    void start(Application application, Executor executor,boolean showAnimation);
+
+    /**
      * 关闭
      */
     void stop();
@@ -37,5 +45,11 @@ public interface IShowLogManager {
      * @return
      */
     Executor loadExecutor();
+
+    /**
+     * 是否显示动画
+     * @return
+     */
+    boolean loadShowAnimation();
 
 }
