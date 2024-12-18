@@ -1,5 +1,8 @@
 package com.xq.dialoglogshow;
 
+import android.view.View;
+import android.widget.FrameLayout;
+
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.PushData;
@@ -56,6 +59,12 @@ public interface IShowLoadDataCallback {
      * @return 文件路径
      */
     ArrayList<BaseShowData> loadRestData();
+    /**
+     * 给开发者 自定义一tab
+     *
+     * @return 文件路径
+     */
+    void setCustomView(FrameLayout frameLayout);
 
 
 

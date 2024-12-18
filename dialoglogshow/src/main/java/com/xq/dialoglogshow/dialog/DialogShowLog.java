@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,9 +50,10 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mTab2, mTab3, mTab4, mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
+    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
+    private FrameLayout setting_config;
 
     private long startTime, endTime;
 
@@ -71,7 +73,9 @@ public class DialogShowLog extends Dialog {
      * 初始化
      */
     private void initView() {
+        setting_config = findViewById(R.id.setting_config);
         mRecyclerView = findViewById(R.id.show_app_dialog_httplog_list);
+        mSeeting = findViewById(R.id.show_sdk_id_dialog_http_log_tv_config);
         mTab1 = findViewById(R.id.show_sdk_id_dialog_http_log_tv1);
         mTab2 = findViewById(R.id.show_sdk_id_dialog_http_log_tv2);
         mTab3 = findViewById(R.id.show_sdk_id_dialog_http_log_tv3);
@@ -107,11 +111,25 @@ public class DialogShowLog extends Dialog {
 
         //网络日志
         mTab1.setOnClickListener(v -> {
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
             loadDataHttp();
             changeTabState(v);
             mCurrentDate.setVisibility(View.VISIBLE);
             mPrevious.setVisibility(View.VISIBLE);
             mNext.setVisibility(View.VISIBLE);
+        });
+        //自定义设置
+        mSeeting.setOnClickListener(v -> {
+            changeTabState(v);
+            mCurrentDate.setVisibility(View.GONE);
+            mPrevious.setVisibility(View.GONE);
+            mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+
+            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config);
+
         });
         //本地key-value
         mTab2.setOnClickListener(v -> {
@@ -120,6 +138,8 @@ public class DialogShowLog extends Dialog {
             mCurrentDate.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //push
         mTab3.setOnClickListener(v -> {
@@ -128,6 +148,8 @@ public class DialogShowLog extends Dialog {
             mCurrentDate.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //个人信息
         mTab4.setOnClickListener(v -> {
@@ -136,6 +158,8 @@ public class DialogShowLog extends Dialog {
             mCurrentDate.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //其他信息
         mTab5.setOnClickListener(v -> {
@@ -144,6 +168,8 @@ public class DialogShowLog extends Dialog {
             mCurrentDate.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         mPrevious.setOnClickListener(v -> {
             //上一天

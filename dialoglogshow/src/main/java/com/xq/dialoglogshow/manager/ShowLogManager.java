@@ -1,6 +1,7 @@
 package com.xq.dialoglogshow.manager;
 
 import android.app.Application;
+import android.widget.FrameLayout;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
@@ -133,6 +134,13 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
             return showLoadDataCallback.loadRestData();
         }
         return null;
+    }
+
+    @Override
+    public void setCustomView(FrameLayout frameLayout) {
+        if (showLoadDataCallback != null) {
+            showLoadDataCallback.setCustomView(frameLayout);
+        }
     }
 
     private static class Holder {

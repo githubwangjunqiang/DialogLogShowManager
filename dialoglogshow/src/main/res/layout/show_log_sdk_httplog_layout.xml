@@ -31,6 +31,17 @@
                 android:textSize="14dp" />
 
             <TextView
+                android:id="@+id/show_sdk_id_dialog_http_log_tv_config"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="自定义设置"
+                android:textColor="@color/sdk_item_dialog_http_tab_text_color"
+                android:textSize="14dp" />
+
+            <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,6 +110,12 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="500dp">
+
+        <FrameLayout
+            android:id="@+id/setting_config"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/show_app_dialog_httplog_list"
