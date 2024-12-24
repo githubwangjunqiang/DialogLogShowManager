@@ -5,6 +5,7 @@ import android.widget.FrameLayout;
 
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 
 import java.util.ArrayList;
@@ -65,6 +66,11 @@ public interface IShowLoadDataCallback {
      * @return 文件路径
      */
     void setCustomView(FrameLayout frameLayout);
+    /**
+     * 获取配置
+     *
+     */
+    LogConfigData loadConfig();
 
 
 

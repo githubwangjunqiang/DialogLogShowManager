@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
@@ -23,6 +24,7 @@ import com.xq.dialoglogshow.activity.FileShareActivity;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.DateUtils;
@@ -94,6 +96,8 @@ public class DialogShowLog extends Dialog {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new MyItemDecoration(getContext()));
         mRecyclerView.setAdapter(mMyAdapter);
+
+
     }
 
     /**
@@ -229,11 +233,20 @@ public class DialogShowLog extends Dialog {
         mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
+    private void loadDataHttp() {
+        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+        if (logConfigData != null && logConfigData.sortUrlForTime) {
+            loadDataHttpSort();
+        } else {
+            loadDataHttpOld();
+        }
+    }
+
     /**
      * 拉取网络日志
      */
     @SuppressLint("StaticFieldLeak")
-    private void loadDataHttp() {
+    private void loadDataHttpOld() {
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
         }
@@ -305,6 +318,64 @@ public class DialogShowLog extends Dialog {
                     for (int i = 0; i < retUrnList.size(); i++) {
                         retUrnList.get(i).setIndex(i + 1);
                     }
+                    return retUrnList;
+                }
+
+
+                return null;
+            }
+        };
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+    }
+
+    /**
+     * 拉取网络日志 平铺 排序
+     */
+    @SuppressLint("StaticFieldLeak")
+    private void loadDataHttpSort() {
+        if (mAsyncTask != null) {
+            mAsyncTask.cancel(true);
+        }
+        mAsyncTask = new ShowTask<ArrayList<BaseShowData>>() {
+            @Override
+            protected void postMainData(ArrayList<BaseShowData> o) {
+                hideLoading();
+                mCurrentDate.setText("日期：" + DateUtils.formatDd(startTime));
+                mMyAdapter.setList(o);
+                mMyAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showLoading();
+            }
+
+            @Override
+            protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
+                Log.d("DialogShowLog", "doInBackground:-1 ");
+
+
+                ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
+                        .loadHttpLog(startTime, endTime);
+                Log.d("DialogShowLog", "doInBackground:-2 ");
+
+
+                if (list != null && !list.isEmpty()) {
+                    ArrayList<BaseShowData> retUrnList = new ArrayList<>();
+                    for (HttpLogData data : list) {
+                        long time = data.getTime();
+                        String url = data.getUrl();
+                        BaseShowData zi = new HttpLogData(
+                                url, time, data.getContent(), data.getResMsg(), null, false, 0);
+                        zi.setItemType(BaseShowData.TYE_TOW);
+                    }
+                    Collections.sort(retUrnList, new Comparator<BaseShowData>() {
+                        @Override
+                        public int compare(BaseShowData baseShowData, BaseShowData t1) {
+                            return Long.compare(baseShowData.getTime(), t1.getTime());
+                        }
+                    });
                     return retUrnList;
                 }
 
@@ -496,7 +567,7 @@ public class DialogShowLog extends Dialog {
         super.show();
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         if (attributes != null) {
-            attributes.width = SizeUtils.dpToPx(getContext().getApplicationContext(), 335F);
+            attributes.width = WindowManager.LayoutParams.MATCH_PARENT;
             attributes.height = WindowManager.LayoutParams.WRAP_CONTENT;
             attributes.gravity = Gravity.CENTER;
             getWindow().setAttributes(attributes);

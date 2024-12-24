@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="335dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:layout_marginHorizontal="10dp"
     android:background="#CCFFFFFF"
     android:orientation="vertical">
 
@@ -109,7 +110,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp">
+        android:layout_height="550dp">
 
         <FrameLayout
             android:id="@+id/setting_config"

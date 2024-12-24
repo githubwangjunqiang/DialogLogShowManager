@@ -6,6 +6,7 @@ import android.widget.FrameLayout;
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
 
@@ -36,6 +37,9 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     }
 
     public static IShowLogManager getInstance() {
+        return Holder.showLogManager;
+    }
+    public static IShowLoadDataCallback getCallback() {
         return Holder.showLogManager;
     }
 
@@ -141,6 +145,14 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         if (showLoadDataCallback != null) {
             showLoadDataCallback.setCustomView(frameLayout);
         }
+    }
+
+    @Override
+    public LogConfigData loadConfig() {
+        if (showLoadDataCallback != null) {
+            showLoadDataCallback.loadConfig();
+        }
+        return null;
     }
 
     private static class Holder {
