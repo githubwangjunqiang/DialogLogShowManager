@@ -152,6 +152,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         if (showLoadDataCallback != null) {
             showLoadDataCallback.loadConfig();
         }
+
         return null;
     }
 
