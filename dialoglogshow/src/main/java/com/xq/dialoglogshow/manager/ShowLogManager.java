@@ -150,7 +150,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     @Override
     public LogConfigData loadConfig() {
         if (showLoadDataCallback != null) {
-            showLoadDataCallback.loadConfig();
+            return showLoadDataCallback.loadConfig();
         }
 
         return null;
@@ -158,6 +158,9 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
 
     @Override
     public boolean deleteHttpLog(BaseShowData data) {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.deleteHttpLog(data);
+        }
         return false;
     }
 

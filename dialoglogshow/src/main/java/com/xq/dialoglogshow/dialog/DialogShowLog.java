@@ -93,6 +93,18 @@ public class DialogShowLog extends Dialog {
 
 
         mMyAdapter = new MyAdapter(getContext(), mRecyclerView);
+        mMyAdapter.mClickAdapter = new MyAdapter.ClickAdapter() {
+            @Override
+            public void clickDeleteHttpLog(BaseShowData data, int position) {
+                boolean b = ShowLogManager.getCallback().deleteHttpLog(data);
+                if (!b) {
+                    Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mMyAdapter.removedHttpData(data,position);
+
+            }
+        };
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new MyItemDecoration(getContext()));
         mRecyclerView.setAdapter(mMyAdapter);
@@ -369,13 +381,20 @@ public class DialogShowLog extends Dialog {
                         BaseShowData zi = new HttpLogData(
                                 url, time, data.getContent(), data.getResMsg(), null, false, 0);
                         zi.setItemType(BaseShowData.TYE_THREE);
+                        data.setExpansion(false);
+                        data.setItemType(BaseShowData.TYE_THREE);
+                        retUrnList.add(data);
                     }
                     Collections.sort(retUrnList, new Comparator<BaseShowData>() {
                         @Override
                         public int compare(BaseShowData baseShowData, BaseShowData t1) {
-                            return Long.compare(baseShowData.getTime(), t1.getTime());
+                            return -Long.compare(baseShowData.getTime(), t1.getTime());
                         }
                     });
+
+                    for (int i = 0; i < retUrnList.size(); i++) {
+                        retUrnList.get(i).setIndex(retUrnList.size() - i);
+                    }
                     return retUrnList;
                 }
 

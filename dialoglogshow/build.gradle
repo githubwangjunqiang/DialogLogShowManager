@@ -42,7 +42,7 @@ afterEvaluate {
 //                url "D:\\as\\maven\\sdk"
 //            }
             handler.maven {
-                url "D:\\as\\work\\MyApplication\\sdk\\repo"
+                url "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
                 name "本地"
             }
 //             仓库用户名密码
@@ -68,7 +68,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.xq.showlog"//公司名称
                 artifactId = "showLog"//sdk名称
-                version = "1.0"//sdk版本号
+                version = "3.0.4"//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {

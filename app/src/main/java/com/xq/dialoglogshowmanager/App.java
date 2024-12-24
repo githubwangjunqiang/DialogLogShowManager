@@ -140,6 +140,7 @@ public class App extends Application {
 
             @Override
             public LogConfigData loadConfig() {
+                Log.d("12345", "loadConfig: ");
                 return new LogConfigData();
             }
 

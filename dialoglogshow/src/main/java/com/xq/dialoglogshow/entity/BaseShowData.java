@@ -22,6 +22,10 @@ public class BaseShowData {
     /**
      * 数据
      */
+    protected String id;
+    /**
+     * 数据
+     */
     protected String content;
     /**
      * 网络链接
@@ -50,6 +54,14 @@ public class BaseShowData {
      * 子类使用的下标
      */
     protected int index;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getUrl() {
         return url;
