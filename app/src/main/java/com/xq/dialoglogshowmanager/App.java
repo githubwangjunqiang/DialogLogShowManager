@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 
@@ -135,6 +136,16 @@ public class App extends Application {
                     }
                 });
                 frameLayout.addView(textView);
+            }
+
+            @Override
+            public LogConfigData loadConfig() {
+                return new LogConfigData();
+            }
+
+            @Override
+            public boolean deleteHttpLog(BaseShowData data) {
+                return false;
             }
         });
         ShowLogManager.getInstance().start(this,
