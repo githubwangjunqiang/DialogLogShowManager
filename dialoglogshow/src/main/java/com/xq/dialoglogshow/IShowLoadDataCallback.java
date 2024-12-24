@@ -72,6 +72,12 @@ public interface IShowLoadDataCallback {
      */
     LogConfigData loadConfig();
 
+    /**
+     * 删除一个数据
+     * @param data
+     */
+    boolean deleteHttpLog(BaseShowData data);
+
 
 
 }

@@ -368,7 +368,7 @@ public class DialogShowLog extends Dialog {
                         String url = data.getUrl();
                         BaseShowData zi = new HttpLogData(
                                 url, time, data.getContent(), data.getResMsg(), null, false, 0);
-                        zi.setItemType(BaseShowData.TYE_TOW);
+                        zi.setItemType(BaseShowData.TYE_THREE);
                     }
                     Collections.sort(retUrnList, new Comparator<BaseShowData>() {
                         @Override
