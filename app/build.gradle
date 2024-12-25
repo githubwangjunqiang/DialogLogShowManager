@@ -9,8 +9,8 @@ android {
         applicationId "com.xq.dialoglogshowmanager"
         minSdk 21
         targetSdk 32
-        versionCode 9
-        versionName "3.0.6"
+        versionCode 10
+        versionName "3.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

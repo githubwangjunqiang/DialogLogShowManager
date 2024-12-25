@@ -144,7 +144,7 @@ public class DialogShowLog extends Dialog {
             setting_config.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
 
-            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config);
+            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config,this);
 
         });
         //本地key-value

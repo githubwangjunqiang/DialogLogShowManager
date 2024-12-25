@@ -1,5 +1,6 @@
 package com.xq.dialoglogshow;
 
+import android.app.Dialog;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -65,7 +66,7 @@ public interface IShowLoadDataCallback {
      *
      * @return 文件路径
      */
-    void setCustomView(FrameLayout frameLayout);
+    void setCustomView(FrameLayout frameLayout, Dialog dialog);
     /**
      * 获取配置
      *

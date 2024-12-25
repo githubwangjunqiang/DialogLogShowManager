@@ -1,6 +1,7 @@
 package com.xq.dialoglogshow.manager;
 
 import android.app.Application;
+import android.app.Dialog;
 import android.widget.FrameLayout;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
@@ -39,6 +40,7 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     public static IShowLogManager getInstance() {
         return Holder.showLogManager;
     }
+
     public static IShowLoadDataCallback getCallback() {
         return Holder.showLogManager;
     }
@@ -141,9 +143,9 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     }
 
     @Override
-    public void setCustomView(FrameLayout frameLayout) {
+    public void setCustomView(FrameLayout frameLayout, Dialog dialog) {
         if (showLoadDataCallback != null) {
-            showLoadDataCallback.setCustomView(frameLayout);
+            showLoadDataCallback.setCustomView(frameLayout, dialog);
         }
     }
 
