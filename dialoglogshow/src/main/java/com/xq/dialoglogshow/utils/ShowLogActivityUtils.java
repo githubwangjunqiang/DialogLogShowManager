@@ -123,7 +123,7 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
         if (root instanceof ViewGroup) {
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.topMargin = root.getHeight() - fullView.sizeHeight;
+            layoutParams.topMargin = root.getHeight() /2;
             ((ViewGroup) root).addView(fullView, layoutParams);
         }
 
