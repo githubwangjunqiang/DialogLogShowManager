@@ -78,6 +78,10 @@ public interface IShowLoadDataCallback {
      * @param data
      */
     boolean deleteHttpLog(BaseShowData data);
+    /**
+     * 删除一个数据
+     */
+    boolean deleteHttpLogAll();
 
 
 

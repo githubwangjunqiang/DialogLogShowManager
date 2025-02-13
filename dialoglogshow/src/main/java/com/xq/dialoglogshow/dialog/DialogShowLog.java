@@ -52,7 +52,8 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
+    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mBtnClose, mShare;
+    private TextView mClearHttpLog, mCurrentDate, mPrevious, mNext;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
     private FrameLayout setting_config;
@@ -85,6 +86,7 @@ public class DialogShowLog extends Dialog {
         mTab5 = findViewById(R.id.show_sdk_id_dialog_http_log_tv5);
         mProgressBar = findViewById(R.id.show_app_dialog_httplog_loading);
         mCurrentDate = findViewById(R.id.show_app_dialog_httplog_currentdate);
+        mClearHttpLog = findViewById(R.id.show_app_dialog_clear_http);
         mPrevious = findViewById(R.id.show_app_dialog_httplog_previous);
         mNext = findViewById(R.id.show_app_dialog_httplog_next);
         mBtnClose = findViewById(R.id.show_app_dialog_confirm_btnok);
@@ -101,7 +103,7 @@ public class DialogShowLog extends Dialog {
                     Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                mMyAdapter.removedHttpData(data,position);
+                mMyAdapter.removedHttpData(data, position);
 
             }
         };
@@ -132,19 +134,30 @@ public class DialogShowLog extends Dialog {
             loadDataHttp();
             changeTabState(v);
             mCurrentDate.setVisibility(View.VISIBLE);
+            mClearHttpLog.setVisibility(View.VISIBLE);
             mPrevious.setVisibility(View.VISIBLE);
             mNext.setVisibility(View.VISIBLE);
+        });
+// 清空网络日志
+        mClearHttpLog.setOnClickListener(view -> {
+            boolean b = ShowLogManager.getCallback().deleteHttpLogAll();
+            if (!b) {
+                Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mMyAdapter.setList(new ArrayList<>());
         });
         //自定义设置
         mSeeting.setOnClickListener(v -> {
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
 
-            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config,this);
+            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config, this);
 
         });
         //本地key-value
@@ -152,6 +165,7 @@ public class DialogShowLog extends Dialog {
             loadDataKeyValue();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.GONE);
@@ -162,6 +176,7 @@ public class DialogShowLog extends Dialog {
             loadDataPush();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.GONE);
@@ -172,6 +187,7 @@ public class DialogShowLog extends Dialog {
             loadDataUserInfo();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.GONE);
@@ -182,6 +198,7 @@ public class DialogShowLog extends Dialog {
             loadOtherInformation();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.GONE);
@@ -220,7 +237,6 @@ public class DialogShowLog extends Dialog {
             protected void postMainData(ArrayList<BaseShowData> o) {
                 hideLoading();
                 mMyAdapter.setList(o);
-                mMyAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -268,7 +284,6 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
                 mCurrentDate.setText("日期：" + DateUtils.formatDd(startTime));
                 mMyAdapter.setList(o);
-                mMyAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -354,7 +369,6 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
                 mCurrentDate.setText("日期：" + DateUtils.formatDd(startTime));
                 mMyAdapter.setList(o);
-                mMyAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -435,7 +449,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };
@@ -490,7 +503,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };
@@ -550,7 +562,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };

@@ -95,8 +95,8 @@ public class ShowEntranceFullView extends View {
     int parHeight = 0;
 
     private void initData(Context context) {
-        sizeWidth = SizeUtils.dpToPx(context, 50);
-        sizeHeight = SizeUtils.dpToPx(context, 50);
+        sizeWidth = SizeUtils.dpToPx(context, 30);
+        sizeHeight = SizeUtils.dpToPx(context, 30);
 
         paintRed.isAntiAlias();
         paintRed.setStyle(Paint.Style.FILL);

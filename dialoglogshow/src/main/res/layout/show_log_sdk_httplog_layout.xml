@@ -174,6 +174,17 @@
             android:textColor="#333333"
             android:textSize="12dp" />
 
+        <TextView
+            android:id="@+id/show_app_dialog_clear_http"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="清空日志"
+            android:textAllCaps="true"
+            android:textColor="#59B47B"
+            android:textSize="16dp" />
 
         <TextView
             android:id="@+id/show_app_dialog_confirm_btnok"
@@ -182,7 +193,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Close"
+            android:text="关闭弹框"
             android:textAllCaps="true"
             android:textColor="#59B47B"
             android:textSize="16dp" />

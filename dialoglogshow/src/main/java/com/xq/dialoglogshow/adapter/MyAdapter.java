@@ -60,6 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (mList.isEmpty()) {
             Toast.makeText(mContext.getApplicationContext(), "无数据", Toast.LENGTH_SHORT).show();
         }
+        notifyDataSetChanged();
     }
 
     public MyAdapter(Context context, RecyclerView recyclerView) {

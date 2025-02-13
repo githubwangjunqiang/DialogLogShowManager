@@ -149,6 +149,11 @@ public class App extends Application {
             public boolean deleteHttpLog(BaseShowData data) {
                 return false;
             }
+
+            @Override
+            public boolean deleteHttpLogAll() {
+                return true;
+            }
         });
         ShowLogManager.getInstance().start(this,
                 new ScheduledThreadPoolExecutor(1),

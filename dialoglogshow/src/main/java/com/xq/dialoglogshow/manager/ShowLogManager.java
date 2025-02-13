@@ -166,6 +166,14 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         return false;
     }
 
+    @Override
+    public boolean deleteHttpLogAll() {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.deleteHttpLogAll();
+        }
+        return false;
+    }
+
     private static class Holder {
         private static volatile ShowLogManager showLogManager = new ShowLogManager();
     }
