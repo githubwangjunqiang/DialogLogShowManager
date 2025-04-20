@@ -1,6 +1,11 @@
 package com.xq.dialoglogshow.entity;
 
+import android.graphics.Point;
+import android.graphics.RectF;
+
 import androidx.annotation.Keep;
+
+import java.lang.reflect.Array;
 
 /**
  * Description:
@@ -12,4 +17,6 @@ public class LogConfigData {
 
     @Keep
     public boolean sortUrlForTime = false;
+    @Keep
+    public RectF debugViewSize = null;
 }

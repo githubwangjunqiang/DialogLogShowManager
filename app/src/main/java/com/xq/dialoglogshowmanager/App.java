@@ -2,6 +2,7 @@ package com.xq.dialoglogshowmanager;
 
 import android.app.Application;
 import android.app.Dialog;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -142,7 +143,9 @@ public class App extends Application {
             @Override
             public LogConfigData loadConfig() {
                 Log.d("12345", "loadConfig: ");
-                return new LogConfigData();
+                LogConfigData logConfigData = new LogConfigData();
+                logConfigData.debugViewSize = new RectF(0,0,0,0);
+                return logConfigData;
             }
 
             @Override

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
@@ -95,8 +97,15 @@ public class ShowEntranceFullView extends View {
     int parHeight = 0;
 
     private void initData(Context context) {
-        sizeWidth = SizeUtils.dpToPx(context, 30);
-        sizeHeight = SizeUtils.dpToPx(context, 30);
+        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+        if (logConfigData != null && logConfigData.debugViewSize != null) {
+            sizeWidth = (int) logConfigData.debugViewSize.width();
+            sizeHeight = (int) logConfigData.debugViewSize.height();
+        } else {
+            sizeWidth = SizeUtils.dpToPx(context, 40);
+            sizeHeight = SizeUtils.dpToPx(context, 40);
+
+        }
 
         paintRed.isAntiAlias();
         paintRed.setStyle(Paint.Style.FILL);
