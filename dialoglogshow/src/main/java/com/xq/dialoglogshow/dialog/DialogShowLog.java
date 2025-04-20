@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
@@ -22,6 +24,7 @@ import com.xq.dialoglogshow.activity.FileShareActivity;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.DateUtils;
@@ -49,9 +52,11 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mTab2, mTab3, mTab4, mTab5, mCurrentDate, mPrevious, mNext, mBtnClose, mShare;
+    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mBtnClose, mShare;
+    private TextView mClearHttpLog, mCurrentDate, mPrevious, mNext;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
+    private FrameLayout setting_config;
 
     private long startTime, endTime;
 
@@ -71,7 +76,9 @@ public class DialogShowLog extends Dialog {
      * 初始化
      */
     private void initView() {
+        setting_config = findViewById(R.id.setting_config);
         mRecyclerView = findViewById(R.id.show_app_dialog_httplog_list);
+        mSeeting = findViewById(R.id.show_sdk_id_dialog_http_log_tv_config);
         mTab1 = findViewById(R.id.show_sdk_id_dialog_http_log_tv1);
         mTab2 = findViewById(R.id.show_sdk_id_dialog_http_log_tv2);
         mTab3 = findViewById(R.id.show_sdk_id_dialog_http_log_tv3);
@@ -79,6 +86,7 @@ public class DialogShowLog extends Dialog {
         mTab5 = findViewById(R.id.show_sdk_id_dialog_http_log_tv5);
         mProgressBar = findViewById(R.id.show_app_dialog_httplog_loading);
         mCurrentDate = findViewById(R.id.show_app_dialog_httplog_currentdate);
+        mClearHttpLog = findViewById(R.id.show_app_dialog_clear_http);
         mPrevious = findViewById(R.id.show_app_dialog_httplog_previous);
         mNext = findViewById(R.id.show_app_dialog_httplog_next);
         mBtnClose = findViewById(R.id.show_app_dialog_confirm_btnok);
@@ -87,9 +95,23 @@ public class DialogShowLog extends Dialog {
 
 
         mMyAdapter = new MyAdapter(getContext(), mRecyclerView);
+        mMyAdapter.mClickAdapter = new MyAdapter.ClickAdapter() {
+            @Override
+            public void clickDeleteHttpLog(BaseShowData data, int position) {
+                boolean b = ShowLogManager.getCallback().deleteHttpLog(data);
+                if (!b) {
+                    Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mMyAdapter.removedHttpData(data, position);
+
+            }
+        };
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new MyItemDecoration(getContext()));
         mRecyclerView.setAdapter(mMyAdapter);
+
+
     }
 
     /**
@@ -107,43 +129,80 @@ public class DialogShowLog extends Dialog {
 
         //网络日志
         mTab1.setOnClickListener(v -> {
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
             loadDataHttp();
             changeTabState(v);
             mCurrentDate.setVisibility(View.VISIBLE);
+            mClearHttpLog.setVisibility(View.VISIBLE);
             mPrevious.setVisibility(View.VISIBLE);
             mNext.setVisibility(View.VISIBLE);
+        });
+// 清空网络日志
+        mClearHttpLog.setOnClickListener(view -> {
+            boolean b = ShowLogManager.getCallback().deleteHttpLogAll();
+            if (!b) {
+                Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mMyAdapter.setList(new ArrayList<>());
+        });
+        //自定义设置
+        mSeeting.setOnClickListener(v -> {
+            changeTabState(v);
+            mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
+            mPrevious.setVisibility(View.GONE);
+            mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+
+            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config, this);
+
         });
         //本地key-value
         mTab2.setOnClickListener(v -> {
             loadDataKeyValue();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //push
         mTab3.setOnClickListener(v -> {
             loadDataPush();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //个人信息
         mTab4.setOnClickListener(v -> {
             loadDataUserInfo();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         //其他信息
         mTab5.setOnClickListener(v -> {
             loadOtherInformation();
             changeTabState(v);
             mCurrentDate.setVisibility(View.GONE);
+            mClearHttpLog.setVisibility(View.GONE);
             mPrevious.setVisibility(View.GONE);
             mNext.setVisibility(View.GONE);
+            setting_config.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         });
         mPrevious.setOnClickListener(v -> {
             //上一天
@@ -178,7 +237,6 @@ public class DialogShowLog extends Dialog {
             protected void postMainData(ArrayList<BaseShowData> o) {
                 hideLoading();
                 mMyAdapter.setList(o);
-                mMyAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -203,11 +261,20 @@ public class DialogShowLog extends Dialog {
         mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
     }
 
+    private void loadDataHttp() {
+        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+        if (logConfigData != null && logConfigData.sortUrlForTime) {
+            loadDataHttpSort();
+        } else {
+            loadDataHttpOld();
+        }
+    }
+
     /**
      * 拉取网络日志
      */
     @SuppressLint("StaticFieldLeak")
-    private void loadDataHttp() {
+    private void loadDataHttpOld() {
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
         }
@@ -217,7 +284,6 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
                 mCurrentDate.setText("日期：" + DateUtils.formatDd(startTime));
                 mMyAdapter.setList(o);
-                mMyAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -290,6 +356,70 @@ public class DialogShowLog extends Dialog {
     }
 
     /**
+     * 拉取网络日志 平铺 排序
+     */
+    @SuppressLint("StaticFieldLeak")
+    private void loadDataHttpSort() {
+        if (mAsyncTask != null) {
+            mAsyncTask.cancel(true);
+        }
+        mAsyncTask = new ShowTask<ArrayList<BaseShowData>>() {
+            @Override
+            protected void postMainData(ArrayList<BaseShowData> o) {
+                hideLoading();
+                mCurrentDate.setText("日期：" + DateUtils.formatDd(startTime));
+                mMyAdapter.setList(o);
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                showLoading();
+            }
+
+            @Override
+            protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
+                Log.d("DialogShowLog", "doInBackground:-1 ");
+
+
+                ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
+                        .loadHttpLog(startTime, endTime);
+                Log.d("DialogShowLog", "doInBackground:-2 ");
+
+
+                if (list != null && !list.isEmpty()) {
+                    ArrayList<BaseShowData> retUrnList = new ArrayList<>();
+                    for (HttpLogData data : list) {
+                        long time = data.getTime();
+                        String url = data.getUrl();
+                        BaseShowData zi = new HttpLogData(
+                                url, time, data.getContent(), data.getResMsg(), null, false, 0);
+                        zi.setItemType(BaseShowData.TYE_THREE);
+                        data.setExpansion(false);
+                        data.setItemType(BaseShowData.TYE_THREE);
+                        retUrnList.add(data);
+                    }
+                    Collections.sort(retUrnList, new Comparator<BaseShowData>() {
+                        @Override
+                        public int compare(BaseShowData baseShowData, BaseShowData t1) {
+                            return -Long.compare(baseShowData.getTime(), t1.getTime());
+                        }
+                    });
+
+                    for (int i = 0; i < retUrnList.size(); i++) {
+                        retUrnList.get(i).setIndex(retUrnList.size() - i);
+                    }
+                    return retUrnList;
+                }
+
+
+                return null;
+            }
+        };
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+    }
+
+    /**
      * 拉取本地缓存 key-value
      */
     @SuppressLint("StaticFieldLeak")
@@ -319,7 +449,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };
@@ -374,7 +503,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };
@@ -434,7 +562,6 @@ public class DialogShowLog extends Dialog {
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
                 mMyAdapter.setList(baseShowData);
-                mMyAdapter.notifyDataSetChanged();
                 hideLoading();
             }
         };
@@ -470,7 +597,7 @@ public class DialogShowLog extends Dialog {
         super.show();
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         if (attributes != null) {
-            attributes.width = SizeUtils.dpToPx(getContext().getApplicationContext(), 335F);
+            attributes.width = WindowManager.LayoutParams.MATCH_PARENT;
             attributes.height = WindowManager.LayoutParams.WRAP_CONTENT;
             attributes.gravity = Gravity.CENTER;
             getWindow().setAttributes(attributes);

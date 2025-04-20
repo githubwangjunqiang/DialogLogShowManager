@@ -50,12 +50,17 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
-
+        initView(activity);
     }
 
     @Override
     public void onActivityPostResumed(@NonNull Activity activity) {
         Application.ActivityLifecycleCallbacks.super.onActivityPostResumed(activity);
+//        initView(activity);
+    }
+
+    private void initView(Activity activity) {
+
         try {
             View root = activity.findViewById(android.R.id.content);
             if (root != null) {
@@ -120,11 +125,11 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
                 new DialogShowLog(activity).show();
             }
         });
-        if (root instanceof ViewGroup) {
+        if (root instanceof FrameLayout) {
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.topMargin = root.getHeight() - fullView.sizeHeight;
-            ((ViewGroup) root).addView(fullView, layoutParams);
+            layoutParams.topMargin = root.getHeight() / 2;
+            ((FrameLayout) root).addView(fullView, layoutParams);
         }
 
         return fullView;

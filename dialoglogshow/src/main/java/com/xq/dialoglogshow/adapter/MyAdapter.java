@@ -2,6 +2,7 @@ package com.xq.dialoglogshow.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.LogConfigData;
+import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.ClipboardUtils;
 import com.xq.dialoglogshow.utils.DateUtils;
 import com.xq.dialoglogshow.utils.ShareUtils;
@@ -34,6 +37,16 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     private RecyclerView mRecyclerView;
     private LayoutInflater mLayoutInflater;
     private List<BaseShowData> mList = new ArrayList<>();
+    public ClickAdapter mClickAdapter;
+
+    public void removedHttpData(BaseShowData data, int position) {
+        mList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public interface ClickAdapter {
+        void clickDeleteHttpLog(BaseShowData data, int position);
+    }
 
     public List<BaseShowData> getListNodeData() {
         return mList;
@@ -47,6 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (mList.isEmpty()) {
             Toast.makeText(mContext.getApplicationContext(), "无数据", Toast.LENGTH_SHORT).show();
         }
+        notifyDataSetChanged();
     }
 
     public MyAdapter(Context context, RecyclerView recyclerView) {
@@ -85,6 +99,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
                     .inflate(R.layout.show_sdk_httplog_item_three_layout,
                             parent, false));
 
+            myViewHolderHttpChild.viewDelete.setOnClickListener(this);
             myViewHolderHttpChild.itemView.setOnClickListener(this);
             myViewHolderHttpChild.itemView.setOnLongClickListener(this);
 
@@ -165,10 +180,20 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         }
         if (containingViewHolder instanceof MyViewHolderHttpChild) {
             //孩子
-            int layoutPosition = containingViewHolder.getLayoutPosition();
-            BaseShowData data = mList.get(layoutPosition);
-            data.setExpansion(!data.isExpansion());
-            notifyItemChanged(layoutPosition);
+            if (v.getId() == R.id.show_sdk_id_dialog_http_log_delete) {
+                int layoutPosition = containingViewHolder.getLayoutPosition();
+                BaseShowData data = mList.get(layoutPosition);
+                if (mClickAdapter == null) {
+                    return;
+                }
+                mClickAdapter.clickDeleteHttpLog(data, layoutPosition);
+            } else {
+                int layoutPosition = containingViewHolder.getLayoutPosition();
+                BaseShowData data = mList.get(layoutPosition);
+                data.setExpansion(!data.isExpansion());
+                notifyItemChanged(layoutPosition);
+            }
+
         }
         if (containingViewHolder instanceof MyViewHolderData) {
             //其他
@@ -250,10 +275,18 @@ class MyViewHolderHttpFather extends RecyclerView.ViewHolder {
 class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
 
     BigTextView mBigTextView;
+    View viewDelete;
 
     public MyViewHolderHttpChild(View itemView) {
         super(itemView);
         mBigTextView = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_tvbig);
+        viewDelete = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_delete);
+        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+        if (logConfigData != null && logConfigData.sortUrlForTime) {
+            View viewById = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_root);
+            int v = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+            viewById.setPadding(v, v, v, v);
+        }
     }
 
     public void setData(BaseShowData baseShowData) {
@@ -262,10 +295,10 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
             mBigTextView.setMessage(baseShowData.getContent());
         } else {
             String format = DateUtils.format(baseShowData.getTime());
-            String msg = "Index：" + baseShowData.getIndex() + "，" +
+            String msg = "Count：" + baseShowData.getIndex() + "，" +
                     "Time：" + format + "\n" +
-                    "Url：" + baseShowData.getUrl() + "\n" +
-                    "Code：" + baseShowData.getResMsg();
+                    baseShowData.getUrl() + "\n" +
+                    "Result：" + baseShowData.getResMsg();
             mBigTextView.setMessage(msg);
         }
 

@@ -1,10 +1,13 @@
 package com.xq.dialoglogshow.manager;
 
 import android.app.Application;
+import android.app.Dialog;
+import android.widget.FrameLayout;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
 
@@ -35,6 +38,10 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
     }
 
     public static IShowLogManager getInstance() {
+        return Holder.showLogManager;
+    }
+
+    public static IShowLoadDataCallback getCallback() {
         return Holder.showLogManager;
     }
 
@@ -133,6 +140,38 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
             return showLoadDataCallback.loadRestData();
         }
         return null;
+    }
+
+    @Override
+    public void setCustomView(FrameLayout frameLayout, Dialog dialog) {
+        if (showLoadDataCallback != null) {
+            showLoadDataCallback.setCustomView(frameLayout, dialog);
+        }
+    }
+
+    @Override
+    public LogConfigData loadConfig() {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.loadConfig();
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean deleteHttpLog(BaseShowData data) {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.deleteHttpLog(data);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteHttpLogAll() {
+        if (showLoadDataCallback != null) {
+            return showLoadDataCallback.deleteHttpLogAll();
+        }
+        return false;
     }
 
     private static class Holder {

@@ -1,10 +1,17 @@
 package com.xq.dialoglogshowmanager;
 
 import android.app.Application;
+import android.app.Dialog;
+import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 
@@ -15,6 +22,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by Android-小强 on 2023/1/10.
@@ -26,6 +35,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Log.d("12345", "onCreate: 日志");
         ShowLogManager.getInstance().setDataCallback(new IShowLoadDataCallback() {
             @Override
             public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
@@ -114,7 +124,39 @@ public class App extends Application {
                 list.add(data);
                 return list;
             }
+
+            @Override
+            public void setCustomView(FrameLayout frameLayout, Dialog dialog) {
+                TextView textView = new TextView(frameLayout.getContext());
+                textView.setText("我是自定义设置");
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(view.getContext(), "wosh的爽肤水地方", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+                frameLayout.addView(textView);
+            }
+
+            @Override
+            public LogConfigData loadConfig() {
+                Log.d("12345", "loadConfig: ");
+                return new LogConfigData();
+            }
+
+            @Override
+            public boolean deleteHttpLog(BaseShowData data) {
+                return false;
+            }
+
+            @Override
+            public boolean deleteHttpLogAll() {
+                return true;
+            }
         });
-//        ShowLogManager.getInstance().start(this);
+        ShowLogManager.getInstance().start(this,
+                new ScheduledThreadPoolExecutor(1),
+                true);
     }
 }

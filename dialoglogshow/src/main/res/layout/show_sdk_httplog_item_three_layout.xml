@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/show_sdk_id_dialog_http_log_root"
     android:layout_height="wrap_content"
     android:paddingStart="35dp"
     android:paddingTop="8dp"
@@ -11,5 +12,19 @@
         android:id="@+id/show_sdk_id_dialog_http_log_tvbig"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/show_sdk_id_dialog_http_log_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="16dp"
+        android:paddingVertical="2dp"
+        android:paddingHorizontal="10dp"
+        android:background="@drawable/show_log_delete_back_dr"
+        android:text="Delete"
+        android:textColor="#ff0000"
+        android:textSize="12dp" />
 
 </FrameLayout>
