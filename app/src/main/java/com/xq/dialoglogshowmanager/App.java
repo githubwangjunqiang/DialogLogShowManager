@@ -15,6 +15,7 @@ import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.utils.SizeUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -144,7 +145,10 @@ public class App extends Application {
             public LogConfigData loadConfig() {
                 Log.d("12345", "loadConfig: ");
                 LogConfigData logConfigData = new LogConfigData();
-                logConfigData.debugViewSize = new RectF(0,0,0,0);
+                logConfigData.debugViewSize = new RectF(0,
+                        SizeUtils.dpToPx(App.this, 360F),
+                        SizeUtils.dpToPx(App.this, 60F),
+                        SizeUtils.dpToPx(App.this, 420F));
                 return logConfigData;
             }
 
