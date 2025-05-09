@@ -2,6 +2,8 @@ package com.xq.dialoglogshow.utils;
 
 import android.app.Activity;
 import android.app.Application;
+import android.graphics.Point;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.xq.dialoglogshow.dialog.DialogShowLog;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.view.ShowEntranceFullView;
 
@@ -126,9 +129,18 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
             }
         });
         if (root instanceof FrameLayout) {
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.topMargin = root.getHeight() / 2;
+            FrameLayout.LayoutParams layoutParams =
+                    new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT);
+            LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+            if (logConfigData != null && logConfigData.debugViewSize != null) {
+                layoutParams.topMargin = (int) logConfigData.debugViewSize.top;
+                layoutParams.leftMargin = (int) logConfigData.debugViewSize.left;
+            } else {
+                layoutParams.topMargin = root.getHeight() / 2;
+                layoutParams.leftMargin = 0;
+            }
             ((FrameLayout) root).addView(fullView, layoutParams);
         }
 
