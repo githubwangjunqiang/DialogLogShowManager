@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.xq.showlog",
+    "module": "showLog",
+    "version": "3.0.4",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "showLog-3.0.4.aar",
+          "url": "showLog-3.0.4.aar",
+          "size": 58225,
+          "sha512": "2c5a40fa7a58f6899e1cde2413375378cad1aae35feb32dbf67aa7cd33ad9cebb4cfa97509c2b65a81b5c41d7a674834fb86b57ad666820227459e602a15e431",
+          "sha256": "169b4211c7db8b0ddedbc7048d300d83ef99df86da6aab3dcce057601378ece5",
+          "sha1": "d8ffea9f229af9a7fd9d7f94f7e5dc939a112099",
+          "md5": "b8310725213b7fb5fd9d6e95dc09374d"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.3.1"
+          }
+        },
+        {
+          "group": "androidx.recyclerview",
+          "module": "recyclerview",
+          "version": {
+            "requires": "1.2.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "showLog-3.0.4.aar",
+          "url": "showLog-3.0.4.aar",
+          "size": 58225,
+          "sha512": "2c5a40fa7a58f6899e1cde2413375378cad1aae35feb32dbf67aa7cd33ad9cebb4cfa97509c2b65a81b5c41d7a674834fb86b57ad666820227459e602a15e431",
+          "sha256": "169b4211c7db8b0ddedbc7048d300d83ef99df86da6aab3dcce057601378ece5",
+          "sha1": "d8ffea9f229af9a7fd9d7f94f7e5dc939a112099",
+          "md5": "b8310725213b7fb5fd9d6e95dc09374d"
+        }
+      ]
+    }
+  ]
+}
