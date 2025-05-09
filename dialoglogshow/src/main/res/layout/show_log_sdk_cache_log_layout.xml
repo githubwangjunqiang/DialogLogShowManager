@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginHorizontal="10dp"
+    android:background="#CCFFFFFF"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="本地文件展示"
+        android:textSize="13dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/show_app_dialog_cache_file_log_review"
+        android:layout_width="match_parent"
+        android:layout_height="550dp" />
+    <TextView
+        android:id="@+id/show_app_dialog_confirm_btnok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="关闭弹框"
+        android:textAllCaps="true"
+        android:textColor="#59B47B"
+        android:textSize="16dp" />
+
+</LinearLayout>
