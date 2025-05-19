@@ -19,4 +19,12 @@ public class LogConfigData {
     public boolean sortUrlForTime = false;
     @Keep
     public RectF debugViewSize = null;
+
+    @Keep
+    public ReadTextCall readTextCall = null;
+
+    @Keep
+    public interface ReadTextCall{
+        void readText(String path);
+    }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/baseline_create_new_folder_24_floder" android:state_selected="false" />
+    <item android:drawable="@drawable/baseline_insert_drive_file_24_doc" android:state_selected="true" />
+</selector>

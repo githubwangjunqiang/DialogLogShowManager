@@ -13,9 +13,10 @@
         android:id="@+id/show_app_dialog_cache_file_log_docicon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/baseline_insert_drive_file_24_doc" />
+        android:src="@drawable/baseline_insert_drive_file_24_doc_se" />
 
     <TextView
+        android:id="@+id/tvname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="我是文件夹" />

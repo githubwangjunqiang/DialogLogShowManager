@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +19,12 @@ import java.util.List;
  * mailbox:980766134@qq.com
  * description:
  */
-public class MyAdapterCacheFile extends RecyclerView.Adapter<CacheViewHolder> implements View.OnClickListener, View.OnLongClickListener {
+public class MyAdapterCacheFileAdapter extends RecyclerView.Adapter<CacheViewHolder> implements View.OnClickListener {
 
     public static class FileData {
-        String path;
-        String name;
-        boolean doc;
-        int hierarchy = 0;
+        public String path;
+        public String name;
+        public boolean doc;
     }
 
     private Context mContext;
@@ -33,11 +33,27 @@ public class MyAdapterCacheFile extends RecyclerView.Adapter<CacheViewHolder> im
     private List<FileData> mList = new ArrayList<>();
 
 
-    public List<FileData> getListNodeData() {
-        return mList;
+    public void setPath(String path) {
+        mList.clear();
+        File file = new File(path);
+
+        if (file.isDirectory()) {
+            for (File listFile : file.listFiles()) {
+                FileData fileData = new FileData();
+                fileData.doc = listFile.isDirectory();
+                fileData.path = listFile.getAbsolutePath();
+                fileData.name = listFile.getName();
+                mList.add(fileData);
+            }
+        }
+
+        notifyDataSetChanged();
+
+
     }
 
-    public void setList(List<FileData> list) {
+
+    private void setList(List<FileData> list) {
         mList.clear();
         if (list != null) {
             mList.addAll(list);
@@ -48,8 +64,15 @@ public class MyAdapterCacheFile extends RecyclerView.Adapter<CacheViewHolder> im
         notifyDataSetChanged();
     }
 
-    public MyAdapterCacheFile(Context context, RecyclerView recyclerView) {
+    public interface ClickItem {
+        void clickItem(FileData data, int postion);
+    }
+
+    private ClickItem clickItem;
+
+    public MyAdapterCacheFileAdapter(Context context, RecyclerView recyclerView, ClickItem clickItem) {
         mContext = context;
+        this.clickItem = clickItem;
         mLayoutInflater = LayoutInflater.from(context);
         mRecyclerView = recyclerView;
     }
@@ -62,7 +85,9 @@ public class MyAdapterCacheFile extends RecyclerView.Adapter<CacheViewHolder> im
 
     @Override
     public void onBindViewHolder(CacheViewHolder holder, int position) {
-        int layoutPosition = holder.getLayoutPosition();
+        holder.itemView.setOnClickListener(this);
+        holder.setData(mList.get(holder.getLayoutPosition()));
+
     }
 
 
@@ -75,15 +100,10 @@ public class MyAdapterCacheFile extends RecyclerView.Adapter<CacheViewHolder> im
     @Override
     public void onClick(View v) {
         RecyclerView.ViewHolder containingViewHolder = mRecyclerView.findContainingViewHolder(v);
-
+        assert containingViewHolder != null;
+        int layoutPosition = containingViewHolder.getLayoutPosition();
+        clickItem.clickItem(mList.get(layoutPosition), layoutPosition);
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-
-        RecyclerView.ViewHolder containingViewHolder = mRecyclerView.findContainingViewHolder(v);
-
-        return true;
-    }
 }
 
