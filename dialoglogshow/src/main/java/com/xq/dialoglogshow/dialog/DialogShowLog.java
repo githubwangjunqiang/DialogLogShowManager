@@ -52,7 +52,7 @@ public class DialogShowLog extends Dialog {
     private MyAdapter mMyAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mBtnClose, mShare;
+    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mTab6Doc, mBtnClose, mShare;
     private TextView mClearHttpLog, mCurrentDate, mPrevious, mNext;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
@@ -77,6 +77,7 @@ public class DialogShowLog extends Dialog {
      */
     private void initView() {
         setting_config = findViewById(R.id.setting_config);
+        mTab6Doc = findViewById(R.id.show_sdk_id_dialog_http_log_tv6);
         mRecyclerView = findViewById(R.id.show_app_dialog_httplog_list);
         mSeeting = findViewById(R.id.show_sdk_id_dialog_http_log_tv_config);
         mTab1 = findViewById(R.id.show_sdk_id_dialog_http_log_tv1);
@@ -192,6 +193,14 @@ public class DialogShowLog extends Dialog {
             mNext.setVisibility(View.GONE);
             setting_config.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
+        });
+        mTab6Doc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //缓存文件夹
+                String cacheDocPath = ShowLogManager.getCallback().loadConfig().cacheDocPath;
+                new DialogShowFileCache(getContext(), cacheDocPath).show();
+            }
         });
         //其他信息
         mTab5.setOnClickListener(v -> {

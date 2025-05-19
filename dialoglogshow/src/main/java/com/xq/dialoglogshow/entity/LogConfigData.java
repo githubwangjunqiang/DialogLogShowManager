@@ -19,6 +19,8 @@ public class LogConfigData {
     public boolean sortUrlForTime = false;
     @Keep
     public RectF debugViewSize = null;
+    @Keep
+    public String cacheDocPath = null;
 
     @Keep
     public ReadTextCall readTextCall = null;

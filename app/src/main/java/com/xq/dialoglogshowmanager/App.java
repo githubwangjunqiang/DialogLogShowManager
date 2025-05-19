@@ -2,6 +2,7 @@ package com.xq.dialoglogshowmanager;
 
 import android.app.Application;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
@@ -149,6 +150,16 @@ public class App extends Application {
                         SizeUtils.dpToPx(App.this, 360F),
                         SizeUtils.dpToPx(App.this, 60F),
                         SizeUtils.dpToPx(App.this, 420F));
+                logConfigData.cacheDocPath = getExternalCacheDir().getAbsolutePath();
+                logConfigData.readTextCall = new LogConfigData.ReadTextCall() {
+                    @Override
+                    public void readText(String path) {
+
+//                        "点击查看".log
+
+
+                    }
+                };
                 return logConfigData;
             }
 
