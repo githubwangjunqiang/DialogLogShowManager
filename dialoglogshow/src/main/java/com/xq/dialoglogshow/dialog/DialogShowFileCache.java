@@ -3,6 +3,7 @@ package com.xq.dialoglogshow.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class DialogShowFileCache extends Dialog {
     private MyAdapterCacheFileAdapter mMyAdapter;
     private RecyclerView mRecyclerView;
     private TextView mTvTitle;
+    private View mBackPath;
 
     private String rootPath;
     private LinkedList<String> linkedList = new LinkedList<>();
@@ -57,7 +59,7 @@ public class DialogShowFileCache extends Dialog {
             if (i == 0) {
                 mTvTitle.setText("📁 " + file.getName());
             } else {
-                mTvTitle.append("/📁 ");
+                mTvTitle.append("/📁 " + file.getName());
             }
         }
     }
@@ -66,6 +68,17 @@ public class DialogShowFileCache extends Dialog {
      * 初始化
      */
     private void initView() {
+        mBackPath = findViewById(R.id.show_app_dialog_cache_file_log_tv_back);
+        mBackPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (linkedList.size() > 1) {
+                    linkedList.removeLast();
+                    setTitle();
+                    mMyAdapter.setPath(linkedList.getLast());
+                }
+            }
+        });
         mTvTitle = findViewById(R.id.show_app_dialog_cache_file_log_tv_title);
         setTitle();
 
