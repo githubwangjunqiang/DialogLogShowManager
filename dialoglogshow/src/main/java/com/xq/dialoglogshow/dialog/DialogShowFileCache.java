@@ -53,15 +53,17 @@ public class DialogShowFileCache extends Dialog {
     }
 
     public void setTitle() {
+        StringBuilder stringBuilder = new StringBuilder();
+        String empty = "";
         for (int i = 0; i < linkedList.size(); i++) {
             String s = linkedList.get(i);
             File file = new File(s);
-            if (i == 0) {
-                mTvTitle.setText("📁 " + file.getName());
-            } else {
-                mTvTitle.append("/📁 " + file.getName());
+            for (int j = 0; j < i; j++) {
+                stringBuilder.append("\n").append(empty).append(empty);
             }
+            stringBuilder.append("📁 " + file.getName());
         }
+        mTvTitle.setText(stringBuilder.toString());
     }
 
     /**

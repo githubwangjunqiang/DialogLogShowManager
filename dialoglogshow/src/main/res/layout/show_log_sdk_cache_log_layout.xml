@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -13,21 +14,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#B2E7F2"
+        android:lineHeight="20dp"
         android:paddingHorizontal="6dp"
         android:paddingVertical="6dp"
-        android:text="本地文件展示"
         android:textColor="#0000ff"
-        android:textSize="14dp" />
+        android:textSize="14dp"
+        tools:text="本地文件展示\n   你好本地文件展示\n      你好本地文件展示" />
 
-    <ImageView
+    <TextView
         android:id="@+id/show_app_dialog_cache_file_log_tv_back"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:drawableStart="@drawable/baseline_drive_file_move_rtl_24_file_back"
         android:paddingVertical="8dp"
         android:paddingStart="6dp"
         android:paddingEnd="20dp"
-        android:src="@drawable/baseline_drive_file_move_rtl_24_file_back"
-        android:text="本地文件展示"
+        android:text="返回上一级 "
+        android:textColor="#229822"
         android:textSize="14dp" />
 
 
