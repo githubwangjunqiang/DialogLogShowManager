@@ -3,11 +3,12 @@
   <groupId>com.xq.showlog</groupId>
   <artifactId>showLog</artifactId>
   <versioning>
-    <latest>3.0.4</latest>
-    <release>3.0.4</release>
+    <latest>3.1.2.cache</latest>
+    <release>3.1.2.cache</release>
     <versions>
       <version>3.0.4</version>
+      <version>3.1.2.cache</version>
     </versions>
-    <lastUpdated>20241224114538</lastUpdated>
+    <lastUpdated>20250520065503</lastUpdated>
   </versioning>
 </metadata>

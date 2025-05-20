@@ -12,15 +12,31 @@
         android:id="@+id/show_app_dialog_cache_file_log_tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="6dp"
         android:background="#B2E7F2"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="6dp"
         android:text="本地文件展示"
-        android:textSize="13dp" />
+        android:textColor="#0000ff"
+        android:textSize="14dp" />
+
+    <ImageView
+        android:id="@+id/show_app_dialog_cache_file_log_tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="20dp"
+        android:src="@drawable/baseline_drive_file_move_rtl_24_file_back"
+        android:text="本地文件展示"
+        android:textSize="14dp" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/show_app_dialog_cache_file_log_review"
         android:layout_width="match_parent"
-        android:layout_height="550dp" />
+        android:layout_height="550dp"
+        android:paddingStart="10dp" />
+
     <TextView
         android:id="@+id/show_app_dialog_confirm_btnok"
         android:layout_width="match_parent"

@@ -35,7 +35,6 @@ public class DialogShowFileCache extends Dialog {
      */
     private MyAdapterCacheFileAdapter mMyAdapter;
     private RecyclerView mRecyclerView;
-    private ShowTask mAsyncTask;
     private TextView mTvTitle;
 
     private String rootPath;

@@ -68,12 +68,15 @@ afterEvaluate {
 
                 // Applies the component for the release build variant.
 //                from components.release
+//                from this.components.findByName("release")
                 from this.components.findByName("release")
                 //artifact sourceJar // 上传源码
+                // 明确指定构建的 AAR 文件
+                artifact("$buildDir/outputs/aar/${project.name}-release.aar")
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.xq.showlog"//公司名称
                 artifactId = "showLog"//sdk名称
-                version = "3.0.6"//sdk版本号
+                version = "3.1.2.cache"//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {
@@ -109,4 +112,13 @@ afterEvaluate {
 //            }
         }
     }
+    // 确保在上传前先构建 aar
+    tasks.forEach {
+        if(it.name.startsWith("publish")){
+            it.dependsOn("assemble")
+        }
+    }
+//    tasks.named("publish") {
+//        dependsOn("assembleRelease")
+//    }
 }
