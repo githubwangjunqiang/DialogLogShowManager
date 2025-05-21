@@ -54,7 +54,7 @@ public class DialogShowFileCache extends Dialog {
 
     public void setTitle() {
         StringBuilder stringBuilder = new StringBuilder();
-        String empty = "";
+        String empty = "    ";
         for (int i = 0; i < linkedList.size(); i++) {
             String s = linkedList.get(i);
             File file = new File(s);
