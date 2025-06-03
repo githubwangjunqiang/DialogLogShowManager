@@ -24,20 +24,30 @@ public class PagedTextLoader {
 
     public List<String> loadNextPage() throws IOException {
         List<String> lines = new ArrayList<>();
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        raf.seek(filePointer);
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(file, "r");
+            raf.seek(filePointer);
 
-        String line;
-        int count = 0;
-        StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            int count = 0;
 
-        while ((line = raf.readLine()) != null && count < pageSize) {
-            lines.add(new String(line.getBytes("ISO-8859-1"), StandardCharsets.UTF_8)); // 防乱码
-            count++;
+            while ((line = raf.readLine()) != null && count < pageSize) {
+                lines.add(new String(line.getBytes("ISO-8859-1"), StandardCharsets.UTF_8)); // 防乱码
+                count++;
+            }
+
+            filePointer = raf.getFilePointer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                assert raf != null;
+                raf.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
-        filePointer = raf.getFilePointer();
-        raf.close();
         return lines;
     }
 
