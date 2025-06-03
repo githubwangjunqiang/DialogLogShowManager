@@ -44,6 +44,7 @@ public class ReaderTXTAdapter extends RecyclerView.Adapter<ReaderTXTAdapter.Read
                             RecyclerView recyclerView,
                             OnLoadMore mOnLoadMore
     ) {
+        padding = SizeUtils.dpToPx(context, 10F);
         this.mOnLoadMore = mOnLoadMore;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -81,7 +82,7 @@ public class ReaderTXTAdapter extends RecyclerView.Adapter<ReaderTXTAdapter.Read
         return list.size();
     }
 
-    private int padding = SizeUtils.dpToPx(context, 10F);
+    private int padding = 0;
 
     @Override
     public void onBindViewHolder(@NonNull ReaderVh holder, int position) {
