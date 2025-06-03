@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class ReaderTxtDialog extends Dialog {
 
     private String filePath;
     private TextView mTvTitle;
+    private TextView back;
     private RecyclerView mRecyclerView;
     private ReaderTXTAdapter mReaderTXTAdapter;
 
@@ -55,6 +57,7 @@ public class ReaderTxtDialog extends Dialog {
         setContentView(R.layout.show_log_sdk_cache_log_dialog_reader_layout);
         setCanceledOnTouchOutside(false);
         setCancelable(true);
+        back = findViewById(R.id.back);
         mTvTitle = findViewById(R.id.title);
         mTvTitle.setText(new File(filePath).getName());
         mRecyclerView = findViewById(R.id.show_app_dialog_cache_file_log_review);
@@ -72,6 +75,13 @@ public class ReaderTxtDialog extends Dialog {
         mReaderTXTAdapter.addList(new ArrayList<>());
         loadTxt();
 
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
 
     }
 

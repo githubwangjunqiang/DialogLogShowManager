@@ -1,6 +1,8 @@
 package com.xq.dialoglogshow.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
+import com.xq.dialoglogshow.utils.SizeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,17 +81,28 @@ public class ReaderTXTAdapter extends RecyclerView.Adapter<ReaderTXTAdapter.Read
         return list.size();
     }
 
+    private int padding = SizeUtils.dpToPx(context, 10F);
+
     @Override
     public void onBindViewHolder(@NonNull ReaderVh holder, int position) {
         String s = list.get(position);
         if (s.equals(sLoading)) {
+            holder.mTextView.setGravity(Gravity.CENTER);
+            holder.mTextView.setTextColor(Color.GREEN);
+            holder.mTextView.setPadding(padding, padding, padding, padding);
             holder.mTextView.setText("正在加载更多数据...");
             return;
         }
         if (s.equals(sError)) {
+            holder.mTextView.setGravity(Gravity.CENTER);
+            holder.mTextView.setTextColor(Color.RED);
+            holder.mTextView.setPadding(padding, padding, padding, padding);
             holder.mTextView.setText("已经到底了");
             return;
         }
+        holder.mTextView.setPadding(0, 0, 0, 0);
+        holder.mTextView.setTextColor(Color.BLACK);
+        holder.mTextView.setGravity(Gravity.START);
         holder.mTextView.setText(list.get(position));
     }
 

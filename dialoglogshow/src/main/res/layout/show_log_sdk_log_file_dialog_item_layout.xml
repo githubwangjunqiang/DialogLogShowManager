@@ -2,16 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp">
 
     <TextView
         android:id="@+id/id_show_file_tvcontent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:lineSpacingExtra="4dp"
+        android:lineSpacingExtra="6dp"
         android:text="我是内容"
         android:textColor="#333333"
         android:textIsSelectable="true"
-        android:textSize="13dp" />
+        android:textSize="11dp" />
 
 </LinearLayout>
