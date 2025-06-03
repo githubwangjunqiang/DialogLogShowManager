@@ -17,6 +17,7 @@ import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.adapter.ReaderTXTAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
+import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.PagedTextLoader;
 import com.xq.dialoglogshow.utils.ShowTask;
@@ -44,6 +45,7 @@ public class ReaderTxtDialog extends Dialog {
     private String filePath;
     private TextView mTvTitle;
     private TextView back;
+    private TextView mShare;
     private RecyclerView mRecyclerView;
     private ReaderTXTAdapter mReaderTXTAdapter;
 
@@ -59,6 +61,7 @@ public class ReaderTxtDialog extends Dialog {
         setCancelable(true);
         back = findViewById(R.id.back);
         mTvTitle = findViewById(R.id.title);
+        mShare = findViewById(R.id.share);
         mTvTitle.setText(new File(filePath).getName());
         mRecyclerView = findViewById(R.id.show_app_dialog_cache_file_log_review);
 
@@ -80,6 +83,15 @@ public class ReaderTxtDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 dismiss();
+            }
+        });
+        mShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogConfigData.ReadTextCall readTextCall = ShowLogManager.getCallback().loadConfig().readTextCall;
+                if (readTextCall != null) {
+                    readTextCall.readText(filePath);
+                }
             }
         });
 

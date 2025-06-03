@@ -94,13 +94,7 @@ public class DialogShowFileCache extends Dialog {
                     addPath(data.path);
                 } else {
                     //文件 就要分享了
-//                    ShareUtils.shareText();
-                    LogConfigData.ReadTextCall readTextCall = ShowLogManager.getCallback().loadConfig().readTextCall;
-                    if (readTextCall != null) {
-                        readTextCall.readText(data.path);
-                    } else {
-                        ShowLogManager.getInstance().readTxtForDialog(getContext(), data.path);
-                    }
+                    ShowLogManager.getInstance().readTxtForDialog(getContext(), data.path);
                 }
 
             }

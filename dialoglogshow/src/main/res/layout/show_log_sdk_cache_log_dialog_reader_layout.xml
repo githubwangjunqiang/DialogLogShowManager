@@ -28,6 +28,14 @@
             android:textColor="#0000ff"
             android:padding="10dp"
             android:text="关闭" />
+        <TextView
+            android:id="@+id/share"
+            android:layout_gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#0000ff"
+            android:padding="10dp"
+            android:text="分享" />
 
     </FrameLayout>
 
