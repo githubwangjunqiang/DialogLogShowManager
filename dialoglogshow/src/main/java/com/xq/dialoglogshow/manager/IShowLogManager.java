@@ -1,6 +1,8 @@
 package com.xq.dialoglogshow.manager;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
 
@@ -28,11 +30,12 @@ public interface IShowLogManager {
 
     /**
      * 开始
+     *
      * @param application
      * @param executor
      * @param showAnimation
      */
-    void start(Application application, Executor executor,boolean showAnimation);
+    void start(Application application, Executor executor, boolean showAnimation);
 
     /**
      * 关闭
@@ -48,8 +51,17 @@ public interface IShowLogManager {
 
     /**
      * 是否显示动画
+     *
      * @return
      */
     boolean loadShowAnimation();
+
+    /**
+     * path
+     *
+     * @param path
+     */
+    void readTxtForDialog(Context activity, String path);
+
 
 }

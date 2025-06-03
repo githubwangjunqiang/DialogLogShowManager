@@ -98,6 +98,8 @@ public class DialogShowFileCache extends Dialog {
                     LogConfigData.ReadTextCall readTextCall = ShowLogManager.getCallback().loadConfig().readTextCall;
                     if (readTextCall != null) {
                         readTextCall.readText(data.path);
+                    } else {
+                        ShowLogManager.getInstance().readTxtForDialog(getContext(), data.path);
                     }
                 }
 

@@ -1,10 +1,13 @@
 package com.xq.dialoglogshow.manager;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
+import android.content.Context;
 import android.widget.FrameLayout;
 
 import com.xq.dialoglogshow.IShowLoadDataCallback;
+import com.xq.dialoglogshow.activity.ReaderTxtDialog;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.LogConfigData;
@@ -93,6 +96,10 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         return showAnimation;
     }
 
+    @Override
+    public void readTxtForDialog(Context activity, String path) {
+        new ReaderTxtDialog(activity, path).show();
+    }
 
     @Override
     public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
