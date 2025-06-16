@@ -76,7 +76,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.xq.showlog"//公司名称
                 artifactId = "showLog"//sdk名称
-                version = "3.1.2.cache"//sdk版本号
+                version = "3.2.0.cache"//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {
