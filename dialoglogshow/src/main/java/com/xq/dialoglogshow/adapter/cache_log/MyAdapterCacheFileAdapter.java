@@ -12,6 +12,9 @@ import com.xq.dialoglogshow.R;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,6 +25,10 @@ import java.util.List;
 public class MyAdapterCacheFileAdapter extends RecyclerView.Adapter<CacheViewHolder> implements View.OnClickListener {
 
     public static class FileData {
+                /**
+         * 最后修改时间
+         */
+        public long lastTime;
         public String path;
         public String name;
         public boolean doc;
@@ -40,13 +47,25 @@ public class MyAdapterCacheFileAdapter extends RecyclerView.Adapter<CacheViewHol
         if (file.isDirectory()) {
             for (File listFile : file.listFiles()) {
                 FileData fileData = new FileData();
+                fileData.lastTime = listFile.lastModified();
                 fileData.doc = listFile.isDirectory();
                 fileData.path = listFile.getAbsolutePath();
                 fileData.name = listFile.getName();
                 mList.add(fileData);
             }
         }
-
+Collections.sort(mList, new Comparator<FileData>() {
+            @Override
+            public int compare(FileData fileData, FileData t1) {
+                if (fileData.lastTime > t1.lastTime) {
+                    return 1;
+                } else if (fileData.lastTime < t1.lastTime) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
         notifyDataSetChanged();
 
 
