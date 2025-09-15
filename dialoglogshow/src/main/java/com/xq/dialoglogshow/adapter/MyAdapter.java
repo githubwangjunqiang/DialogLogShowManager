@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
+import com.xq.dialoglogshow.dialog.DialogShowLogInfo;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
@@ -148,9 +149,19 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     public void onClick(View v) {
         RecyclerView.ViewHolder containingViewHolder = mRecyclerView.findContainingViewHolder(v);
         if (containingViewHolder instanceof MyViewHolderHttpFather) {
+
+
             //父亲
             int layoutPosition = containingViewHolder.getLayoutPosition();
             BaseShowData data = mList.get(layoutPosition);
+
+            if (true) {
+                //暂时改为跳转到详情页
+                new DialogShowLogInfo(mContext, data.getContent()).show();
+                return;
+            }
+
+
             boolean expansion = data.isExpansion();
             data.setExpansion(!expansion);
             notifyItemChanged(layoutPosition);

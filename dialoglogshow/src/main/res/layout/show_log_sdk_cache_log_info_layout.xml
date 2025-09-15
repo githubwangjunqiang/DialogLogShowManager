@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginHorizontal="10dp"
+    android:background="#CCFFFFFF"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.xq.dialoglogshow.view.BigTextView
+                android:id="@+id/show_app_dialog_cache_file_log_tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#B2E7F2"
+                android:lineHeight="20dp"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="6dp"
+                android:textColor="#0000ff"
+                android:textSize="14dp"
+                tools:text="请求地址：\nhttps://www.baidu.com" />
+
+
+            <TextView
+                android:id="@+id/show_app_dialog_confirm_btnok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="关闭弹框"
+                android:textAllCaps="true"
+                android:textColor="#59B47B"
+                android:textSize="16dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
