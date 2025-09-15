@@ -155,11 +155,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             int layoutPosition = containingViewHolder.getLayoutPosition();
             BaseShowData data = mList.get(layoutPosition);
 
-            if (true) {
-                //暂时改为跳转到详情页
-                new DialogShowLogInfo(mContext, data.getContent()).show();
-                return;
-            }
 
 
             boolean expansion = data.isExpansion();
@@ -201,6 +196,11 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             } else {
                 int layoutPosition = containingViewHolder.getLayoutPosition();
                 BaseShowData data = mList.get(layoutPosition);
+                if (true) {
+                    //暂时改为跳转到详情页
+                    new DialogShowLogInfo(mContext, data.getContent()).show();
+                    return;
+                }
                 data.setExpansion(!data.isExpansion());
                 notifyItemChanged(layoutPosition);
             }

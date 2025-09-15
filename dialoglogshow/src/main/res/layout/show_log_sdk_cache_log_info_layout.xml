@@ -15,7 +15,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/show_app_dialog_confirm_btnok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="关闭弹框"
+                android:textAllCaps="true"
+                android:textColor="#0A2EEF"
+                android:textSize="16dp" />
 
             <com.xq.dialoglogshow.view.BigTextView
                 android:id="@+id/show_app_dialog_cache_file_log_tv_title"
@@ -30,16 +42,7 @@
                 tools:text="请求地址：\nhttps://www.baidu.com" />
 
 
-            <TextView
-                android:id="@+id/show_app_dialog_confirm_btnok"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="关闭弹框"
-                android:textAllCaps="true"
-                android:textColor="#59B47B"
-                android:textSize="16dp" />
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

@@ -44,7 +44,8 @@ afterEvaluate {
 //                url "D:\\as\\maven\\sdk"
 //            }
             it.maven {
-                url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
+//                url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
+                url = "/Users/songguo77/AndroidStudioProjects/tasow-android/repo"
                 name = "本地"
             }
 //             仓库用户名密码

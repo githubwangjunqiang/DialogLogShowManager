@@ -8,11 +8,17 @@ import java.util.List;
  * description:
  */
 public class BaseShowData {
-    //普通类型
+    /**
+     * 普通类型
+     */
     public static final int TYE_ONE = 0;
-    // 父亲类型
+    /**
+     * 父亲类型
+     */
     public static final int TYE_TOW = 1;
-    // 孩子类型
+    /**
+     * 孩子类型
+     */
     public static final int TYE_THREE = 2;
 
     /**

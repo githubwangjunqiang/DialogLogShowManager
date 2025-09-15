@@ -34,6 +34,7 @@ public class DialogShowLogInfo extends Dialog {
         mContent = content;
         initView();
         setListener();
+        setCanceledOnTouchOutside(true);
 
     }
 
