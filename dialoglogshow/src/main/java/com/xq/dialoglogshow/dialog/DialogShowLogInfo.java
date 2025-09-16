@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.adapter.cache_log.MyAdapterCacheFileAdapter;
 import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.utils.ClipboardUtils;
 import com.xq.dialoglogshow.utils.MyItemDecoration;
+import com.xq.dialoglogshow.utils.ShareUtils;
+import com.xq.dialoglogshow.utils.SizeUtils;
 import com.xq.dialoglogshow.view.BigTextView;
 
 import java.io.File;
@@ -57,6 +60,15 @@ public class DialogShowLogInfo extends Dialog {
     private void setListener() {
         //关闭
         findViewById(R.id.show_app_dialog_confirm_btnok).setOnClickListener(v -> cancel());
+        //分享
+        findViewById(R.id.show_app_dialog_confirm_btnshare).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardUtils.copyText(mContent, view.getContext().getApplicationContext());
+                ShareUtils.shareText(view.getContext().getApplicationContext(), mContent);
+            }
+        });
+
 
     }
 
@@ -67,7 +79,7 @@ public class DialogShowLogInfo extends Dialog {
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         if (attributes != null) {
             attributes.width = WindowManager.LayoutParams.MATCH_PARENT;
-            attributes.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            attributes.height = (int) (SizeUtils.getScreenHeight(getContext().getApplicationContext()) * 0.8f);
             attributes.gravity = Gravity.CENTER;
             getWindow().setAttributes(attributes);
         }

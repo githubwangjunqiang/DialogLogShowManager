@@ -49,15 +49,27 @@ afterEvaluate {
                 name = "本地"
             }
 //             仓库用户名密码
+//            it.maven { MavenArtifactRepository mavenArtifactRepository ->
+//                // maven 仓库地址
+//                allowInsecureProtocol = true
+//                name = "远程"
+//                url = 'http://adt-nexus/repository/gpplay/'
+//                // 访问仓库的 账号和密码
+//                credentials {
+//                    username = "admin"
+//                    password = "Admin_nexus_12@45"
+//                }
+//            }
             it.maven { MavenArtifactRepository mavenArtifactRepository ->
                 // maven 仓库地址
                 allowInsecureProtocol = true
                 name = "远程"
-                url = 'http://adt-nexus/repository/gpplay/'
+//                url = 'http://maven.corp.songguo7.com:8360/nexus/content/groups/public/'
+                url = 'http://maven.corp.songguo7.com:8360/nexus/content/repositories/android/'
                 // 访问仓库的 账号和密码
                 credentials {
                     username = "admin"
-                    password = "Admin_nexus_12@45"
+                    password = "zxcvzxcv"
                 }
             }
         }
@@ -75,9 +87,9 @@ afterEvaluate {
                 // 明确指定构建的 AAR 文件
                 artifact("$buildDir/outputs/aar/${project.name}-release.aar")
                 // You can then customize attributes of the publication as shown below.
-                groupId = "com.xq.showlog"//公司名称
-                artifactId = "showLog"//sdk名称
-                version = "3.2.0.cache"//sdk版本号
+                groupId = "com.tasow.showlog"//公司名称
+                artifactId = "showlog"//sdk名称
+                version = "3.2.2"//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {
