@@ -58,7 +58,7 @@ public class DialogShowLog extends Dialog {
     private ShowTask mAsyncTask;
     private FrameLayout setting_config;
 
-    private long startTime, endTime,deleteTime;
+    private long startTime, endTime;
 
     public DialogShowLog(Context context) {
         super(context, R.style.dialog_httplog);
@@ -141,7 +141,6 @@ public class DialogShowLog extends Dialog {
         });
 // 清空网络日志
         mClearHttpLog.setOnClickListener(view -> {
-            deleteTime = System.currentTimeMillis();
             boolean b = ShowLogManager.getCallback().deleteHttpLogAll();
             if (!b) {
                 Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
@@ -393,9 +392,6 @@ public class DialogShowLog extends Dialog {
 
 
                 long start = startTime;
-                if(deleteTime >0){
-                    start = deleteTime;
-                }
 
                 ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
                         .loadHttpLog(start, endTime);
