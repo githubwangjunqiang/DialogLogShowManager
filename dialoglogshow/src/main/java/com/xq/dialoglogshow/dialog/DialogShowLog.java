@@ -59,6 +59,7 @@ public class DialogShowLog extends Dialog {
     private FrameLayout setting_config;
 
     private long startTime, endTime;
+    private View app_dialog_httplog_root_view;
 
     public DialogShowLog(Context context) {
         super(context, R.style.dialog_httplog);
@@ -76,6 +77,7 @@ public class DialogShowLog extends Dialog {
      * 初始化
      */
     private void initView() {
+        app_dialog_httplog_root_view = findViewById(R.id.app_dialog_httplog_root_view);
         setting_config = findViewById(R.id.setting_config);
         mTab6Doc = findViewById(R.id.show_sdk_id_dialog_http_log_tv6);
         mRecyclerView = findViewById(R.id.show_app_dialog_httplog_list);
@@ -95,7 +97,7 @@ public class DialogShowLog extends Dialog {
         mTabRoot = findViewById(R.id.app_dialog_httplog_tablayout);
 
 
-        mMyAdapter = new MyAdapter(getContext(), mRecyclerView);
+        mMyAdapter = new MyAdapter(getContext(), mRecyclerView, app_dialog_httplog_root_view);
         mMyAdapter.mClickAdapter = new MyAdapter.ClickAdapter() {
             @Override
             public void clickDeleteHttpLog(BaseShowData data, int position) {

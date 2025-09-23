@@ -89,7 +89,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.tasow.showlog"//公司名称
                 artifactId = "showlog"//sdk名称
-                version = "3.2.3"//sdk版本号
+                version = "3.2.4"//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {

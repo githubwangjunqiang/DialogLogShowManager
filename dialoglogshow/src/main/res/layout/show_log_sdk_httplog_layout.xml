@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:id="@+id/app_dialog_httplog_root_view"
     android:layout_marginHorizontal="10dp"
     android:background="#CCFFFFFF"
     android:orientation="vertical">

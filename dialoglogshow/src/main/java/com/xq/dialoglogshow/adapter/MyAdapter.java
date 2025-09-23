@@ -63,11 +63,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         }
         notifyDataSetChanged();
     }
+    private View rootView;
 
-    public MyAdapter(Context context, RecyclerView recyclerView) {
+    public MyAdapter(Context context, RecyclerView recyclerView,View rootView) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         mRecyclerView = recyclerView;
+        this.rootView = rootView;
     }
 
     @Override
@@ -156,7 +158,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             BaseShowData data = mList.get(layoutPosition);
 
 
-
             boolean expansion = data.isExpansion();
             data.setExpansion(!expansion);
             notifyItemChanged(layoutPosition);
@@ -198,7 +199,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
                 BaseShowData data = mList.get(layoutPosition);
                 if (true) {
                     //暂时改为跳转到详情页
-                    new DialogShowLogInfo(mContext, data.getContent()).show();
+                    new DialogShowLogInfo(mContext, data.getContent(), containingViewHolder.itemView,rootView).show();
                     return;
                 }
                 data.setExpansion(!data.isExpansion());

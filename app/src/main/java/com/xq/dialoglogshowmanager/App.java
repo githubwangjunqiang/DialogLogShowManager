@@ -43,8 +43,20 @@ public class App extends Application {
             @Override
             public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
 
+                ArrayList<HttpLogData> httpLogData = new ArrayList<>();
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
+                httpLogData.add(new HttpLogData("url", startTime, "content", "resMsg", null, false, 0));
 
-                return null;
+                return httpLogData;
             }
 
             @Override
