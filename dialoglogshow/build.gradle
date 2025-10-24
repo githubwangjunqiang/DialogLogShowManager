@@ -4,7 +4,7 @@ plugins {
 }
 
 
-version = "4.0.0"
+version = "4.0.1"
 android {
     compileSdk 33
 
@@ -94,6 +94,10 @@ afterEvaluate {
                 url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
 //                url = "/Users/songguo77/AndroidStudioProjects/tasow-android/repo"
                 name = "本地"
+            }
+            it.maven {
+                url = "/Users/songguo77/AndroidStudioProjects/YangBo/repo"
+                name = "杨波"
             }
 //             仓库用户名密码
 //            it.maven { MavenArtifactRepository mavenArtifactRepository ->
