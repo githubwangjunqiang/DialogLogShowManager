@@ -3,6 +3,7 @@ package com.xq.dialoglogshowmanager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
+        Log.d("12345", "onCreate: 123jkjhkj6");
 
     }
 }

@@ -121,6 +121,7 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     private static View loadFullView(Activity activity, View root) {
         ShowEntranceFullView fullView = new ShowEntranceFullView(activity);
+        fullView.setElevation(20);
         fullView.setTag(viewTag);
         fullView.setOnClickListener(new View.OnClickListener() {
             @Override

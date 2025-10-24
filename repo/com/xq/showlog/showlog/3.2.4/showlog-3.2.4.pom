@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.xq.showlog</groupId>
-  <artifactId>showLog</artifactId>
-  <version>3.2.0.cache</version>
+  <artifactId>showlog</artifactId>
+  <version>3.2.4</version>
   <packaging>aar</packaging>
 </project>

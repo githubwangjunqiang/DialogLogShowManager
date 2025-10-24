@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
+
+version = "4.0.0"
 android {
     compileSdk 33
 
@@ -34,8 +36,53 @@ dependencies {
 //    implementation 'com.google.android.material:material:1.6.1'
 }
 
+def incrementVersionAndGet() {
+    // 获取 build.gradle 文件
+    def buildFile = project.buildFile
+    def buildFileText = buildFile.getText('UTF-8')
 
+    // 使用正则表达式查找版本号
+    def pattern = /version = "(\d+)\.(\d+)\.(\d+)"/
+    def matcher = buildFileText =~ pattern
+
+    if (matcher.find()) {
+        // 解析当前版本号
+        def major = matcher[0][1].toInteger()
+        def minor = matcher[0][2].toInteger()
+        def patch = matcher[0][3].toInteger()
+
+        // 只在执行发布任务时才增加版本号
+        // Gradle 会在配置阶段执行代码，我们需要确保只在真正发布时才增加
+        // 'publish' 是一个任务的通用前缀
+        boolean isPublishTask = project.gradle.startParameter.taskNames.any { it.contains('publish') }
+
+        if (isPublishTask) {
+            // 增加修订号
+            patch++
+
+            // 构建新版本号字符串
+            def newVersionLine = "version = \"${major}.${minor}.${patch}\""
+
+            // 替换文件中的旧版本号行为新版本号行
+            def updatedText = buildFileText.replace(matcher[0][0], newVersionLine)
+
+            // 将更新后的内容写回 build.gradle 文件
+            buildFile.write(updatedText, 'UTF-8')
+
+            println "==> Version incremented to: ${major}.${minor}.${patch}"
+            // 返回新版本号
+            return "${major}.${minor}.${patch}"
+        } else {
+            // 如果不是发布任务，只返回当前版本号，不增加
+            return "${major}.${minor}.${patch}"
+        }
+    } else {
+        throw new GradleException("Version pattern not found in build.gradle. Expected format: version = \"x.y.z\"")
+    }
+}
 afterEvaluate {
+    // 1. 定义一个方法来处理版本号的读取、递增和回写
+
     publishing {
         repositories {
 
@@ -44,8 +91,8 @@ afterEvaluate {
 //                url "D:\\as\\maven\\sdk"
 //            }
             it.maven {
-//                url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
-                url = "/Users/songguo77/AndroidStudioProjects/tasow-android/repo"
+                url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
+//                url = "/Users/songguo77/AndroidStudioProjects/tasow-android/repo"
                 name = "本地"
             }
 //             仓库用户名密码
@@ -74,6 +121,7 @@ afterEvaluate {
             }
         }
 
+
         publications {
 
             // Creates a Maven publication called "release".
@@ -89,7 +137,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = "com.tasow.showlog"//公司名称
                 artifactId = "showlog"//sdk名称
-                version = "3.2.4"//sdk版本号
+                version = incrementVersionAndGet()//sdk版本号
 
             }
 //            betaRelease(MavenPublication) {
