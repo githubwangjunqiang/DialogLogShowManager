@@ -36,6 +36,14 @@ public interface IShowLogManager {
      * @param showAnimation
      */
     void start(Application application, Executor executor, boolean showAnimation);
+    /**
+     * 开始
+     *
+     * @param application
+     * @param executor
+     * @param showAnimation
+     */
+    void start(Application application, Executor executor, boolean showAnimation,boolean showVersionCode);
 
     /**
      * 关闭
@@ -63,5 +71,9 @@ public interface IShowLogManager {
      */
     void readTxtForDialog(Context activity, String path);
 
-
+    /**
+     * 是否显示 版本号
+     * @return
+     */
+    boolean loadShowVersionCode();
 }

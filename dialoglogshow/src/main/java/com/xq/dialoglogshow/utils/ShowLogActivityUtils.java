@@ -16,6 +16,7 @@ import com.xq.dialoglogshow.dialog.DialogShowLog;
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.view.ShowEntranceFullView;
+import com.xq.dialoglogshow.view.ShowEntranceFullViewVerSion;
 
 
 /**
@@ -120,7 +121,13 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
     }
 
     private static View loadFullView(Activity activity, View root) {
-        ShowEntranceFullView fullView = new ShowEntranceFullView(activity);
+        View fullView;
+        if (ShowLogManager.getInstance().loadShowVersionCode()) {
+            fullView = new ShowEntranceFullViewVerSion(activity);
+        } else {
+            fullView = new ShowEntranceFullView(activity);
+        }
+
         fullView.setElevation(20);
         fullView.setTag(viewTag);
         fullView.setOnClickListener(new View.OnClickListener() {

@@ -187,6 +187,6 @@ public class App extends Application {
         });
         ShowLogManager.getInstance().start(this,
                 new ScheduledThreadPoolExecutor(1),
-                true);
+                true,true);
     }
 }

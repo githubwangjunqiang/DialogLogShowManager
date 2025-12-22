@@ -186,7 +186,6 @@ public class ShowEntranceFullView extends View {
         canvas.drawArc(rectf, startRed, redSize, false, paint);
         canvas.drawArc(rectf, startRed + 180, redSize, false, paint);
         canvas.drawCircle(getWidth() * 0.5F, getHeight() * 0.5F, ffRed, paintFill);
-        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F, paint);
     }
 
 
