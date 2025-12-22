@@ -16,6 +16,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
 
@@ -97,6 +98,7 @@ public class ShowEntranceFullView extends View {
     int parHeight = 0;
 
     private void initData(Context context) {
+        AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
         LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
         if (logConfigData != null && logConfigData.debugViewSize != null) {
             sizeWidth = (int) logConfigData.debugViewSize.width();
@@ -175,6 +177,8 @@ public class ShowEntranceFullView extends View {
                 w - top, h - top);
     }
 
+    private static String AppVersionCode = "";
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -182,6 +186,7 @@ public class ShowEntranceFullView extends View {
         canvas.drawArc(rectf, startRed, redSize, false, paint);
         canvas.drawArc(rectf, startRed + 180, redSize, false, paint);
         canvas.drawCircle(getWidth() * 0.5F, getHeight() * 0.5F, ffRed, paintFill);
+        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F, paint);
     }
 
 
