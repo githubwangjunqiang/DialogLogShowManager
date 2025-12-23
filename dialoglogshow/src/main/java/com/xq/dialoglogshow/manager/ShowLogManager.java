@@ -35,7 +35,6 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
      * 是否显示动画
      */
     private volatile boolean showAnimation = false;
-    private volatile boolean showVersionCode = false;
 
 
     private ShowLogManager() {
@@ -59,14 +58,9 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         start(application, executor, false);
     }
 
-    @Override
-    public void start(Application application, Executor executor, boolean showAnimation) {
-        start(application, executor, showAnimation, false);
-    }
 
     @Override
-    public void start(Application application, Executor executor, boolean showAnimation, boolean showVersionCode) {
-        this.showVersionCode = showVersionCode;
+    public void start(Application application, Executor executor, boolean showAnimation) {
         this.showAnimation = showAnimation;
         ShowLogActivityUtils.getInstance().open = true;
         if (application == null) {
@@ -109,10 +103,6 @@ public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
         new ReaderTxtDialog(activity, path).show();
     }
 
-    @Override
-    public boolean loadShowVersionCode() {
-        return showVersionCode;
-    }
 
     @Override
     public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {

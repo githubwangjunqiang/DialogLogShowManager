@@ -172,6 +172,8 @@ public class App extends Application {
 
                     }
                 };
+                logConfigData.showVersionCodeView = true;
+                logConfigData.showVersionCodeText = "123/n2444";
                 return logConfigData;
             }
 
@@ -187,6 +189,6 @@ public class App extends Application {
         });
         ShowLogManager.getInstance().start(this,
                 new ScheduledThreadPoolExecutor(1),
-                true,true);
+                true);
     }
 }

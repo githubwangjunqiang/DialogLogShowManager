@@ -6,12 +6,16 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+
+import androidx.core.util.Pair;
 
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
@@ -48,12 +52,9 @@ public class ShowEntranceFullViewVerSion extends View {
     Paint paintRed = new Paint();
     Paint paint = new Paint();
     Paint paintFill = new TextPaint();
-    RectF rectf = new RectF();
 
     AnimatorSet animator = null;
 
-    public int sizeWidth;
-    public int sizeHeight;
 
     int leftOld = 0;
     int topOld = 0;
@@ -95,19 +96,24 @@ public class ShowEntranceFullViewVerSion extends View {
 
     int parWidth = 0;
     int parHeight = 0;
+    int minWidth = 0;
+    int minHeight = 0;
+
+    private Paint.FontMetrics fontMetricsCurrent = new Paint.FontMetrics();
+    private Path mPath = new Path();
 
     private void initData(Context context) {
-        AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
-        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-        if (logConfigData != null && logConfigData.debugViewSize != null) {
-            sizeWidth = (int) logConfigData.debugViewSize.width();
-            sizeHeight = (int) logConfigData.debugViewSize.height();
+
+        minWidth = SizeUtils.dpToPx(context, 40);
+        minHeight = SizeUtils.dpToPx(context, 12);
+
+
+        if (ShowLogManager.getCallback().loadConfig().showVersionCodeText != null) {
+            AppVersionCode = ShowLogManager.getCallback().loadConfig().showVersionCodeText;
         } else {
-            sizeWidth = SizeUtils.dpToPx(context, 40);
-            sizeHeight = SizeUtils.dpToPx(context, 40);
-
+            AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
         }
-
+        mHorizontalPadding = SizeUtils.dpToPx(context, 2);
         paintRed.isAntiAlias();
         paintRed.setStyle(Paint.Style.FILL);
         paintRed.setColor(Color.parseColor("#bbff0000"));
@@ -126,15 +132,14 @@ public class ShowEntranceFullViewVerSion extends View {
         paintFill.setTextSize(SizeUtils.dpToPx(context, 9));
 
 
-
         post(new Runnable() {
             @Override
             public void run() {
                 try {
                     leftOld = getLeft();
                     topOld = getTop();
-                    parWidth = ((View) getParent()).getWidth() - sizeWidth;
-                    parHeight = ((View) getParent()).getHeight() - sizeWidth;
+                    parWidth = ((View) getParent()).getWidth() - getWidth();
+                    parHeight = ((View) getParent()).getHeight() - getHeight();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -143,7 +148,7 @@ public class ShowEntranceFullViewVerSion extends View {
         });
         animator = new AnimatorSet();
 
-        ObjectAnimator red = ObjectAnimator.ofFloat(this, "startRed", 0F, 360F);
+        ObjectAnimator red = ObjectAnimator.ofFloat(this, "startRed", 0F, 360f);
         red.setDuration(1200);
         red.setRepeatCount(ObjectAnimator.INFINITE);
         red.setRepeatMode(ObjectAnimator.RESTART);
@@ -157,38 +162,72 @@ public class ShowEntranceFullViewVerSion extends View {
 //        fff.setInterpolator(new LinearInterpolator());
 
 
-        ObjectAnimator rasize = ObjectAnimator.ofFloat(this, "redSize", 10F, 90F);
+        ObjectAnimator rasize = ObjectAnimator.ofFloat(this, "redSize", 10F, 90f);
         rasize.setDuration(1200);
         rasize.setRepeatCount(ObjectAnimator.INFINITE);
         rasize.setRepeatMode(ObjectAnimator.REVERSE);
         rasize.setInterpolator(new LinearInterpolator());
-        animator.playTogether(red,  rasize);
+        animator.playTogether(red, rasize);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(sizeWidth, sizeHeight);
+        float textWidth = paintFill.measureText(AppVersionCode);
+        float v = textWidth + mHorizontalPadding * 2;
+        paintFill.getFontMetrics(fontMetricsCurrent);
+        float textHeight = Math.abs(fontMetricsCurrent.leading) +
+                Math.abs(fontMetricsCurrent.ascent) +
+                Math.abs(fontMetricsCurrent.descent) + mHorizontalPadding * 2;
+
+
+        setMeasuredDimension(Math.max((int) v, minWidth), Math.max((int) textHeight, minHeight));
     }
+
+    private RectF mRectF = new RectF();
+    private RectF mRectF2 = new RectF();
+    private RectF mRectFBack = new RectF();
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int top = SizeUtils.dpToPx(getContext().getApplicationContext(), 5);
-        rectf.set(top, top,
-                w - top, h - top);
+        mRectF.set(0f, 0f, w, h);
+        mRectF2.set(0f, 0f, w, h);
+        mRectFBack.set(0f, 0f, w, h);
+        mRectF2.inset(mHorizontalPadding, mHorizontalPadding);
+        mRectFBack.inset(-mHorizontalPadding * 10, -mHorizontalPadding * 10);
+        mPath.reset();
+        mPath.addRoundRect(mRectF2, mHorizontalPadding, mHorizontalPadding, Path.Direction.CCW);
     }
 
     private static String AppVersionCode = "";
+    private float mHorizontalPadding; // 左右2dp边距
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawCircle(getWidth() * 0.5F, getHeight() * 0.5F, getHeight() * 0.5F, paintRed);
-        canvas.drawArc(rectf, startRed, redSize, false, paint);
-        canvas.drawArc(rectf, startRed + 180, redSize, false, paint);
-//        canvas.drawCircle(getWidth() * 0.5F, getHeight() * 0.5F, ffRed, paintFill);
-        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F, paintFill);
+        canvas.drawRoundRect(mRectF, mHorizontalPadding, mHorizontalPadding, paintRed);
+
+        canvas.save();
+        mPath.rewind();
+        mPath.moveTo(getWidth() * 0.5f, getHeight() * 0.5f);
+        mPath.arcTo(mRectFBack, startRed, redSize, false);
+        mPath.close();
+        canvas.clipPath(mPath);
+        canvas.drawRoundRect(mRectF2, mHorizontalPadding, mHorizontalPadding, paint);
+        canvas.restore();
+
+
+//        canvas.drawArc(mRectF, startRed, redSize, false, paint);
+//        canvas.drawArc(mRectF, startRed + 180, redSize, false, paint);
+
+
+        float textHeight = Math.abs(fontMetricsCurrent.leading) +
+                Math.abs(fontMetricsCurrent.ascent) +
+                Math.abs(fontMetricsCurrent.descent);
+        float v = textHeight * 0.5f - Math.abs(fontMetricsCurrent.descent);
+        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F + v, paintFill);
+
     }
 
 

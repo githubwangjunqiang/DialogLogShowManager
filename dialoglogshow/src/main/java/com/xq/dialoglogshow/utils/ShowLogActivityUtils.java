@@ -122,7 +122,9 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     private static View loadFullView(Activity activity, View root) {
         View fullView;
-        if (ShowLogManager.getInstance().loadShowVersionCode()) {
+        if (ShowLogManager.getCallback().loadConfig().iLogShowView != null) {
+            fullView = ShowLogManager.getCallback().loadConfig().iLogShowView.getView(activity);
+        } else if (ShowLogManager.getCallback().loadConfig().showVersionCodeView) {
             fullView = new ShowEntranceFullViewVerSion(activity);
         } else {
             fullView = new ShowEntranceFullView(activity);
