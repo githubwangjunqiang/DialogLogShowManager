@@ -11,9 +11,11 @@ import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 
 import androidx.core.util.Pair;
 
@@ -28,7 +30,7 @@ import com.xq.dialoglogshow.utils.SizeUtils;
  * mailbox:980766134@qq.com
  * description: 日志弹框入口
  */
-public class ShowEntranceFullViewVerSion extends View {
+public class ShowEntranceFullViewVerSion extends androidx.appcompat.widget.AppCompatTextView {
     public ShowEntranceFullViewVerSion(Context context) {
         super(context);
         initData(context);
@@ -44,10 +46,6 @@ public class ShowEntranceFullViewVerSion extends View {
         initData(context);
     }
 
-    public ShowEntranceFullViewVerSion(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        initData(context);
-    }
 
     Paint paintRed = new Paint();
     Paint paint = new Paint();
@@ -113,7 +111,13 @@ public class ShowEntranceFullViewVerSion extends View {
         } else {
             AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
         }
+        setText(AppVersionCode);
+        setTextColor(Color.WHITE);
+        setTextSize(10);
+        setGravity(Gravity.CENTER);
         mHorizontalPadding = SizeUtils.dpToPx(context, 2);
+        int padding = (int) mHorizontalPadding;
+        setPadding(padding * 2, padding, padding * 2, padding);
         paintRed.isAntiAlias();
         paintRed.setStyle(Paint.Style.FILL);
         paintRed.setColor(Color.parseColor("#bbff0000"));
@@ -172,16 +176,16 @@ public class ShowEntranceFullViewVerSion extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        float textWidth = paintFill.measureText(AppVersionCode);
-        float v = textWidth + mHorizontalPadding * 2;
-        paintFill.getFontMetrics(fontMetricsCurrent);
-        float textHeight = Math.abs(fontMetricsCurrent.leading) +
-                Math.abs(fontMetricsCurrent.ascent) +
-                Math.abs(fontMetricsCurrent.descent) + mHorizontalPadding * 2;
-
-
-        setMeasuredDimension(Math.max((int) v, minWidth), Math.max((int) textHeight, minHeight));
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        float textWidth = paintFill.measureText(AppVersionCode);
+//        float v = textWidth + mHorizontalPadding * 2;
+//        paintFill.getFontMetrics(fontMetricsCurrent);
+//        float textHeight = Math.abs(fontMetricsCurrent.leading) +
+//                Math.abs(fontMetricsCurrent.ascent) +
+//                Math.abs(fontMetricsCurrent.descent) + mHorizontalPadding * 2;
+//
+//
+//        setMeasuredDimension(Math.max((int) v, minWidth), Math.max((int) textHeight, minHeight));
     }
 
     private RectF mRectF = new RectF();
@@ -196,8 +200,6 @@ public class ShowEntranceFullViewVerSion extends View {
         mRectFBack.set(0f, 0f, w, h);
         mRectF2.inset(mHorizontalPadding, mHorizontalPadding);
         mRectFBack.inset(-mHorizontalPadding * 10, -mHorizontalPadding * 10);
-        mPath.reset();
-        mPath.addRoundRect(mRectF2, mHorizontalPadding, mHorizontalPadding, Path.Direction.CCW);
     }
 
     private static String AppVersionCode = "";
@@ -205,8 +207,9 @@ public class ShowEntranceFullViewVerSion extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         canvas.drawRoundRect(mRectF, mHorizontalPadding, mHorizontalPadding, paintRed);
+        super.onDraw(canvas);
+
 
         canvas.save();
         mPath.rewind();
@@ -222,11 +225,11 @@ public class ShowEntranceFullViewVerSion extends View {
 //        canvas.drawArc(mRectF, startRed + 180, redSize, false, paint);
 
 
-        float textHeight = Math.abs(fontMetricsCurrent.leading) +
-                Math.abs(fontMetricsCurrent.ascent) +
-                Math.abs(fontMetricsCurrent.descent);
-        float v = textHeight * 0.5f - Math.abs(fontMetricsCurrent.descent);
-        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F + v, paintFill);
+//        float textHeight = Math.abs(fontMetricsCurrent.leading) +
+//                Math.abs(fontMetricsCurrent.ascent) +
+//                Math.abs(fontMetricsCurrent.descent);
+//        float v = textHeight * 0.5f - Math.abs(fontMetricsCurrent.descent);
+//        canvas.drawText(AppVersionCode, getWidth() * 0.5F, getHeight() * 0.5F + v, paintFill);
 
     }
 

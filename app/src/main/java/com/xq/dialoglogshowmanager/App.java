@@ -16,6 +16,7 @@ import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
 import java.io.BufferedWriter;
@@ -158,7 +159,7 @@ public class App extends Application {
             public LogConfigData loadConfig() {
                 Log.d("12345", "loadConfig: ");
                 LogConfigData logConfigData = new LogConfigData();
-                logConfigData.debugViewSize = new RectF(0,
+                logConfigData.debugViewSize = new RectF(10,
                         SizeUtils.dpToPx(App.this, 360F),
                         SizeUtils.dpToPx(App.this, 60F),
                         SizeUtils.dpToPx(App.this, 420F));
@@ -173,7 +174,8 @@ public class App extends Application {
                     }
                 };
                 logConfigData.showVersionCodeView = true;
-                logConfigData.showVersionCodeText = "123/n2444";
+//                logConfigData.showVersionCodeText = AppUtils.getAppVersionCode(App.this, App.this.getPackageName()) + "";
+                logConfigData.showVersionCodeText = "12120";
                 return logConfigData;
             }
 

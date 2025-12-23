@@ -149,7 +149,7 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
                 layoutParams.leftMargin = (int) logConfigData.debugViewSize.left;
             } else {
                 layoutParams.topMargin = root.getHeight() / 2;
-                layoutParams.leftMargin = 0;
+                layoutParams.leftMargin = 10;
             }
             ((FrameLayout) root).addView(fullView, layoutParams);
         }
