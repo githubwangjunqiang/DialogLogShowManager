@@ -4,7 +4,7 @@ plugins {
 }
 
 
-version = "4.0.11"
+version = "4.0.12"
 android {
     compileSdk 33
 
@@ -98,6 +98,10 @@ afterEvaluate {
             it.maven {
                 url = "/Users/songguo77/AndroidStudioProjects/YangBo/repo"
                 name = "杨波"
+            }
+            it.maven {
+                url = "/Users/songguo77/AndroidStudioProjects/ShuDong/repo"
+                name = "树洞"
             }
 //             仓库用户名密码
 //            it.maven { MavenArtifactRepository mavenArtifactRepository ->
