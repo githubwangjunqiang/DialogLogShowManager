@@ -106,7 +106,6 @@ public class ShowEntranceFullView extends View {
         } else {
             sizeWidth = SizeUtils.dpToPx(context, 40);
             sizeHeight = SizeUtils.dpToPx(context, 40);
-
         }
 
         paintRed.isAntiAlias();

@@ -101,9 +101,15 @@ public class ShowEntranceFullViewVerSion extends androidx.appcompat.widget.AppCo
     private Path mPath = new Path();
 
     private void initData(Context context) {
+        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
+        if (logConfigData != null && logConfigData.debugViewSize != null) {
+            minWidth = (int) logConfigData.debugViewSize.width();
+            minHeight = (int) logConfigData.debugViewSize.height();
+        } else {
+            minWidth = SizeUtils.dpToPx(context, 40);
+            minHeight = SizeUtils.dpToPx(context, 12);
+        }
 
-        minWidth = SizeUtils.dpToPx(context, 40);
-        minHeight = SizeUtils.dpToPx(context, 12);
 
 
         if (ShowLogManager.getCallback().loadConfig().showVersionCodeText != null) {
