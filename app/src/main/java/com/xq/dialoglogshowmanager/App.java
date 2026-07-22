@@ -192,5 +192,9 @@ public class App extends Application {
         ShowLogManager.getInstance().start(this,
                 new ScheduledThreadPoolExecutor(1),
                 true);
+
+        // --- 初始化新版 Kotlin 重构的 DebugPanelManager ---
+        //com.xq.logshowcore.manager.DebugPanelManager.getInstance().init(this);
+        //com.xq.logshowcore.manager.DebugPanelManager.getInstance().show();
     }
 }

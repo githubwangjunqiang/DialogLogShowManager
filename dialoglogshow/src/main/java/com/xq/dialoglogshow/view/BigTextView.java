@@ -49,7 +49,7 @@ public class BigTextView extends View {
 
 
     private void initData(Context context) {
-        tp.setColor(Color.parseColor("#444444"));
+        tp.setColor(Color.parseColor("#E2E8F0"));
         tp.setStyle(Paint.Style.FILL);
         tp.setTextSize(SizeUtils.dpToPx(context, 12F));
     }

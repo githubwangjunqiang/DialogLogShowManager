@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingVertical="6dp">
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="12dp">
 
     <View
         android:layout_width="10dp"
@@ -12,17 +14,18 @@
 
     <ImageView
         android:id="@+id/show_app_dialog_cache_file_log_docicon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/baseline_insert_drive_file_24_doc_se" />
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/baseline_insert_drive_file_24_doc_se"
+        app:tint="#06B6D4" />
 
     <TextView
         android:id="@+id/tvname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="10dp"
+        android:paddingHorizontal="16dp"
         android:text="我是文件夹"
-        android:textColor="#0E2BC5"
-        android:textSize="13sp" />
+        android:textColor="#F8FAFC"
+        android:textSize="14sp" />
 
 </LinearLayout>

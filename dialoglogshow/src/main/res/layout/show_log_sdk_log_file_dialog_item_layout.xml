@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="10dp">
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
 
     <TextView
         android:id="@+id/id_show_file_tvcontent"
@@ -11,8 +12,9 @@
         android:layout_height="wrap_content"
         android:lineSpacingExtra="6dp"
         android:text="我是内容"
-        android:textColor="#333333"
+        android:fontFamily="monospace"
+        android:textColor="#E2E8F0"
         android:textIsSelectable="true"
-        android:textSize="11dp" />
+        android:textSize="12dp" />
 
 </LinearLayout>

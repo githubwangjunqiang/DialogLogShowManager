@@ -2,52 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginVertical="20dp"
-    android:background="#ffffff"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="24dp"
+    android:background="@drawable/show_sdk_dialog_bg"
+    android:elevation="24dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <!-- Header / Title Bar -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_height="wrap_content">
-
-
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#0000ff"
-            android:padding="10dp"
-            android:text="关闭" />
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="关闭"
+            android:textColor="#FFFFFF"
+            android:textSize="12dp" />
+
         <TextView
             android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="10dp"
+            android:layout_centerInParent="true"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:layout_toEndOf="@id/back"
+            android:layout_toStartOf="@id/share"
+            android:gravity="center"
             android:text="我是文件名"
-            android:textColor="#0000FF"
+            android:textColor="#FFFFFF"
             android:textSize="14dp"
             android:textStyle="bold" />
+
         <TextView
             android:id="@+id/share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#0000ff"
-            android:padding="10dp"
-            android:text="分享" />
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="分享"
+            android:textColor="#06B6D4"
+            android:textSize="12dp" />
+    </RelativeLayout>
 
-    </LinearLayout>
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/show_app_dialog_cache_file_log_review"
+    <!-- Content Box -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:background="@drawable/show_sdk_content_bg"
+        android:padding="8dp">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/show_app_dialog_cache_file_log_review"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+    </FrameLayout>
 
 </LinearLayout>

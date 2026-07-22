@@ -4,51 +4,71 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginHorizontal="10dp"
-    android:background="#CCFFFFFF"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="24dp"
+    android:background="@drawable/show_sdk_dialog_bg"
+    android:elevation="24dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-
-    <TextView
-        android:id="@+id/show_app_dialog_cache_file_log_tv_title"
+    <!-- Header / Title Bar -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#B2E7F2"
-        android:lineHeight="20dp"
-        android:paddingHorizontal="6dp"
-        android:paddingVertical="6dp"
-        android:textColor="#0000ff"
-        android:textSize="14dp"
-        tools:text="本地文件展示\n   你好本地文件展示\n      你好本地文件展示" />
+        android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/show_app_dialog_cache_file_log_tv_back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/baseline_drive_file_move_rtl_24_file_back"
-        android:paddingVertical="8dp"
-        android:paddingStart="6dp"
-        android:paddingEnd="20dp"
-        android:text="返回上一级 "
-        android:textColor="#229822"
-        android:textSize="14dp" />
+        <TextView
+            android:id="@+id/show_app_dialog_cache_file_log_tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:drawableStart="@drawable/baseline_drive_file_move_rtl_24_file_back"
+            android:drawablePadding="6dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="上一级"
+            android:textColor="#06B6D4"
+            android:textSize="12dp" />
 
+        <TextView
+            android:id="@+id/show_app_dialog_cache_file_log_tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/show_app_dialog_cache_file_log_tv_back"
+            android:layout_toStartOf="@+id/show_app_dialog_confirm_btnok"
+            android:ellipsize="middle"
+            android:gravity="center"
+            android:lines="1"
+            android:singleLine="true"
+            android:text="本地文件展示"
+            android:textColor="#F8FAFC"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            tools:text="/storage/emulated/0/cache/log..." />
+
+        <TextView
+            android:id="@+id/show_app_dialog_confirm_btnok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="关闭"
+            android:textColor="#FFFFFF"
+            android:textSize="12dp" />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/show_app_dialog_cache_file_log_review"
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:paddingStart="10dp" />
-
-    <TextView
-        android:id="@+id/show_app_dialog_confirm_btnok"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="关闭弹框"
-        android:textAllCaps="true"
-        android:textColor="#59B47B"
-        android:textSize="16dp" />
+        android:background="@drawable/show_sdk_content_bg"
+        android:padding="8dp"
+        android:scrollbars="vertical" />
 
 </LinearLayout>

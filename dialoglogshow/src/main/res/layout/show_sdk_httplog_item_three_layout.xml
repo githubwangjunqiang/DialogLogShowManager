@@ -3,16 +3,15 @@
     android:id="@+id/show_sdk_id_dialog_http_log_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="35dp"
+    android:paddingStart="42dp"
     android:paddingTop="8dp"
-    android:paddingEnd="10dp"
-    android:paddingBottom="8dp">
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
 
     <com.xq.dialoglogshow.view.BigTextView
         android:id="@+id/show_sdk_id_dialog_http_log_tvbig"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
 
     <TextView
         android:id="@+id/show_sdk_id_dialog_http_log_delete"
@@ -20,11 +19,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/show_log_delete_back_dr"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="2dp"
+        android:background="@drawable/show_sdk_btn_clear_bg"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
         android:text="Delete"
-        android:textColor="#ff0000"
+        android:textColor="#EF4444"
         android:textSize="12dp" />
 
 </com.xq.dialoglogshow.view.MyTouchFragmentLayout>

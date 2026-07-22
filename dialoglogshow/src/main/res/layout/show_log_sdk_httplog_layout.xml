@@ -1,22 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_dialog_httplog_root_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:id="@+id/app_dialog_httplog_root_view"
-    android:layout_marginHorizontal="10dp"
-    android:background="#CCFFFFFF"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="24dp"
+    android:background="@drawable/show_sdk_dialog_bg"
+    android:elevation="24dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
+    <!-- Header / Title Bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
 
+        <TextView
+            android:id="@+id/show_sdk_id_dialog_http_log_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Share"
+            android:textColor="#06B6D4"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Geek Console"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/show_app_dialog_confirm_btnok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="关闭"
+            android:textColor="#FFFFFF"
+            android:textSize="12dp" />
+    </RelativeLayout>
+
+    <!-- Tabs -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:scrollbars="none">
 
         <LinearLayout
             android:id="@+id/app_dialog_httplog_tablayout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -25,66 +71,79 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="接口数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv_config"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="自定义设置"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="本地数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="Push数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="个人信息"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
+
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="缓存文件夹"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/show_sdk_id_dialog_http_log_tv5"
@@ -92,36 +151,27 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
                 android:text="其他信息"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
-                android:textSize="14dp" />
-
-            <TextView
-                android:id="@+id/show_sdk_id_dialog_http_log_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="分享"
-                android:textColor="#EF7D36"
                 android:textSize="13dp" />
         </LinearLayout>
-
     </HorizontalScrollView>
 
-
+    <!-- Stub to satisfy findViewById for removed dividers -->
     <View
         android:id="@+id/show_app_dialog_confirm_view_line"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#C8C8C8" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-
+    <!-- Content Box -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="550dp">
+        android:layout_height="550dp"
+        android:background="@drawable/show_sdk_content_bg"
+        android:padding="8dp">
 
         <FrameLayout
             android:id="@+id/setting_config"
@@ -132,83 +182,81 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/show_app_dialog_httplog_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
 
         <ProgressBar
             android:id="@+id/show_app_dialog_httplog_loading"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:visibility="gone" />
     </FrameLayout>
 
-
+    <!-- Stub to satisfy findViewById for removed dividers -->
     <View
         android:id="@+id/show_app_dialog_confirm_view_line2"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#C8C8C8" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-    <LinearLayout
+    <!-- Footer Controls -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="16dp">
 
-
-        <TextView
-            android:id="@+id/show_app_dialog_httplog_currentdate"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="当前日期："
-            android:textColor="#333333"
-            android:textSize="12dp" />
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/show_app_dialog_httplog_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="上一天"
-            android:textColor="#333333"
-            android:textSize="12dp" />
+            <TextView
+                android:id="@+id/show_app_dialog_httplog_previous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/show_sdk_btn_dark_bg"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:text="上一天"
+                android:textColor="#A1A1AA"
+                android:textSize="12dp" />
 
-        <TextView
-            android:id="@+id/show_app_dialog_httplog_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="下一天"
-            android:textColor="#333333"
-            android:textSize="12dp" />
+            <TextView
+                android:id="@+id/show_app_dialog_httplog_currentdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:text="日期："
+                android:textColor="#E4E4E7"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/show_app_dialog_httplog_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/show_sdk_btn_dark_bg"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:text="下一天"
+                android:textColor="#A1A1AA"
+                android:textSize="12dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/show_app_dialog_clear_http"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="清空日志"
-            android:textAllCaps="true"
-            android:textColor="#59B47B"
-            android:textSize="16dp" />
-
-        <TextView
-            android:id="@+id/show_app_dialog_confirm_btnok"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="关闭弹框"
-            android:textAllCaps="true"
-            android:textColor="#59B47B"
-            android:textSize="16dp" />
-    </LinearLayout>
-
-
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_clear_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp"
+            android:text="清空数据"
+            android:textColor="#EF4444"
+            android:textSize="12dp" />
+    </RelativeLayout>
 </LinearLayout>

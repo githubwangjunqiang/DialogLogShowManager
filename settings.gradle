@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "DialogLogShowManager"
 include ':app'
 include ':dialoglogshow'
+include ':logshow-core'

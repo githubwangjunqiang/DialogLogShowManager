@@ -1,71 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/show_app_dialog_log_info_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:id="@+id/show_app_dialog_log_info_root"
-    android:layout_marginHorizontal="10dp"
-    android:background="#B2E7F2"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="24dp"
+    android:background="@drawable/show_sdk_dialog_bg"
+    android:elevation="24dp"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical">-->
-
-
-<!--    </LinearLayout>-->
-
-    <LinearLayout
+    <!-- Header / Title Bar -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/show_app_dialog_confirm_btnok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="关闭弹框"
-            android:textAllCaps="true"
-            android:textColor="#0A2EEF"
-            android:textSize="16dp" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/show_app_dialog_confirm_btnshare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="分享"
-            android:textAllCaps="true"
-            android:textColor="#EF0A15"
-            android:textSize="16dp" />
-    </LinearLayout>
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Share"
+            android:textColor="#06B6D4"
+            android:textSize="12dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#0080FF" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Log Detail"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
-    <ScrollView
+        <TextView
+            android:id="@+id/show_app_dialog_confirm_btnok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="关闭"
+            android:textColor="#FFFFFF"
+            android:textSize="12dp" />
+    </RelativeLayout>
+
+    <!-- Content Area -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@drawable/show_sdk_content_bg"
+        android:padding="8dp">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="10dp">
-
+            android:layout_height="match_parent">
 
             <com.xq.dialoglogshow.view.BigTextView
                 android:id="@+id/show_app_dialog_cache_file_log_tv_title"
@@ -74,28 +73,17 @@
                 android:lineHeight="20dp"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="6dp"
-                android:textColor="#0000ff"
+                android:textColor="#E2E8F0"
                 android:textSize="14dp"
                 tools:text="请求地址：\nhttps://www.baidu.com" />
+        </ScrollView>
+    </FrameLayout>
 
-
-        </LinearLayout>
-    </ScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#0080FF" />
-
+    <!-- Bottom Stub to preserve ID -->
     <TextView
         android:id="@+id/show_app_dialog_confirm_btnok2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="关闭弹框"
-        android:textAllCaps="true"
-        android:textColor="#0A2EEF"
-        android:textSize="16dp" />
+        android:visibility="gone" />
 
 </LinearLayout>
