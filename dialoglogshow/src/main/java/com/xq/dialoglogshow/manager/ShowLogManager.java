@@ -1,192 +1,100 @@
 package com.xq.dialoglogshow.manager;
 
-import android.app.Activity;
 import android.app.Application;
-import android.app.Dialog;
-import android.content.Context;
-import android.widget.FrameLayout;
 
-import com.xq.dialoglogshow.IShowLoadDataCallback;
-import com.xq.dialoglogshow.activity.ReaderTxtDialog;
-import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.entity.HttpLogData;
-import com.xq.dialoglogshow.entity.LogConfigData;
-import com.xq.dialoglogshow.entity.PushData;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.xq.dialoglogshow.config.InternalDefaultShowLogProvider;
+import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
 
-import java.util.ArrayList;
-import java.util.concurrent.Executor;
-
 /**
- * Created by Android-小强 on 2023/1/10.
- * mailbox:980766134@qq.com
- * description: 管理器
+ * Description: SDK 全局核心单例管理者
+ * 为什么这样做：收拢管理 Application 生命周期挂载与全局 Provider 的持用，
+ * 并向 SDK 内部各弹窗/视图统一提供 100% 安全防空的 Provider 代理。
+ *
+ * Author: 王俊强 980766134@qq.com
+ * Date: 2026/07/22
  */
-public class ShowLogManager implements IShowLoadDataCallback, IShowLogManager {
-    /**
-     * 数据回调 接口
-     */
-    private volatile IShowLoadDataCallback showLoadDataCallback;
-    /**
-     * 外部传入的线程池
-     */
-    private volatile Executor executor;
-    /**
-     * 是否显示动画
-     */
-    private volatile boolean showAnimation = false;
+public class ShowLogManager {
 
+    private static volatile ShowLogManager instance;
+
+    private Application application;
+    private InternalDefaultShowLogProvider internalProvider;
 
     private ShowLogManager() {
     }
 
-    public static IShowLogManager getInstance() {
-        return Holder.showLogManager;
-    }
-
-    public static IShowLoadDataCallback getCallback() {
-        return Holder.showLogManager;
-    }
-
-    @Override
-    public void setDataCallback(IShowLoadDataCallback iShowLoadDataCallback) {
-        showLoadDataCallback = iShowLoadDataCallback;
-    }
-
-    @Override
-    public void start(Application application, Executor executor) {
-        start(application, executor, false);
-    }
-
-
-    @Override
-    public void start(Application application, Executor executor, boolean showAnimation) {
-        this.showAnimation = showAnimation;
-        ShowLogActivityUtils.getInstance().open = true;
-        if (application == null) {
-            throw new NullPointerException("application为空");
+    @NonNull
+    public static ShowLogManager getInstance() {
+        if (instance == null) {
+            synchronized (ShowLogManager.class) {
+                if (instance == null) {
+                    instance = new ShowLogManager();
+                }
+            }
         }
-        if (executor == null) {
-            throw new NullPointerException("线程池为空");
-        }
-        try {
-            application.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            application.registerActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        this.executor = executor;
+        return instance;
     }
 
+    /**
+     * SDK 初始化核心方法
+     *
+     * @param app          宿主 Application
+     * @param userProvider 开发者实现的契约提供者实例
+     */
+    public void init(@NonNull Application app, @Nullable ShowLogProvider userProvider) {
+        if (app == null) {
+            throw new IllegalArgumentException("Application cannot be null");
+        }
+        this.application = app;
 
-    @Override
+        // 使用 SDK 内部默认提供者包装开发者传入的 userProvider，收拢缺省值与空保护
+        this.internalProvider = new InternalDefaultShowLogProvider(app, userProvider);
+
+        // 如果开启了 Debug 控制台，注册 Activity 生命周期挂载悬浮球
+        if (internalProvider.isDebug()) {
+            ShowLogActivityUtils.getInstance().open = true;
+            try {
+                app.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
+            } catch (Exception ignored) {
+            }
+            try {
+                app.registerActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            ShowLogActivityUtils.getInstance().open = false;
+        }
+    }
+
+    /**
+     * 获取 SDK 内部代理持有的 Provider 契约（100% 防空）
+     */
+    @NonNull
+    public ShowLogProvider getProvider() {
+        if (internalProvider == null) {
+            // 未手动初始化时的默认保护
+            if (application != null) {
+                internalProvider = new InternalDefaultShowLogProvider(application, null);
+            } else {
+                throw new IllegalStateException("ShowLog SDK has not been initialized. Please call ShowLog.init(application, provider) first.");
+            }
+        }
+        return internalProvider;
+    }
+
+    /**
+     * 手动停止悬浮窗挂载
+     */
     public void stop() {
         ShowLogActivityUtils.getInstance().open = false;
     }
 
-    @Override
-    public Executor loadExecutor() {
-        return executor;
+    public Application getApplication() {
+        return application;
     }
-
-    @Override
-    public boolean loadShowAnimation() {
-        return showAnimation;
-    }
-
-    @Override
-    public void readTxtForDialog(Context activity, String path) {
-        new ReaderTxtDialog(activity, path).show();
-    }
-
-
-    @Override
-    public ArrayList<HttpLogData> loadHttpLog(long startTime, long endTime) {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadHttpLog(startTime, endTime);
-        }
-        return null;
-    }
-
-    @Override
-    public ArrayList<BaseShowData> loadUserInfo() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadUserInfo();
-        }
-        return null;
-    }
-
-    @Override
-    public ArrayList<BaseShowData> loadKeyValue() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadKeyValue();
-        }
-        return null;
-    }
-
-    @Override
-    public ArrayList<PushData> loadPush() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadPush();
-        }
-        return null;
-    }
-
-    @Override
-    public String loadAllData() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadAllData();
-        }
-        return null;
-    }
-
-    @Override
-    public ArrayList<BaseShowData> loadRestData() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadRestData();
-        }
-        return null;
-    }
-
-    @Override
-    public void setCustomView(FrameLayout frameLayout, Dialog dialog) {
-        if (showLoadDataCallback != null) {
-            showLoadDataCallback.setCustomView(frameLayout, dialog);
-        }
-    }
-
-    @Override
-    public LogConfigData loadConfig() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.loadConfig();
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean deleteHttpLog(BaseShowData data) {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.deleteHttpLog(data);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean deleteHttpLogAll() {
-        if (showLoadDataCallback != null) {
-            return showLoadDataCallback.deleteHttpLogAll();
-        }
-        return false;
-    }
-
-    private static class Holder {
-        private static volatile ShowLogManager showLogManager = new ShowLogManager();
-    }
-
-
 }

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import androidx.core.util.Pair;
 
-import com.xq.dialoglogshow.entity.LogConfigData;
+import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
@@ -101,19 +101,19 @@ public class ShowEntranceFullViewVerSion extends androidx.appcompat.widget.AppCo
     private Path mPath = new Path();
 
     private void initData(Context context) {
-        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-        if (logConfigData != null && logConfigData.debugViewSize != null) {
-            minWidth = (int) logConfigData.debugViewSize.width();
-            minHeight = (int) logConfigData.debugViewSize.height();
+        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        RectF debugViewSize = provider.getDebugViewSize();
+        if (debugViewSize != null) {
+            minWidth = (int) debugViewSize.width();
+            minHeight = (int) debugViewSize.height();
         } else {
             minWidth = SizeUtils.dpToPx(context, 40);
             minHeight = SizeUtils.dpToPx(context, 12);
         }
 
-
-
-        if (ShowLogManager.getCallback().loadConfig().showVersionCodeText != null) {
-            AppVersionCode = ShowLogManager.getCallback().loadConfig().showVersionCodeText;
+        String customVersionText = provider.getShowVersionCodeText();
+        if (customVersionText != null) {
+            AppVersionCode = customVersionText;
         } else {
             AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
         }
@@ -243,7 +243,7 @@ public class ShowEntranceFullViewVerSion extends androidx.appcompat.widget.AppCo
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (ShowLogManager.getInstance().loadShowAnimation()) {
+        if (true) {
             try {
                 if (visibility == View.VISIBLE) {
                     animator.start();

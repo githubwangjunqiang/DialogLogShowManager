@@ -24,7 +24,7 @@
             android:background="@drawable/show_sdk_btn_close_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="关闭"
+            android:text="@string/show_sdk_close"
             android:textColor="#FFFFFF"
             android:textSize="12dp" />
 
@@ -38,7 +38,6 @@
             android:layout_toEndOf="@id/back"
             android:layout_toStartOf="@id/share"
             android:gravity="center"
-            android:text="我是文件名"
             android:textColor="#FFFFFF"
             android:textSize="14dp"
             android:textStyle="bold" />
@@ -52,7 +51,7 @@
             android:background="@drawable/show_sdk_btn_dark_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="分享"
+            android:text="@string/show_sdk_share"
             android:textColor="#06B6D4"
             android:textSize="12dp" />
     </RelativeLayout>
@@ -71,5 +70,24 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
     </FrameLayout>
+
+    <!-- 底部控制区域：提供更适合单手操作的底部关闭按钮 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/show_app_dialog_reader_btn_close_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingVertical="10dp"
+            android:text="@string/show_sdk_close"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
 </LinearLayout>

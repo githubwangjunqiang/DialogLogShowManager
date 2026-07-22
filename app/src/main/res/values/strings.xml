@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">DialogLogShowManager</string>
+    <string name="app_name">DialogLogShow Manager</string>
+    <string name="app_demo_title_welcome">ShowLog SDK v5.0.0 接入示范</string>
+    <string name="app_demo_btn_open_console">手动打开调试控制台</string>
+    <string name="app_demo_btn_toggle_debug">检查 SDK 调试状态</string>
 </resources>

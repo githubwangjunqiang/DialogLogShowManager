@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.dialog.DialogShowLogInfo;
 import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.entity.LogConfigData;
+import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.ClipboardUtils;
 import com.xq.dialoglogshow.utils.DateUtils;
@@ -293,8 +293,8 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
         super(itemView);
         mBigTextView = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_tvbig);
         viewDelete = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_delete);
-        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-        if (logConfigData != null && logConfigData.sortUrlForTime) {
+        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        if (provider.isSortUrlForTime()) {
             View viewById = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_root);
             int v = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8F, itemView.getResources().getDisplayMetrics()) + 0.5F);
             viewById.setPadding(v, v, v, v);

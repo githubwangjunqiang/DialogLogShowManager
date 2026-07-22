@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 为了遵循用户可见文本禁止硬编码规范，定义通用弹窗按钮文案与标题资源 -->
+    <string name="show_sdk_close">关闭</string>
+    <string name="show_sdk_share">分享</string>
+    <string name="show_sdk_back">上一级</string>
+    <string name="show_sdk_delete">删除</string>
+    <string name="show_sdk_clear_data">清空数据</string>
+    <string name="show_sdk_log_detail">日志详情</string>
+    <string name="show_sdk_geek_console">Geek Console</string>
+    <string name="show_sdk_prev_day">上一天</string>
+    <string name="show_sdk_next_day">下一天</string>
+    <string name="show_sdk_date_prefix">日期</string>
+    
+    <!-- 预制系统与应用基本信息 key 资源 -->
+    <string name="show_sdk_app_package_name">应用包名</string>
+    <string name="show_sdk_app_version_name">版本名称</string>
+    <string name="show_sdk_app_version_code">版本号</string>
+    <string name="show_sdk_app_target_sdk">Target SDK</string>
+    <string name="show_sdk_app_min_sdk">Min SDK</string>
+    <string name="show_sdk_app_build_type">Build 模式</string>
+    <string name="show_sdk_apk_cpu_abi">APK 内置 CPU 架构</string>
+    <string name="show_sdk_app_install_time">安装时间</string>
+    <string name="show_sdk_app_update_time">更新时间</string>
+    <string name="show_sdk_app_install_source">安装来源</string>
+
+    <string name="show_sdk_app_system_version">系统版本</string>
+    <string name="show_sdk_app_device_model">设备型号</string>
+    <string name="show_sdk_device_cpu_abi">硬件支持 CPU 架构</string>
+    <string name="show_sdk_process_cpu_abi">当前进程运行 ABI</string>
+    <string name="show_sdk_device_screen">屏幕分辨率与 Dpi</string>
+    <string name="show_sdk_device_ram">堆内存/系统 RAM</string>
+    <string name="show_sdk_device_language">语言与时区</string>
+
+    <string name="show_sdk_network_type">网络连接类型</string>
+    <string name="show_sdk_cellular_operator">蜂窝移动运营商</string>
+    <string name="show_sdk_wifi_info">无线 Wi-Fi 信息</string>
+    <string name="show_sdk_network_iso">基站网络国家 (Network ISO)</string>
+    <string name="show_sdk_sim_iso">SIM卡发行国家 (SIM ISO)</string>
+    <string name="show_sdk_system_locale_region">系统地区设置 (System Locale)</string>
+    <string name="show_sdk_network_is_china">归属中国网络判定</string>
+
+    <string name="show_sdk_app_sign_md5">签名 MD5</string>
+    <string name="show_sdk_app_sign_sha1">签名 SHA1</string>
+    <string name="show_sdk_app_sign_sha256">签名 SHA256</string>
+    <string name="show_sdk_unknown">未知</string>
+</resources>

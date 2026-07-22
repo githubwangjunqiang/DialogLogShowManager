@@ -18,15 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
-import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.activity.FileShareActivity;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
-import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.entity.PushData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.DateUtils;
 import com.xq.dialoglogshow.utils.MyItemDecoration;
 import com.xq.dialoglogshow.utils.ShowTask;
@@ -101,7 +100,7 @@ public class DialogShowLog extends Dialog {
         mMyAdapter.mClickAdapter = new MyAdapter.ClickAdapter() {
             @Override
             public void clickDeleteHttpLog(BaseShowData data, int position) {
-                boolean b = ShowLogManager.getCallback().deleteHttpLog(data);
+                boolean b = ShowLogManager.getInstance().getProvider().onDeleteHttpLog(data);
                 if (!b) {
                     Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
                     return;
@@ -143,7 +142,7 @@ public class DialogShowLog extends Dialog {
         });
 // 清空网络日志
         mClearHttpLog.setOnClickListener(view -> {
-            boolean b = ShowLogManager.getCallback().deleteHttpLogAll();
+            boolean b = ShowLogManager.getInstance().getProvider().onClearAllHttpLogs();
             if (!b) {
                 Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
                 return;
@@ -160,7 +159,7 @@ public class DialogShowLog extends Dialog {
             setting_config.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
 
-            ((IShowLoadDataCallback) ShowLogManager.getInstance()).setCustomView(setting_config, this);
+            ShowLogManager.getInstance().getProvider().setupCustomTab(setting_config, this);
 
         });
         //本地key-value
@@ -200,7 +199,7 @@ public class DialogShowLog extends Dialog {
             @Override
             public void onClick(View view) {
                 //缓存文件夹
-                String cacheDocPath = ShowLogManager.getCallback().loadConfig().cacheDocPath;
+                String cacheDocPath = ShowLogManager.getInstance().getProvider().provideAllCacheDocPath();
                 new DialogShowFileCache(getContext(), cacheDocPath).show();
             }
         });
@@ -236,7 +235,9 @@ public class DialogShowLog extends Dialog {
     }
 
     /**
-     * 其他信息
+     * 加载“其他信息”Tab 数据
+     * 为什么这样做：优先加载系统及应用基础诊断信息（包名、版本号/名、安装/更新时间、安装来源等），
+     * 并在其后追加开发者传入的自定义拓展信息，保证开箱即用且不影响外部业务接入。
      */
     @SuppressLint("StaticFieldLeak")
     private void loadOtherInformation() {
@@ -258,23 +259,28 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
-
-                ArrayList<BaseShowData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadRestData();
+                // 1. 获取预制的 App 及设备诊断信息列表作为前缀
+                ArrayList<BaseShowData> resultList = AppUtils.getPresetAppInformation(getContext());
+                
                 if (isCancelled()) {
                     return null;
                 }
-                if (baseShowData == null) {
-                    return null;
+                
+                // 2. 获取开发者通过回调传入的额外自定义数据，追加到预制信息后面
+                ArrayList<BaseShowData> developerData = ShowLogManager.getInstance().getProvider().provideRestData();
+                if (developerData != null && !developerData.isEmpty()) {
+                    resultList.addAll(developerData);
                 }
-                return baseShowData;
+                
+                return resultList;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
     private void loadDataHttp() {
-        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-        if (logConfigData != null && logConfigData.sortUrlForTime) {
+        boolean isSort = ShowLogManager.getInstance().getProvider().isSortUrlForTime();
+        if (isSort) {
             loadDataHttpSort();
         } else {
             loadDataHttpOld();
@@ -305,12 +311,8 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
-                Log.d("DialogShowLog", "doInBackground:-1 ");
-
-
-                ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
-                        .loadHttpLog(startTime, endTime);
-                Log.d("DialogShowLog", "doInBackground:-2 ");
+                ArrayList<HttpLogData> list = ShowLogManager.getInstance().getProvider()
+                        .provideHttpLogs(startTime, endTime);
 
                 if (list != null && !list.isEmpty()) {
                     Map<String, ArrayList<BaseShowData>> map = new HashMap<>();
@@ -359,11 +361,10 @@ public class DialogShowLog extends Dialog {
                     return retUrnList;
                 }
 
-
                 return null;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
     /**
@@ -390,25 +391,14 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
-                Log.d("DialogShowLog", "doInBackground:-1 ");
-
-
                 long start = startTime;
 
-                ArrayList<HttpLogData> list = ((IShowLoadDataCallback) ShowLogManager.getInstance())
-                        .loadHttpLog(start, endTime);
-                Log.d("DialogShowLog", "doInBackground:-2 ");
-
+                ArrayList<HttpLogData> list = ShowLogManager.getInstance().getProvider()
+                        .provideHttpLogs(start, endTime);
 
                 if (list != null && !list.isEmpty()) {
                     ArrayList<BaseShowData> retUrnList = new ArrayList<>();
                     for (HttpLogData data : list) {
-                        long time = data.getTime();
-                        String url = data.getUrl();
-                        BaseShowData zi = new HttpLogData(
-                                url, time, data.getContent(), data.getResMsg(), null, false, 0);
-                        zi.setItemType(BaseShowData.TYE_THREE);
-                        data.setExpansion(false);
                         data.setItemType(BaseShowData.TYE_THREE);
                         retUrnList.add(data);
                     }
@@ -425,11 +415,10 @@ public class DialogShowLog extends Dialog {
                     return retUrnList;
                 }
 
-
                 return null;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
     /**
@@ -449,15 +438,12 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<BaseShowData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadKeyValue();
-//
+                ArrayList<BaseShowData> baseShowData = ShowLogManager.getInstance().getProvider().provideKeyValueData();
                 if (isCancelled()) {
                     return null;
                 }
                 return baseShowData;
-
             }
-
 
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
@@ -465,7 +451,7 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
     /**
@@ -485,7 +471,7 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<PushData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadPush();
+                ArrayList<PushData> baseShowData = ShowLogManager.getInstance().getProvider().providePushLogs();
                 if (isCancelled()) {
                     return null;
                 }
@@ -504,12 +490,7 @@ public class DialogShowLog extends Dialog {
                         }
                     }
                 });
-                ArrayList<BaseShowData> returnList = new ArrayList<>();
-
-                for (int i = 0; i < baseShowData.size(); i++) {
-                    PushData pushData = baseShowData.get(i);
-                    returnList.add(pushData);
-                }
+                ArrayList<BaseShowData> returnList = new ArrayList<>(baseShowData);
                 return returnList;
             }
 
@@ -519,8 +500,9 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
+
 
     @Override
     public void dismiss() {
@@ -528,6 +510,7 @@ public class DialogShowLog extends Dialog {
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
         }
+        ShowLogManager.getInstance().getProvider().onConsoleDismiss();
     }
 
     /**
@@ -548,29 +531,12 @@ public class DialogShowLog extends Dialog {
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<BaseShowData> baseShowData = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadUserInfo();
-//
+                ArrayList<BaseShowData> baseShowData = ShowLogManager.getInstance().getProvider().provideUserInfo();
                 if (isCancelled()) {
                     return null;
                 }
-
                 return baseShowData;
-//                // 反射获取 参数
-//                Class<?> aClass = showSdkUserInfoData.getClass();
-//                JSONObject jsonObject = new JSONObject();
-//                for (Field declaredField : aClass.getDeclaredFields()) {
-//                    try {
-//                        declaredField.setAccessible(true);
-//                        String name = declaredField.getName();
-//                        Object o = declaredField.get(showSdkUserInfoData);
-//                        jsonObject.put(name, o);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-
             }
-
 
             @Override
             protected void postMainData(ArrayList<BaseShowData> baseShowData) {
@@ -578,7 +544,7 @@ public class DialogShowLog extends Dialog {
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
     private void showLoading() {
@@ -616,8 +582,7 @@ public class DialogShowLog extends Dialog {
             getWindow().setAttributes(attributes);
         }
         getWindow().setWindowAnimations(R.style.dialog_httplog);
-
-
+        ShowLogManager.getInstance().getProvider().onConsoleShow();
     }
 
 

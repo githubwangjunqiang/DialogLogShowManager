@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0F172A"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/app_demo_title_welcome"
+        android:textColor="#F8FAFC"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btn_open_console"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#3B82F6"
+        android:text="@string/app_demo_btn_open_console"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_check_status"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#334155"
+        android:text="@string/app_demo_btn_toggle_debug"
+        android:textColor="#E2E8F0"
+        android:textSize="15sp" />
+
+</LinearLayout>

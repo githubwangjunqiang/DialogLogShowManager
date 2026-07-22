@@ -28,7 +28,7 @@
             android:drawablePadding="6dp"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="上一级"
+            android:text="@string/show_sdk_back"
             android:textColor="#06B6D4"
             android:textSize="12dp" />
 
@@ -43,7 +43,6 @@
             android:gravity="center"
             android:lines="1"
             android:singleLine="true"
-            android:text="本地文件展示"
             android:textColor="#F8FAFC"
             android:textSize="14dp"
             android:textStyle="bold"
@@ -58,7 +57,7 @@
             android:background="@drawable/show_sdk_btn_close_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="关闭"
+            android:text="@string/show_sdk_close"
             android:textColor="#FFFFFF"
             android:textSize="12dp" />
     </RelativeLayout>
@@ -66,9 +65,28 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/show_app_dialog_cache_file_log_review"
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_height="500dp"
         android:background="@drawable/show_sdk_content_bg"
         android:padding="8dp"
         android:scrollbars="vertical" />
+
+    <!-- 底部控制区域：提供更适合单手操作的底部关闭按钮 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/show_app_dialog_confirm_btnok_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/show_sdk_btn_close_bg"
+            android:paddingVertical="10dp"
+            android:text="@string/show_sdk_close"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
 </LinearLayout>

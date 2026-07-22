@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.ShowTask;
 import com.xq.dialoglogshow.utils.SizeUtils;
@@ -174,7 +173,7 @@ public class FileShareActivity extends Activity {
         try {
             OutputStream outputStream = getContentResolver().openOutputStream(uri);
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-            String path = ((IShowLoadDataCallback) ShowLogManager.getInstance()).loadAllData();
+            String path = ShowLogManager.getInstance().getProvider().provideAllCacheDocPath();
 
             if (TextUtils.isEmpty(path)) {
                 return false;

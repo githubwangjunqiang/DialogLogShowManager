@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
+import com.xq.dialoglogshow.activity.ReaderTxtDialog;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.adapter.cache_log.MyAdapterCacheFileAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.MyItemDecoration;
 import com.xq.dialoglogshow.utils.ShareUtils;
@@ -93,8 +93,9 @@ public class DialogShowFileCache extends Dialog {
                 if (data.doc) {
                     addPath(data.path);
                 } else {
-                    //文件 就要分享了
-                    ShowLogManager.getInstance().readTxtForDialog(getContext(), data.path);
+                    // 文件：优先调用 Provider 响应事件
+                    ShowLogManager.getInstance().getProvider().onOpenTextFile(data.path);
+                    new ReaderTxtDialog(getContext(), data.path).show();
                 }
 
             }
@@ -113,12 +114,17 @@ public class DialogShowFileCache extends Dialog {
     }
 
     /**
-     * 监听器
+     * 监听器：绑定顶部及底部关闭按钮事件，保证手指在屏下更好触达操作
      */
     private void setListener() {
-        //关闭
+        // 顶部关闭按钮
         findViewById(R.id.show_app_dialog_confirm_btnok).setOnClickListener(v -> cancel());
-
+        
+        // 底部新增的关闭按钮，便于单手触达
+        View btnCloseBottom = findViewById(R.id.show_app_dialog_confirm_btnok_bottom);
+        if (btnCloseBottom != null) {
+            btnCloseBottom.setOnClickListener(v -> cancel());
+        }
     }
 
 

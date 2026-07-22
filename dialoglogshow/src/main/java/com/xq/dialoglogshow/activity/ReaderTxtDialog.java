@@ -13,11 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.xq.dialoglogshow.IShowLoadDataCallback;
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.adapter.ReaderTXTAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.PagedTextLoader;
 import com.xq.dialoglogshow.utils.ShowTask;
@@ -79,19 +77,29 @@ public class ReaderTxtDialog extends Dialog {
         loadTxt();
 
 
+        // 绑定顶部返回关闭按钮
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismiss();
             }
         });
+        
+        // 绑定新增的底部关闭按钮，提升在屏幕底部的单手操作体验
+        TextView btnCloseBottom = findViewById(R.id.show_app_dialog_reader_btn_close_bottom);
+        if (btnCloseBottom != null) {
+            btnCloseBottom.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismiss();
+                }
+            });
+        }
+
         mShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LogConfigData.ReadTextCall readTextCall = ShowLogManager.getCallback().loadConfig().readTextCall;
-                if (readTextCall != null) {
-                    readTextCall.readText(filePath);
-                }
+                ShowLogManager.getInstance().getProvider().onShareFile(getContext(), filePath);
             }
         });
 
@@ -148,7 +156,7 @@ public class ReaderTxtDialog extends Dialog {
                 return null;
             }
         };
-        mShowTask.executeOnExecutor(ShowLogManager.getInstance().loadExecutor());
+        mShowTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
 
     }
 

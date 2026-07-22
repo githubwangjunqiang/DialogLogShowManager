@@ -12,8 +12,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.graphics.RectF;
+
+import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.dialog.DialogShowLog;
-import com.xq.dialoglogshow.entity.LogConfigData;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.view.ShowEntranceFullView;
 import com.xq.dialoglogshow.view.ShowEntranceFullViewVerSion;
@@ -122,9 +124,11 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     private static View loadFullView(Activity activity, View root) {
         View fullView;
-        if (ShowLogManager.getCallback().loadConfig().iLogShowView != null) {
-            fullView = ShowLogManager.getCallback().loadConfig().iLogShowView.getView(activity);
-        } else if (ShowLogManager.getCallback().loadConfig().showVersionCodeView) {
+        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        View customView = provider.getCustomEntranceView(activity);
+        if (customView != null) {
+            fullView = customView;
+        } else if (provider.isShowVersionCodeView()) {
             fullView = new ShowEntranceFullViewVerSion(activity);
         } else {
             fullView = new ShowEntranceFullView(activity);
@@ -143,10 +147,10 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
                     new FrameLayout.LayoutParams(
                             FrameLayout.LayoutParams.WRAP_CONTENT,
                             FrameLayout.LayoutParams.WRAP_CONTENT);
-            LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-            if (logConfigData != null && logConfigData.debugViewSize != null) {
-                layoutParams.topMargin = (int) logConfigData.debugViewSize.top;
-                layoutParams.leftMargin = (int) logConfigData.debugViewSize.left;
+            RectF debugViewSize = provider.getDebugViewSize();
+            if (debugViewSize != null) {
+                layoutParams.topMargin = (int) debugViewSize.top;
+                layoutParams.leftMargin = (int) debugViewSize.left;
             } else {
                 layoutParams.topMargin = root.getHeight() / 2;
                 layoutParams.leftMargin = 10;

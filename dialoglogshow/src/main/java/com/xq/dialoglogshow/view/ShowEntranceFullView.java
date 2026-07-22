@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
-import com.xq.dialoglogshow.entity.LogConfigData;
+import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
@@ -99,10 +99,11 @@ public class ShowEntranceFullView extends View {
 
     private void initData(Context context) {
         AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
-        LogConfigData logConfigData = ShowLogManager.getCallback().loadConfig();
-        if (logConfigData != null && logConfigData.debugViewSize != null) {
-            sizeWidth = (int) logConfigData.debugViewSize.width();
-            sizeHeight = (int) logConfigData.debugViewSize.height();
+        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        RectF debugViewSize = provider.getDebugViewSize();
+        if (debugViewSize != null) {
+            sizeWidth = (int) debugViewSize.width();
+            sizeHeight = (int) debugViewSize.height();
         } else {
             sizeWidth = SizeUtils.dpToPx(context, 40);
             sizeHeight = SizeUtils.dpToPx(context, 40);
@@ -191,7 +192,7 @@ public class ShowEntranceFullView extends View {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (ShowLogManager.getInstance().loadShowAnimation()) {
+        if (true) {
             try {
                 if (visibility == View.VISIBLE) {
                     animator.start();
