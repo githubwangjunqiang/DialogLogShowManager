@@ -110,7 +110,8 @@ public class DialogShowLog extends Dialog {
             }
         };
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addItemDecoration(new MyItemDecoration(getContext()));
+        // 采用精致暗黑卡片自自带边框与间距，移除旧版突兀的荧光绿分割线
+        // mRecyclerView.addItemDecoration(new MyItemDecoration(getContext()));
         mRecyclerView.setAdapter(mMyAdapter);
 
 

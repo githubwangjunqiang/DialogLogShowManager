@@ -4,18 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="24dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="16dp"
     android:background="@drawable/show_sdk_dialog_bg"
     android:elevation="24dp"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <!-- Header / Title Bar -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="12dp">
 
         <TextView
             android:id="@+id/show_sdk_id_dialog_http_log_share"
@@ -26,7 +26,7 @@
             android:background="@drawable/show_sdk_btn_dark_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="Share"
+            android:text="@string/show_sdk_share"
             android:textColor="#06B6D4"
             android:textSize="12dp" />
 
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Geek Console"
+            android:text="@string/show_sdk_geek_console"
             android:textColor="#FFFFFF"
             android:textSize="16dp"
             android:textStyle="bold" />
@@ -48,7 +48,7 @@
             android:background="@drawable/show_sdk_btn_close_bg"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            android:text="关闭"
+            android:text="@string/show_sdk_close"
             android:textColor="#FFFFFF"
             android:textSize="12dp" />
     </RelativeLayout>
@@ -57,7 +57,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:scrollbars="none">
 
         <LinearLayout
@@ -71,10 +71,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="接口数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -84,10 +84,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv_config"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="自定义设置"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -97,10 +97,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="本地数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -110,10 +110,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="Push数据"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -123,10 +123,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="个人信息"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -136,10 +136,10 @@
                 android:id="@+id/show_sdk_id_dialog_http_log_tv6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="缓存文件夹"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -151,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
+                android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:text="其他信息"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
@@ -171,7 +171,7 @@
         android:layout_width="match_parent"
         android:layout_height="550dp"
         android:background="@drawable/show_sdk_content_bg"
-        android:padding="8dp">
+        android:padding="4dp">
 
         <FrameLayout
             android:id="@+id/setting_config"
@@ -204,7 +204,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="12dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -221,7 +221,7 @@
                 android:background="@drawable/show_sdk_btn_dark_bg"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
-                android:text="上一天"
+                android:text="@string/show_sdk_prev_day"
                 android:textColor="#A1A1AA"
                 android:textSize="12dp" />
 
@@ -229,8 +229,8 @@
                 android:id="@+id/show_app_dialog_httplog_currentdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:text="日期："
+                android:layout_marginHorizontal="8dp"
+                android:text="@string/show_sdk_date_prefix"
                 android:textColor="#E4E4E7"
                 android:textSize="12dp" />
 
@@ -241,7 +241,7 @@
                 android:background="@drawable/show_sdk_btn_dark_bg"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp"
-                android:text="下一天"
+                android:text="@string/show_sdk_next_day"
                 android:textColor="#A1A1AA"
                 android:textSize="12dp" />
         </LinearLayout>
@@ -253,9 +253,9 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@drawable/show_sdk_btn_clear_bg"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="14dp"
             android:paddingVertical="6dp"
-            android:text="清空数据"
+            android:text="@string/show_sdk_clear_data"
             android:textColor="#EF4444"
             android:textSize="12dp" />
     </RelativeLayout>

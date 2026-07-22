@@ -147,8 +147,16 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     }
 
 
+    private long lastClickTime = 0;
+
     @Override
     public void onClick(View v) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastClickTime < 500) {
+            return; // 500ms 防抖处理，避免频繁重复点击
+        }
+        lastClickTime = currentTime;
+
         RecyclerView.ViewHolder containingViewHolder = mRecyclerView.findContainingViewHolder(v);
         if (containingViewHolder instanceof MyViewHolderHttpFather) {
 
@@ -294,10 +302,22 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
         mBigTextView = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_tvbig);
         viewDelete = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_delete);
         ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
-        if (provider.isSortUrlForTime()) {
-            View viewById = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_root);
-            int v = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8F, itemView.getResources().getDisplayMetrics()) + 0.5F);
-            viewById.setPadding(v, v, v, v);
+        View viewById = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_root);
+        if (viewById != null && viewById.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewById.getLayoutParams();
+            if (provider.isSortUrlForTime()) {
+                // 常用列表模式：无需左侧树状大缩进，保持紧凑的 2dp 边距
+                int m = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+                lp.setMargins(m, m, m, m);
+            } else {
+                // 父子树状展开模式：保留左侧 14dp 自然层级缩进
+                int start = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+                int top = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+                int end = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+                int bottom = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4F, itemView.getResources().getDisplayMetrics()) + 0.5F);
+                lp.setMargins(start, top, end, bottom);
+            }
+            viewById.setLayoutParams(lp);
         }
     }
 
