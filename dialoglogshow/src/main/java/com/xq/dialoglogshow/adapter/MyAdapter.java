@@ -277,8 +277,10 @@ class MyViewHolderHttpFather extends RecyclerView.ViewHolder {
 
     @SuppressLint("SetTextI18n")
     public void setData(BaseShowData baseShowData) {
+        String status = !android.text.TextUtils.isEmpty(baseShowData.getResMsg()) ? (" [" + baseShowData.getResMsg() + "]") : "";
+        int childCount = baseShowData.getList() != null ? baseShowData.getList().size() : 0;
         mTextView.setText("Index：" + (baseShowData.getIndex())
-                + "，Count：" + baseShowData.getList().size()
+                + status + " (明细：" + childCount + "项)"
                 + "\n"
                 + "Url：" + baseShowData.getUrl());
         if (baseShowData.isExpansion()) {
@@ -322,19 +324,12 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
     }
 
     public void setData(BaseShowData baseShowData) {
-
-        if (baseShowData.isExpansion()) {
-            mBigTextView.setMessage(baseShowData.getContent());
-        } else {
-            String format = DateUtils.format(baseShowData.getTime());
-            String msg = "Count：" + baseShowData.getIndex() + "，" +
-                    "Time：" + format + "\n" +
-                    baseShowData.getUrl() + "\n" +
-                    "Result：" + baseShowData.getResMsg();
-            mBigTextView.setMessage(msg);
-        }
-
-
+        String format = DateUtils.format(baseShowData.getTime());
+        String status = !android.text.TextUtils.isEmpty(baseShowData.getResMsg()) ? (" [" + baseShowData.getResMsg() + "]") : "";
+        String msg = "Index：" + baseShowData.getIndex() + status + "，Time：" + format + "\n" +
+                "Url：" + baseShowData.getUrl() + "\n" +
+                "👉 点击查看完整 Headers/Body/cURL 报文详情";
+        mBigTextView.setMessage(msg);
     }
 }
 

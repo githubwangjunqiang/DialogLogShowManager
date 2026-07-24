@@ -63,7 +63,24 @@ public class AppUtils {
     }
 
     /**
-     * 预制获取 App 及系统的基础诊断信息
+     * 获取完整的 App 诊断报告文本
+     * 为什么这样做：汇总 App 基础信息、硬件架构、当前进程 ABI、存储与网络环境，供自定义 Tab 和调试诊断使用。
+     */
+    public static String getAppDiagnosticReport(Context context) {
+        StringBuilder sb = new StringBuilder();
+        java.util.ArrayList<BaseShowData> list = getPresetAppInformation(context);
+        if (list != null) {
+            for (BaseShowData data : list) {
+                if (data != null && !TextUtils.isEmpty(data.getContent())) {
+                    sb.append(data.getContent()).append("\n\n");
+                }
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * 动态生成丰富的预制 App 诊断与系统信息列表的基础诊断信息
      * 为什么这样做：在“其他信息”Tab 中提供自动集成的包名、版本、安装更新时间与安装来源等关键诊断数据，
      * 便于开发者排查不同环境或安装通道下的应用运行状态，无需每次手动编码传入。
      *
@@ -117,6 +134,9 @@ public class AppUtils {
 
                 // APK 内置 Native 库 CPU 架构
                 sb.append(appContext.getString(R.string.show_sdk_apk_cpu_abi)).append(": ").append(getApkSupportedAbis(appContext)).append("\n");
+
+                // 当前进程实际运行 ABI (精准识别 64 位/32 位运行环境)
+                sb.append(appContext.getString(R.string.show_sdk_process_cpu_abi)).append(": ").append(getCurrentProcessAbi(appContext)).append("\n");
 
                 // 安装与更新时间
                 sb.append(appContext.getString(R.string.show_sdk_app_install_time)).append(": ")
@@ -323,17 +343,33 @@ public class AppUtils {
 
     /**
      * 获取当前 APK 进程实际运行加载的 CPU ABI 指令集
-     * 为什么这样做：区分 64 位与 32 位运行进程，排查 Native 崩溃极度关键。
+     * 为什么这样做：结合 ApplicationInfo.primaryCpuAbi、Process.is64Bit() 和 os.arch，
+     * 精准判定 APK 到底是以 64 位还是 32 位指令集运行在宿主设备上，方便排查 Native 崩溃与 ABI 错位。
      */
-    private static String getCurrentProcessAbi() {
-        String osArch = System.getProperty("os.arch");
+    public static String getCurrentProcessAbi(Context context) {
+        String abi = null;
+        try {
+            if (context != null) {
+                Context appContext = context.getApplicationContext();
+                if (appContext != null && appContext.getApplicationInfo() != null) {
+                    java.lang.reflect.Field field = android.content.pm.ApplicationInfo.class.getDeclaredField("primaryCpuAbi");
+                    field.setAccessible(true);
+                    abi = (String) field.get(appContext.getApplicationInfo());
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        if (TextUtils.isEmpty(abi)) {
+            abi = System.getProperty("os.arch");
+        }
         boolean is64Bit = false;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             is64Bit = android.os.Process.is64Bit();
         } else {
-            is64Bit = osArch != null && osArch.contains("64");
+            is64Bit = abi != null && abi.contains("64");
         }
-        return (osArch != null ? osArch : "未知") + " (" + (is64Bit ? "64 位进程" : "32 位进程") + ")";
+        return (abi != null ? abi : "未知") + " (" + (is64Bit ? "64位模式" : "32位兼容模式") + ")";
     }
 
     /**

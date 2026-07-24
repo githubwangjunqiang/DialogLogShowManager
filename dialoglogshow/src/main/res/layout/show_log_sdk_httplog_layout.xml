@@ -76,7 +76,20 @@
                 android:gravity="center"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
-                android:text="接口数据"
+                android:text="@string/manual_http_log"
+                android:textColor="@color/sdk_item_dialog_http_tab_text_color"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/show_sdk_id_dialog_http_log_tv_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/show_sdk_id_dialog_http_log_tvback"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="@string/auto_http_log"
                 android:textColor="@color/sdk_item_dialog_http_tab_text_color"
                 android:textSize="13dp" />
 

@@ -3,4 +3,9 @@
     <string name="app_demo_title_welcome">ShowLog SDK v5.0.0 接入示范</string>
     <string name="app_demo_btn_open_console">手动打开调试控制台</string>
     <string name="app_demo_btn_toggle_debug">检查 SDK 调试状态</string>
+
+    <!-- 测试按钮 Key，遵循英文小写 snake_case -->
+    <string name="test_http_get">测试发起 HTTP GET 请求</string>
+    <string name="test_https_post">测试发起 HTTPS POST 请求</string>
+    <string name="test_http_error">测试发起 404 异常请求</string>
 </resources>

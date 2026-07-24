@@ -49,13 +49,15 @@ public class DialogShowLog extends Dialog {
      * 适配器
      */
     private MyAdapter mMyAdapter;
+    private com.xq.dialoglogshow.collector.adapter.AutoHttpLogAdapter mAutoHttpLogAdapter;
     private LinearLayout mTabRoot;
     private RecyclerView mRecyclerView;
-    private TextView mTab1, mSeeting, mTab2, mTab3, mTab4, mTab5, mTab6Doc, mBtnClose, mShare;
+    private TextView mTab1, mTabAutoHttp, mSeeting, mTab2, mTab3, mTab4, mTab5, mTab6Doc, mBtnClose, mShare;
     private TextView mClearHttpLog, mCurrentDate, mPrevious, mNext;
     private ProgressBar mProgressBar;
     private ShowTask mAsyncTask;
     private FrameLayout setting_config;
+    private boolean mIsAutoHttpTab = false;
 
     private long startTime, endTime;
     private View app_dialog_httplog_root_view;
@@ -82,6 +84,7 @@ public class DialogShowLog extends Dialog {
         mRecyclerView = findViewById(R.id.show_app_dialog_httplog_list);
         mSeeting = findViewById(R.id.show_sdk_id_dialog_http_log_tv_config);
         mTab1 = findViewById(R.id.show_sdk_id_dialog_http_log_tv1);
+        mTabAutoHttp = findViewById(R.id.show_sdk_id_dialog_http_log_tv_auto);
         mTab2 = findViewById(R.id.show_sdk_id_dialog_http_log_tv2);
         mTab3 = findViewById(R.id.show_sdk_id_dialog_http_log_tv3);
         mTab4 = findViewById(R.id.show_sdk_id_dialog_http_log_tv4);
@@ -130,8 +133,9 @@ public class DialogShowLog extends Dialog {
             getContext().startActivity(intent);
         });
 
-        //网络日志
+        // 手动网络日志
         mTab1.setOnClickListener(v -> {
+            mIsAutoHttpTab = false;
             setting_config.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
             loadDataHttp();
@@ -141,14 +145,36 @@ public class DialogShowLog extends Dialog {
             mPrevious.setVisibility(View.VISIBLE);
             mNext.setVisibility(View.VISIBLE);
         });
-// 清空网络日志
+
+        // 自动网络日志
+        if (mTabAutoHttp != null) {
+            mTabAutoHttp.setOnClickListener(v -> {
+                mIsAutoHttpTab = true;
+                setting_config.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                loadDataAutoHttp();
+                changeTabState(v);
+                mCurrentDate.setVisibility(View.GONE);
+                mClearHttpLog.setVisibility(View.VISIBLE);
+                mPrevious.setVisibility(View.GONE);
+                mNext.setVisibility(View.GONE);
+            });
+        }
+
+        // 清空网络日志
         mClearHttpLog.setOnClickListener(view -> {
-            boolean b = ShowLogManager.getInstance().getProvider().onClearAllHttpLogs();
-            if (!b) {
-                Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
-                return;
+            if (mIsAutoHttpTab) {
+                com.xq.dialoglogshow.collector.JavaHttpLogCollector.getInstance().clearAutoHttpLogs();
+                mMyAdapter.setList(new ArrayList<>());
+                Toast.makeText(getContext(), "已清空自动捕获网络日志", Toast.LENGTH_SHORT).show();
+            } else {
+                boolean b = ShowLogManager.getInstance().getProvider().onClearAllHttpLogs();
+                if (!b) {
+                    Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mMyAdapter.setList(new ArrayList<>());
             }
-            mMyAdapter.setList(new ArrayList<>());
         });
         //自定义设置
         mSeeting.setOnClickListener(v -> {
@@ -279,9 +305,32 @@ public class DialogShowLog extends Dialog {
         mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
     }
 
+    /**
+     * 加载全 Java 运行时自动拦截捕获到的网络日志
+     * 为什么这样做：独立拉取 JavaHttpLogCollector 中的日志，并推送到 UI 列表中展示，不与开发者手动传入的日志混淆。
+     */
+    private void loadDataAutoHttp() {
+        hideLoading();
+        if (mAutoHttpLogAdapter == null) {
+            mAutoHttpLogAdapter = new com.xq.dialoglogshow.collector.adapter.AutoHttpLogAdapter(getContext(), mRecyclerView);
+        }
+        if (mRecyclerView.getAdapter() != mAutoHttpLogAdapter) {
+            mRecyclerView.setAdapter(mAutoHttpLogAdapter);
+        }
+        ArrayList<com.xq.dialoglogshow.collector.model.AutoHttpLogModel> autoLogs = com.xq.dialoglogshow.collector.JavaHttpLogCollector.getInstance().getAutoHttpLogModels(false);
+        android.util.Log.d("DialogShowLog", "loadDataAutoHttp autoLogs count: " + autoLogs.size());
+
+        for (int i = 0; i < autoLogs.size(); i++) {
+            autoLogs.get(i).setIndex(autoLogs.size() - i);
+        }
+        mAutoHttpLogAdapter.setList(autoLogs);
+    }
+
     private void loadDataHttp() {
-        boolean isSort = ShowLogManager.getInstance().getProvider().isSortUrlForTime();
-        if (isSort) {
+        if (mRecyclerView.getAdapter() != mMyAdapter) {
+            mRecyclerView.setAdapter(mMyAdapter);
+        }
+        if (ShowLogManager.getInstance().getProvider().isSortUrlForTime()) {
             loadDataHttpSort();
         } else {
             loadDataHttpOld();

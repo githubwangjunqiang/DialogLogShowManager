@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.xq.dialoglogshowmanager"
-        minSdk 21
+        minSdk 23
         targetSdk 33
         versionCode 15
         versionName "3.2.1"
@@ -33,6 +33,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation files('libs/nativelib-release.aar')
     implementation project(path: ':dialoglogshow')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

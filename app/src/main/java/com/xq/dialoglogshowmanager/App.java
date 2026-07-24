@@ -49,7 +49,16 @@ public class App extends Application {
         // 构造丰富多样的真实模拟网络日志数据
         initMockLogs();
 
-        // 一站式无脑接入 SDK 契约提供者
+        // 为什么这样做：接入并调用 nativelib-release.aar 提供的 Native C/C++ SO 库与其 API 接口
+        try {
+            boolean initSuccess = com.xq.app.so.BiZhi.init(this);
+            String lepValue = com.xq.app.so.BiZhi.lep();
+            Log.d("App", "nativelib-release.aar Native 库初始化结果: " + initSuccess + ", lep标志位: " + lepValue);
+        } catch (Throwable t) {
+            Log.e("App", "nativelib-release.aar 初始化异常", t);
+        }
+
+        // 适配全新的 SDK 双模式初始化方案，传入 true 开启全 Java 运行时无感网络日志自动拦截
         ShowLog.init(this, new ShowLogProvider() {
 
             @Override
@@ -215,7 +224,7 @@ public class App extends Application {
             public void onConsoleDismiss() {
                 Log.d("App", "控制台弹窗已关闭");
             }
-        });
+        }, true);
     }
 
     /**

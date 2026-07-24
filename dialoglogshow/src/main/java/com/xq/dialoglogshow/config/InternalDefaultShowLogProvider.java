@@ -124,6 +124,20 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
         if (delegate != null) {
             delegate.setupCustomTab(container, dialog);
         }
+        if (container.getChildCount() == 0) {
+            // 为什么这样做：当宿主未自定义设置 Tab 视图时，默认展示包含 Process ABI、APK ABI 及硬件 ABI 在内的完整 App 系统诊断报告
+            android.widget.ScrollView scrollView = new android.widget.ScrollView(container.getContext());
+            scrollView.setPadding(30, 30, 30, 30);
+
+            android.widget.TextView textView = new android.widget.TextView(container.getContext());
+            textView.setTextSize(13f);
+            textView.setTextColor(0xFF333333);
+            textView.setTextIsSelectable(true);
+            textView.setText(com.xq.dialoglogshow.utils.AppUtils.getAppDiagnosticReport(container.getContext()));
+
+            scrollView.addView(textView);
+            container.addView(scrollView);
+        }
     }
 
     @NonNull

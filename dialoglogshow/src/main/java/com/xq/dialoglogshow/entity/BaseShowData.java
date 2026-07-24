@@ -8,6 +8,19 @@ import java.util.List;
  * description:
  */
 public class BaseShowData {
+
+    public BaseShowData() {
+    }
+
+    /**
+     * 快捷构造方法
+     * 为什么这样做：方便快捷组装带有 id、content 和 itemType 的数据项，供各种 Adapter 展开子项使用。
+     */
+    public BaseShowData(String id, String content, int itemType) {
+        this.id = id;
+        this.content = content;
+        this.itemType = itemType;
+    }
     /**
      * 普通类型
      */

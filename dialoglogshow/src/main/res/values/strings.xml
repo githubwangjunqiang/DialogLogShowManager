@@ -44,4 +44,10 @@
     <string name="show_sdk_app_sign_sha1">签名 SHA1</string>
     <string name="show_sdk_app_sign_sha256">签名 SHA256</string>
     <string name="show_sdk_unknown">未知</string>
+
+    <!-- 自动网络日志交互专用 Key 规则：全英文小写 snake_case -->
+    <string name="auto_http_log">自动HTTP</string>
+    <string name="manual_http_log">手动HTTP</string>
+    <string name="filter_only_failed">仅看失败</string>
+    <string name="copy_curl_success">cURL命令已复制到剪贴板</string>
 </resources>

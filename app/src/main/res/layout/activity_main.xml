@@ -38,4 +38,34 @@
         android:textColor="#E2E8F0"
         android:textSize="15sp" />
 
+    <Button
+        android:id="@+id/btn_test_get"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#059669"
+        android:text="@string/test_http_get"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_test_post"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#0891B2"
+        android:text="@string/test_https_post"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_test_error"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#DC2626"
+        android:text="@string/test_http_error"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
 </LinearLayout>
