@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0F172A"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp"
-    tools:context=".MainActivity">
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/tv_title"
@@ -17,6 +22,14 @@
         android:textColor="#F8FAFC"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_vpn_guide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="#CBD5E1"
+        android:textSize="13sp" />
 
     <Button
         android:id="@+id/btn_open_console"
@@ -68,4 +81,35 @@
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/btn_okhttp_weather"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#8B5CF6"
+        android:text="@string/test_okhttp_weather_get"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_okhttp_form"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#D97706"
+        android:text="@string/test_okhttp_form_post"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_okhttp_json"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#EC4899"
+        android:text="@string/test_okhttp_json_post"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -5,11 +5,16 @@
     <string name="show_sdk_share">分享</string>
     <string name="show_sdk_back">上一级</string>
     <string name="show_sdk_delete">删除</string>
+    <string name="show_sdk_delete_failed">删除失败</string>
     <string name="show_sdk_clear_data">清空数据</string>
     <string name="show_sdk_log_detail">日志详情</string>
+    <string name="show_sdk_no_data">无数据</string>
+    <string name="show_sdk_yes">是</string>
+    <string name="show_sdk_no">否</string>
     <string name="show_sdk_geek_console">Geek Console</string>
     <string name="show_sdk_prev_day">上一天</string>
     <string name="show_sdk_next_day">下一天</string>
+    <string name="show_sdk_last_day">最后一天了</string>
     <string name="show_sdk_date_prefix">日期</string>
     
     <!-- 预制系统与应用基本信息 key 资源 -->
@@ -50,4 +55,59 @@
     <string name="manual_http_log">手动HTTP</string>
     <string name="filter_only_failed">仅看失败</string>
     <string name="copy_curl_success">cURL命令已复制到剪贴板</string>
+
+    <!-- VPN 调试能力文案 -->
+    <string name="vpn_network_log">VPN网络</string>
+    <string name="show_sdk_vpn_enable">开启VPN</string>
+    <string name="show_sdk_vpn_stop">停止VPN</string>
+    <string name="show_sdk_vpn_status_title">VPN状态</string>
+    <string name="show_sdk_vpn_status_idle">未启用 VPN 调试</string>
+    <string name="show_sdk_vpn_status_prepare_required">需要系统授权后才能开始抓取网络日志</string>
+    <string name="show_sdk_vpn_status_starting">VPN 正在启动，请稍候</string>
+    <string name="show_sdk_vpn_status_running">VPN 已启动，宿主流量将通过当前唯一转发链路进入日志采集</string>
+    <string name="show_sdk_vpn_status_system_active_unsynced">系统状态栏显示 VPN 已连接，但 SDK 仍在重新同步当前调试链路状态；如果日志长时间不刷新，请尝试先停止再重新开启。</string>
+    <string name="show_sdk_vpn_status_stopped">VPN 已停止</string>
+    <string name="show_sdk_vpn_status_error_prefix">VPN异常</string>
+    <string name="show_sdk_vpn_action_tip">当前 VPN 单方案已切到 NetBare；开发者可先直接开启 VPN 抓取宿主网络，安装调试证书后再升级为 HTTPS 明文抓取。</string>
+    <string name="show_sdk_vpn_permission_denied">未授予 VPN 权限</string>
+    <string name="show_sdk_vpn_permission_granted">VPN 权限已授予，正在启动</string>
+    <string name="show_sdk_vpn_establish_failed">VPN 虚拟网卡建立失败</string>
+    <string name="show_sdk_vpn_certificate_generating">调试证书仍在准备中，请稍候几秒后再次开启 VPN。</string>
+    <string name="show_sdk_vpn_certificate_required">需要先安装调试证书后，SDK 才能抓取 HTTPS 明文与完整 HTTP 详情。</string>
+    <string name="show_sdk_vpn_certificate_install_failed">调试证书安装发起失败，请检查系统证书安装能力。</string>
+    <string name="show_sdk_vpn_install_certificate">安装HTTPS证书</string>
+    <string name="show_sdk_vpn_session_name">ShowLog VPN Session</string>
+    <string name="show_sdk_vpn_notification_title">ShowLog VPN 调试中</string>
+    <string name="show_sdk_vpn_notification_text">VPN 网络日志骨架服务正在运行</string>
+    <string name="show_sdk_vpn_notification_channel_name">ShowLog VPN</string>
+    <string name="show_sdk_vpn_snapshot_none">尚未识别到连接数据</string>
+    <string name="show_sdk_vpn_snapshot_label_packets">数据包</string>
+    <string name="show_sdk_vpn_snapshot_label_tcp">TCP</string>
+    <string name="show_sdk_vpn_snapshot_label_udp">UDP</string>
+    <string name="show_sdk_vpn_snapshot_label_sessions">活跃会话</string>
+    <string name="show_sdk_vpn_snapshot_label_latest">最近连接</string>
+    <string name="show_sdk_http_child_summary">Index：%1$s%2$s，Time：%3$s\nUrl：%4$s\n👉 点击查看完整 Headers/Body/cURL 报文详情</string>
+    <string name="show_sdk_index_prefix">Index：%1$s</string>
+    <string name="show_sdk_vpn_log_protocol">Protocol</string>
+    <string name="show_sdk_vpn_log_host">Host</string>
+    <string name="show_sdk_vpn_log_url">Url</string>
+    <string name="show_sdk_vpn_log_method">Method</string>
+    <string name="show_sdk_vpn_log_status">Status</string>
+    <string name="show_sdk_vpn_log_time">Time</string>
+    <string name="show_sdk_vpn_log_cost">Cost</string>
+    <string name="show_sdk_vpn_log_cost_value">%1$d ms</string>
+    <string name="show_sdk_vpn_log_request_bytes">RequestBytes</string>
+    <string name="show_sdk_vpn_log_response_bytes">ResponseBytes</string>
+    <string name="show_sdk_vpn_log_parse_status">ParseStatus</string>
+    <string name="show_sdk_vpn_log_encrypted">Encrypted</string>
+    <string name="show_sdk_vpn_log_source">Source</string>
+    <string name="show_sdk_vpn_log_package_name">PackageName</string>
+    <string name="show_sdk_vpn_log_request_headers">Request Headers</string>
+    <string name="show_sdk_vpn_log_request_body">Request Body</string>
+    <string name="show_sdk_vpn_log_response_headers">Response Headers</string>
+    <string name="show_sdk_vpn_log_response_body">Response Body</string>
+    <string name="show_sdk_vpn_log_message">Message</string>
+    <string name="show_sdk_vpn_log_request_success">成功</string>
+    <string name="show_sdk_vpn_log_request_failed">失败</string>
+    <string name="show_sdk_vpn_log_list_summary">时间：%1$s\nURL：%2$s\n结果：%3$s    状态码：%4$s    方法：%5$s</string>
 </resources>

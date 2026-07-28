@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="show_sdk_vpn_panel_padding">16dp</dimen>
+    <dimen name="show_sdk_vpn_status_margin_top">12dp</dimen>
+    <dimen name="show_sdk_vpn_tip_margin_top">10dp</dimen>
+    <dimen name="show_sdk_vpn_action_margin_top">16dp</dimen>
+    <dimen name="show_sdk_vpn_action_padding_horizontal">14dp</dimen>
+    <dimen name="show_sdk_vpn_action_padding_vertical">8dp</dimen>
+
+    <dimen name="show_sdk_vpn_title_text_size">16sp</dimen>
+    <dimen name="show_sdk_vpn_status_text_size">13sp</dimen>
+    <dimen name="show_sdk_vpn_tip_text_size">12sp</dimen>
+    <dimen name="show_sdk_vpn_action_text_size">13sp</dimen>
+</resources>

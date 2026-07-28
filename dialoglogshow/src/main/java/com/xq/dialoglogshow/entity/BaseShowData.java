@@ -33,6 +33,10 @@ public class BaseShowData {
      * 孩子类型
      */
     public static final int TYE_THREE = 2;
+    /**
+     * VPN 列表头部操作区
+     */
+    public static final int TYE_FOUR = 3;
 
     /**
      * item 类型

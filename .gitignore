@@ -14,3 +14,7 @@ build/
 .cxx
 local.properties
 /repo/
+third_party/**/build/
+third_party/**/.gradle/
+tmp_netbare_official/
+计划文档/

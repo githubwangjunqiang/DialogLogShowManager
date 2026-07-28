@@ -106,6 +106,16 @@ public interface ShowLogProvider {
     @Nullable
     String getConsoleTitle();
 
+    /**
+     * VPN 业务报文解密器
+     * 为什么这样做：如果宿主对请求体/响应体又做了 AES 或自定义业务加密，SDK 本身无法猜测业务算法；
+     * 这里给宿主一个统一出口按需提供解密器，不提供则继续展示原始报文。
+     *
+     * @return 业务报文解密器；不需要解密传 null
+     */
+    @Nullable
+    VpnPayloadDecryptor getVpnPayloadDecryptor();
+
     // =========================================================================
     // 3. 6 大 Tab 数据源提供器 (Data Sources for 6 Tabs)
     // =========================================================================

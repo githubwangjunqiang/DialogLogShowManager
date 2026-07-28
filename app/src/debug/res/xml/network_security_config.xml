@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        为什么这样做：
+        1. 示例 App 的 targetSdk=33，默认不会信任用户手动安装的 CA 证书。
+        2. VPN 抓 HTTPS 明文必须依赖用户安装的调试 CA，这里仅在 debug 变体显式放开 user 证书信任。
+        3. 只放在 debug sourceSet，可避免把调试信任策略带进 release 包。
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

@@ -15,3 +15,6 @@ dependencyResolutionManagement {
 rootProject.name = "DialogLogShowManager"
 include ':app'
 include ':dialoglogshow'
+
+include ':netbare-core'
+project(':netbare-core').projectDir = file('third_party/NetBare-Android/netbare-core')

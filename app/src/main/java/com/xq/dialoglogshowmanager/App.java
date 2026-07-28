@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.config.ShowLogProvider;
+import com.xq.dialoglogshow.config.VpnPayloadDecryptor;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.PushData;
@@ -58,7 +59,7 @@ public class App extends Application {
             Log.e("App", "nativelib-release.aar 初始化异常", t);
         }
 
-        // 适配全新的 SDK 双模式初始化方案，传入 true 开启全 Java 运行时无感网络日志自动拦截
+        // 为什么这样做：Demo App 直接按最终单方案接入，传入 true 后统一启用 VPN 网络日志能力，方便真机验证。
         ShowLog.init(this, new ShowLogProvider() {
 
             @Override
@@ -113,7 +114,14 @@ public class App extends Application {
             @Nullable
             @Override
             public String getConsoleTitle() {
-                return "极客调试台 (Geek Console)";
+                return "极客调试台 (VPN 验证)";
+            }
+
+            @Nullable
+            @Override
+            public VpnPayloadDecryptor getVpnPayloadDecryptor() {
+                // 为什么这样做：Demo 默认不注入业务解密逻辑，保持 SDK 在未注册时展示原始报文的真实接入路径。
+                return null;
             }
 
             @Nullable

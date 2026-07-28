@@ -1,0 +1,71 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
+
+/**
+ * 这里显式声明 group，是为了让主 SDK 的 POM 能稳定引用到底层模块，避免依赖 project 名称时出现解析漂移。
+ */
+group = "com.tasow.showlog"
+/**
+ * 这里先给默认版本，是为了兼容单独构建 netbare-core 的场景；正式发布时会在 afterEvaluate 与主 SDK 版本对齐。
+ */
+version = "5.0.2"
+
+android {
+    namespace 'com.github.megatronking.netbare'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    /**
+     * 这里生成 sourcesJar，是为了让 JitPack 与线下本地 Maven 包都保持标准 Maven 构件形态，便于排查接入问题。
+     */
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.56'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.56'
+    implementation 'com.google.guava:guava:19.0'
+}
+
+afterEvaluate {
+    def showLogProject = rootProject.findProject(':dialoglogshow')
+    // 这里强制与主 SDK 版本对齐，是为了保证同一次发布下两个构件能被同一 tag 与同一 POM 正确解析。
+    if (showLogProject != null && showLogProject.version != null) {
+        version = showLogProject.version
+    }
+    // 这里统一走 release 组件发布，是为了确保宿主解析到的是正式产物，而不是调试变体。
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = project.group
+                artifactId = "netbare-core"
+                version = project.version
+            }
+        }
+    }
+}

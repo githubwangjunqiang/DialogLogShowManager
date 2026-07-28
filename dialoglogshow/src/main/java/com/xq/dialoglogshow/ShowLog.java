@@ -4,6 +4,8 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
+import com.xq.dialoglogshow.collector.vpn.VpnController;
+import com.xq.dialoglogshow.collector.vpn.netbare.ShowLogNetBareManager;
 import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.manager.ShowLogManager;
 
@@ -28,17 +30,28 @@ public class ShowLog {
     }
 
     /**
-     * SDK 双模式初始化入口
-     * 为什么这样做：支持开发者通过布尔开关一键开启纯 Java 运行时的网络日志无感自动拦截，无需改动现有网络框架代码。
+     * SDK VPN 初始化入口
+     * 为什么这样做：按照最新方案，第三个开关统一收敛为 VPN 自动网络日志能力，宿主只需要声明是否启用即可，
+     * 后续控制台会自行处理权限申请、服务启动与状态展示，不再把实现细节暴露给开发者。
      *
      * @param application           宿主 Application
      * @param provider              开发者实现的 ShowLogProvider 契约接口实例
-     * @param autoCollectNetworkLog true: 开启纯 Java 运行时网络日志自动拦截；false: 仅使用开发者手动传入
+     * @param autoCollectNetworkLog true: 开启 VPN 自动网络日志能力；false: 仅使用开发者手动传入
      */
     public static void init(@NonNull Application application, @NonNull ShowLogProvider provider, boolean autoCollectNetworkLog) {
+        // 为什么这样做：ShowLogManager 在注册生命周期回调时需要提前知道 VPN 能力是否开启，否则前后台巡检入口无法挂上。
+        ShowLogManager.getInstance().setVpnNetworkLogEnabled(autoCollectNetworkLog);
         ShowLogManager.getInstance().init(application, provider);
+        // 为什么这样做：NetBare 证书生成是异步过程，SDK 初始化时尽早附着 Application 并预生成证书，可以减少第一次点击启用时的等待。
+        ShowLogNetBareManager.getInstance().init(application, provider.isDebug());
+        // 为什么这样做：VPN 首次授权后，后续冷启动应由 SDK 自动恢复抓包能力，避免测试同学忘记手动开启导致关键日志丢失。
         if (autoCollectNetworkLog) {
-            com.xq.dialoglogshow.collector.JavaHttpLogCollector.getInstance().start(application);
+            VpnController.getInstance().tryAutoRestoreVpn(application);
+            return;
+        }
+        // 为什么这样做：只有在 VPN 已经运行时才主动下发停止指令，避免宿主本来就关闭 VPN 功能时仍在 Application 启动阶段多发一次无意义的 Service 调用。
+        if (VpnController.getInstance().isVpnRunning()) {
+            VpnController.getInstance().stopVpn(application);
         }
     }
 

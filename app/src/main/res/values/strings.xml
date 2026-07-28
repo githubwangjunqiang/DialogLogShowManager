@@ -3,9 +3,13 @@
     <string name="app_demo_title_welcome">ShowLog SDK v5.0.0 接入示范</string>
     <string name="app_demo_btn_open_console">手动打开调试控制台</string>
     <string name="app_demo_btn_toggle_debug">检查 SDK 调试状态</string>
+    <string name="app_demo_vpn_verify_guide">真机验证顺序：1. 点击“手动打开调试控制台”；2. 进入“VPN网络”并按提示安装证书、开启 VPN；3. 回到本页依次点击下面的请求按钮；4. 再回控制台查看历史日志。</string>
 
     <!-- 测试按钮 Key，遵循英文小写 snake_case -->
-    <string name="test_http_get">测试发起 HTTP GET 请求</string>
-    <string name="test_https_post">测试发起 HTTPS POST 请求</string>
+    <string name="test_http_get">测试发起 HTTP GET 请求 (原生)</string>
+    <string name="test_https_post">测试发起 HTTPS POST 请求 (原生)</string>
     <string name="test_http_error">测试发起 404 异常请求</string>
+    <string name="test_okhttp_weather_get">OkHttp 发起国内天气 API (GET)</string>
+    <string name="test_okhttp_form_post">OkHttp 发起表单提交 (POST Form)</string>
+    <string name="test_okhttp_json_post">OkHttp 发起复杂 JSON 报文 (POST JSON)</string>
 </resources>

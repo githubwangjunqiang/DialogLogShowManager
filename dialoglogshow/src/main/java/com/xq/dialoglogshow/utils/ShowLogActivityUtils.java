@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import android.graphics.RectF;
 
+import com.xq.dialoglogshow.collector.vpn.VpnHealthMonitor;
 import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.dialog.DialogShowLog;
 import com.xq.dialoglogshow.manager.ShowLogManager;
@@ -27,6 +28,11 @@ import com.xq.dialoglogshow.view.ShowEntranceFullViewVerSion;
  * description: 网络日志 显示相关管理工具
  */
 public class ShowLogActivityUtils implements Application.ActivityLifecycleCallbacks {
+    /**
+     * 为什么这样做：VPN 自动恢复要求识别“真正进入前台/后台”的瞬间，单个 Activity 的 resume/pause 不能可靠代表整个应用态。
+     */
+    private int startedActivityCount = 0;
+
     private ShowLogActivityUtils() {
     }
 
@@ -51,7 +57,10 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityStarted(@NonNull Activity activity) {
-
+        startedActivityCount++;
+        if (startedActivityCount == 1) {
+            VpnHealthMonitor.getInstance().onAppForeground(activity.getApplicationContext());
+        }
     }
 
     @Override
@@ -109,7 +118,10 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     @Override
     public void onActivityStopped(@NonNull Activity activity) {
-
+        startedActivityCount = Math.max(0, startedActivityCount - 1);
+        if (startedActivityCount == 0) {
+            VpnHealthMonitor.getInstance().onAppBackground(activity.getApplicationContext());
+        }
     }
 
     @Override

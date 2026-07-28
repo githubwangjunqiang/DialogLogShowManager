@@ -2,6 +2,11 @@ plugins {
     id 'com.android.application'
 }
 
+configurations.configureEach {
+    // 为什么这样做：NetBare 依赖旧版 guava 19.0，而 AndroidX 会额外传递引入独立的 listenablefuture 工件；这里在 app 维度统一排除，避免 installDebug 阶段出现重复类。
+    exclude group: 'com.google.guava', module: 'listenablefuture'
+}
+
 android {
     compileSdk 33
 
@@ -21,6 +26,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        // 为什么这样做：当前联调入口通过 BuildConfig.DEBUG 严格限制只在 debug 包生效；显式开启 buildConfig 生成，避免不同 AGP 默认值差异导致编译失败。
+        buildConfig true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -33,8 +42,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation files('libs/nativelib-release.aar')
-    implementation project(path: ':dialoglogshow')
+    // 为什么这样做：NetBare 依赖旧版 guava 19.0，本工程其它 AndroidX 传递依赖会额外带入 listenablefuture 单独工件；这里显式排除后者，避免安装包阶段出现重复类冲突。
+    implementation(project(path: ':dialoglogshow')) {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

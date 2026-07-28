@@ -3,8 +3,16 @@ plugins {
     id 'maven-publish'
 }
 
+/**
+ * 统一在模块内显式维护版本，是为了避免 JitPack 发布阶段动态改源码，导致 tag、源码与产物版本发生漂移。
+ */
+version = "5.0.2"
 
-version = "5.0.0"
+/**
+ * 这里显式声明发布坐标，是为了让 showlog 与底层 netbare-core 的 POM 依赖保持可预测，便于 JitPack 和本地 Maven 一致解析。
+ */
+def PUBLISH_GROUP_ID = "com.tasow.showlog"
+def PUBLISH_ARTIFACT_ID = "showlog"
 android {
     compileSdk 33
 
@@ -27,61 +35,30 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'com.xq.dialoglogshow'
+
+    /**
+     * 这里补 sourcesJar，是为了让 JitPack 与内部仓库都能拿到更完整的 Maven 构件，排查宿主接入问题更方便。
+     */
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation project(path: ':netbare-core')
 //    implementation 'com.google.android.material:material:1.6.1'
 }
 
-def incrementVersionAndGet() {
-    // 获取 build.gradle 文件
-    def buildFile = project.buildFile
-    def buildFileText = buildFile.getText('UTF-8')
-
-    // 使用正则表达式查找版本号
-    def pattern = /version = "(\d+)\.(\d+)\.(\d+)"/
-    def matcher = buildFileText =~ pattern
-
-    if (matcher.find()) {
-        // 解析当前版本号
-        def major = matcher[0][1].toInteger()
-        def minor = matcher[0][2].toInteger()
-        def patch = matcher[0][3].toInteger()
-
-        // 只在执行发布任务时才增加版本号
-        // Gradle 会在配置阶段执行代码，我们需要确保只在真正发布时才增加
-        // 'publish' 是一个任务的通用前缀
-        boolean isPublishTask = project.gradle.startParameter.taskNames.any { it.contains('publish') }
-
-        if (isPublishTask) {
-            // 增加修订号
-            patch++
-
-            // 构建新版本号字符串
-            def newVersionLine = "version = \"${major}.${minor}.${patch}\""
-
-            // 替换文件中的旧版本号行为新版本号行
-            def updatedText = buildFileText.replace(matcher[0][0], newVersionLine)
-
-            // 将更新后的内容写回 build.gradle 文件
-            buildFile.write(updatedText, 'UTF-8')
-
-            println "==> Version incremented to: ${major}.${minor}.${patch}"
-            // 返回新版本号
-            return "${major}.${minor}.${patch}"
-        } else {
-            // 如果不是发布任务，只返回当前版本号，不增加
-            return "${major}.${minor}.${patch}"
-        }
-    } else {
-        throw new GradleException("Version pattern not found in build.gradle. Expected format: version = \"x.y.z\"")
-    }
-}
 afterEvaluate {
-    // 1. 定义一个方法来处理版本号的读取、递增和回写
+    // 这里继续沿用 afterEvaluate，是为了确保 Android release component 已经创建完成，避免发布阶段拿不到组件。
+    group = PUBLISH_GROUP_ID
+    // 这里直接使用源码中声明的版本，是为了确保 Git tag、源码版本与实际发布产物保持一一对应。
+    version = project.version
 
     publishing {
         repositories {
@@ -131,63 +108,19 @@ afterEvaluate {
 
 
         publications {
-
-            // Creates a Maven publication called "release".
             release(MavenPublication) {
-
-                // Applies the component for the release build variant.
-//                from components.release
-//                from this.components.findByName("release")
                 from this.components.findByName("release")
-                //artifact sourceJar // 上传源码
-                // 明确指定构建的 AAR 文件
-                artifact("$buildDir/outputs/aar/${project.name}-release.aar")
-                // You can then customize attributes of the publication as shown below.
-                groupId = "com.tasow.showlog"//公司名称
-                artifactId = "showlog"//sdk名称
-                version = incrementVersionAndGet()//sdk版本号
-
+                // 这里显式写坐标，是为了避免 project 名称或 JitPack 默认坐标变化时影响宿主依赖入口。
+                groupId = PUBLISH_GROUP_ID
+                artifactId = PUBLISH_ARTIFACT_ID
+                version = project.version
             }
-//            betaRelease(MavenPublication) {
-//                // Applies the component for the release build variant.
-//                from components.release
-////                artifact sourceJar // 上传源码
-//                // You can then customize attributes of the publication as shown below.
-//                groupId = builder.sdk_packageName//公司名称
-//                artifactId = builder.sdk_Name//sdk名称
-//                version = builder.sdk_version_Name//sdk版本号
-//            }
-//            aar(MavenPublication) {
-//                groupId = "com.play"
-//                artifactId = "sdk"
-//                version = '1.0.0'
-//                //add dependency
-//                pom.withXml {
-//                    def dependenciesNode = asNode().appendNode('dependencies')
-//                    def dependencyNode = dependenciesNode.appendNode('dependency')
-//                    dependencyNode.appendNode('groupId', 'androidx.core')
-//                    dependencyNode.appendNode('artifactId', 'core')
-//                    dependencyNode.appendNode('version', '1.3.2')
-//                }
-//                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
-//            }
-            // Creates a Maven publication called “debug”.
-//            debug(MavenPublication) {
-//                // Applies the component for the debug build variant.
-//                from components.debug
-//                groupId = 'com.play.app.sdk'//公司名称
-//                artifactId = 'playsdk-debug'//sdk名称
-//                version = builder.sdk_version_Name//sdk版本号
-//            }
         }
     }
-    // 确保在上传前先构建 aar
+    // 这里保留统一依赖 assemble，是为了兼容现有发布任务入口，避免手工区分 release/debug 构建导致漏产物。
     tasks.forEach {
         if(it.name.startsWith("publish")){
             it.dependsOn("assemble")
         }
     }
-//    tasks.named("publish") {
-//        dependsOn("assembleRelease")
-//    }
 }

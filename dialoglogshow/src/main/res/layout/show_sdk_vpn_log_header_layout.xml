@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/show_sdk_vpn_panel_padding"
+    android:paddingTop="@dimen/show_sdk_vpn_panel_padding"
+    android:paddingRight="@dimen/show_sdk_vpn_panel_padding"
+    android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical">
+
+    <TextView
+        android:id="@+id/show_sdk_id_vpn_log_header_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/show_sdk_btn_dark_bg"
+        android:paddingLeft="@dimen/show_sdk_vpn_action_padding_horizontal"
+        android:paddingTop="@dimen/show_sdk_vpn_action_padding_vertical"
+        android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
+        android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
+        android:textColor="@color/show_sdk_vpn_action_text"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/show_sdk_id_vpn_log_header_cert_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/show_sdk_vpn_action_margin_top"
+        android:background="@drawable/show_sdk_btn_dark_bg"
+        android:paddingLeft="@dimen/show_sdk_vpn_action_padding_horizontal"
+        android:paddingTop="@dimen/show_sdk_vpn_action_padding_vertical"
+        android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
+        android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
+        android:textColor="@color/show_sdk_vpn_action_text"
+        android:textSize="14sp" />
+
+</LinearLayout>

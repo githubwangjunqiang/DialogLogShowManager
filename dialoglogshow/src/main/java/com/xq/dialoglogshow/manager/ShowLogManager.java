@@ -23,6 +23,10 @@ public class ShowLogManager {
 
     private Application application;
     private InternalDefaultShowLogProvider internalProvider;
+    /**
+     * 为什么这样做：VPN 网络日志能力属于 SDK 级总开关，控制台、权限申请和服务启动都要统一读取这个状态，避免各处自己猜测初始化参数。
+     */
+    private boolean vpnNetworkLogEnabled = false;
 
     private ShowLogManager() {
     }
@@ -54,9 +58,9 @@ public class ShowLogManager {
         // 使用 SDK 内部默认提供者包装开发者传入的 userProvider，收拢缺省值与空保护
         this.internalProvider = new InternalDefaultShowLogProvider(app, userProvider);
 
-        // 如果开启了 Debug 控制台，注册 Activity 生命周期挂载悬浮球
-        if (internalProvider.isDebug()) {
-            ShowLogActivityUtils.getInstance().open = true;
+        // 为什么这样做：VPN 自动恢复需要前后台切换监听，即使悬浮窗没开，也要复用同一套生命周期回调做状态巡检。
+        if (internalProvider.isDebug() || vpnNetworkLogEnabled) {
+            ShowLogActivityUtils.getInstance().open = internalProvider.isDebug();
             try {
                 app.unregisterActivityLifecycleCallbacks(ShowLogActivityUtils.getInstance());
             } catch (Exception ignored) {
@@ -96,5 +100,19 @@ public class ShowLogManager {
 
     public Application getApplication() {
         return application;
+    }
+
+    /**
+     * 保存 VPN 网络日志总开关
+     */
+    public void setVpnNetworkLogEnabled(boolean vpnNetworkLogEnabled) {
+        this.vpnNetworkLogEnabled = vpnNetworkLogEnabled;
+    }
+
+    /**
+     * 查询当前是否启用 VPN 网络日志能力
+     */
+    public boolean isVpnNetworkLogEnabled() {
+        return vpnNetworkLogEnabled;
     }
 }

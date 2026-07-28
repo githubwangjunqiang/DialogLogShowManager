@@ -107,6 +107,15 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
         return "Geek Console";
     }
 
+    @Nullable
+    @Override
+    public VpnPayloadDecryptor getVpnPayloadDecryptor() {
+        if (delegate != null) {
+            return delegate.getVpnPayloadDecryptor();
+        }
+        return null;
+    }
+
     @NonNull
     @Override
     public ArrayList<HttpLogData> provideHttpLogs(long startTime, long endTime) {

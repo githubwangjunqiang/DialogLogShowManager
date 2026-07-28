@@ -2,6 +2,7 @@ package com.xq.dialoglogshow.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
     public interface ClickAdapter {
         void clickDeleteHttpLog(BaseShowData data, int position);
+
+        void clickVpnHeaderAction();
+
+        void clickVpnHeaderCertificateAction();
     }
 
     public List<BaseShowData> getListNodeData() {
@@ -59,7 +64,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             mList.addAll(baseShowData);
         }
         if (mList.isEmpty()) {
-            Toast.makeText(mContext.getApplicationContext(), "无数据", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext.getApplicationContext(), R.string.show_sdk_no_data, Toast.LENGTH_SHORT).show();
         }
         notifyDataSetChanged();
     }
@@ -108,6 +113,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
             return myViewHolderHttpChild;
         }
+        if (viewType == BaseShowData.TYE_FOUR) {
+            MyViewHolderVpnHeader myViewHolderVpnHeader = new MyViewHolderVpnHeader(mLayoutInflater
+                    .inflate(R.layout.show_sdk_vpn_log_header_layout, parent, false));
+            myViewHolderVpnHeader.actionView.setOnClickListener(this);
+            myViewHolderVpnHeader.certificateActionView.setOnClickListener(this);
+            return myViewHolderVpnHeader;
+        }
         return null;
     }
 
@@ -125,6 +137,9 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (holder instanceof MyViewHolderHttpChild) {
             //孩子
             ((MyViewHolderHttpChild) holder).setData(mList.get(layoutPosition));
+        }
+        if (holder instanceof MyViewHolderVpnHeader) {
+            ((MyViewHolderVpnHeader) holder).setData(mList.get(layoutPosition));
         }
     }
 
@@ -216,7 +231,22 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
         }
         if (containingViewHolder instanceof MyViewHolderData) {
-            //其他
+            // 为什么这样做：VPN 历史日志当前走普通列表样式，如果这里不接详情弹窗，开发者只能看到摘要，无法查看完整头/体明细。
+            int layoutPosition = containingViewHolder.getLayoutPosition();
+            BaseShowData data = mList.get(layoutPosition);
+            if (!TextUtils.isEmpty(data.getContent())) {
+                new DialogShowLogInfo(mContext, data.getContent(), containingViewHolder.itemView, rootView).show();
+            }
+        }
+        if (containingViewHolder instanceof MyViewHolderVpnHeader) {
+            if (mClickAdapter == null) {
+                return;
+            }
+            if (v.getId() == R.id.show_sdk_id_vpn_log_header_action) {
+                mClickAdapter.clickVpnHeaderAction();
+            } else if (v.getId() == R.id.show_sdk_id_vpn_log_header_cert_action) {
+                mClickAdapter.clickVpnHeaderCertificateAction();
+            }
         }
     }
 
@@ -326,9 +356,12 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
     public void setData(BaseShowData baseShowData) {
         String format = DateUtils.format(baseShowData.getTime());
         String status = !android.text.TextUtils.isEmpty(baseShowData.getResMsg()) ? (" [" + baseShowData.getResMsg() + "]") : "";
-        String msg = "Index：" + baseShowData.getIndex() + status + "，Time：" + format + "\n" +
-                "Url：" + baseShowData.getUrl() + "\n" +
-                "👉 点击查看完整 Headers/Body/cURL 报文详情";
+        String msg = itemView.getContext().getString(
+                R.string.show_sdk_http_child_summary,
+                String.valueOf(baseShowData.getIndex()),
+                status,
+                format,
+                baseShowData.getUrl() != null ? baseShowData.getUrl() : itemView.getContext().getString(R.string.show_sdk_no_data));
         mBigTextView.setMessage(msg);
     }
 }
@@ -346,11 +379,47 @@ class MyViewHolderData extends RecyclerView.ViewHolder {
     }
 
     public void setData(BaseShowData data, List<BaseShowData> list) {
-        int layoutPosition = getLayoutPosition();
-        int size = list.size();
-        int i = size - layoutPosition;
-        String msg = "Index：" + i + "\n" + data.getContent();
+        String msg;
+        if (!TextUtils.isEmpty(data.getResMsg())) {
+            // 为什么这样做：VPN 一级列表摘要已经在外层收口为“时间/URL/结果/状态码”，这里优先展示摘要，避免一屏塞满完整报文。
+            msg = data.getResMsg();
+        } else {
+            int layoutPosition = getLayoutPosition();
+            int size = list.size();
+            int i = size - layoutPosition;
+            msg = itemView.getContext().getString(R.string.show_sdk_index_prefix, String.valueOf(i))
+                    + "\n"
+                    + data.getContent();
+        }
         mTextView.setText(msg);
     }
 }
 
+/**
+ * VPN 日志列表头部操作区
+ */
+class MyViewHolderVpnHeader extends RecyclerView.ViewHolder {
+
+    TextView actionView;
+    TextView certificateActionView;
+
+    public MyViewHolderVpnHeader(View itemView) {
+        super(itemView);
+        actionView = itemView.findViewById(R.id.show_sdk_id_vpn_log_header_action);
+        certificateActionView = itemView.findViewById(R.id.show_sdk_id_vpn_log_header_cert_action);
+    }
+
+    /**
+     * 为什么这样做：列表已经有日志时，开发者通常是在“看日志的过程中顺手操作”，
+     * 因此这里把开关与证书入口直接跟随列表内容展示，避免来回切换面板。
+     */
+    public void setData(BaseShowData data) {
+        actionView.setText(data.getContent());
+        if (TextUtils.isEmpty(data.getResMsg())) {
+            certificateActionView.setVisibility(View.GONE);
+        } else {
+            certificateActionView.setVisibility(View.VISIBLE);
+            certificateActionView.setText(data.getResMsg());
+        }
+    }
+}
