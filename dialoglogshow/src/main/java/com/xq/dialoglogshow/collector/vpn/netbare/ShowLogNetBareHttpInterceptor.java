@@ -10,7 +10,7 @@ import com.github.megatronking.netbare.http.HttpRequestChain;
 import com.github.megatronking.netbare.http.HttpResponse;
 import com.github.megatronking.netbare.http.HttpResponseChain;
 import com.xq.dialoglogshow.collector.vpn.repository.VpnTrafficLogRepository;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.model.VpnTrafficLogModel;
 
 import java.io.IOException;
@@ -50,9 +50,25 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
      */
     private static final ConcurrentHashMap<String, PendingLog> GLOBAL_PENDING_LOGS = new ConcurrentHashMap<>();
 
+    private final VpnAppIdentityResolver mIdentityResolver;
+
+    public ShowLogNetBareHttpInterceptor(
+            @NonNull VpnAppIdentityResolver identityResolver) {
+        mIdentityResolver = identityResolver;
+    }
+
     @NonNull
-    public static HttpInterceptorFactory createFactory() {
-        return ShowLogNetBareHttpInterceptor::new;
+    public static HttpInterceptorFactory createFactory(
+            @NonNull VpnAppIdentityResolver identityResolver) {
+        return () -> new ShowLogNetBareHttpInterceptor(identityResolver);
+    }
+
+    /**
+     * 清理尚未完成的跨回调聚合状态。
+     * 为什么这样做：动态切换抓包 App 会销毁旧代理链路，旧请求不可能再完整结束，继续保留只会造成内存泄漏或串入新配置日志。
+     */
+    public static void clearPendingLogs() {
+        GLOBAL_PENDING_LOGS.clear();
     }
 
     @Override
@@ -150,12 +166,13 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
         String requestId = request.id();
         PendingLog pendingLog = GLOBAL_PENDING_LOGS.get(requestId);
         if (pendingLog != null) {
+            updateAppIdentityIfNeed(pendingLog, request.uid());
             return pendingLog;
         }
         PendingLog newLog = new PendingLog();
         newLog.logId = UUID.randomUUID().toString();
         newLog.requestId = requestId;
-        newLog.appPackageName = ShowLogManager.getInstance().getApplication().getPackageName();
+        newLog.appPackageName = mIdentityResolver.resolvePackageName(request.uid());
         newLog.sourceDescription = "VPN";
         PendingLog oldLog = GLOBAL_PENDING_LOGS.putIfAbsent(requestId, newLog);
         return oldLog != null ? oldLog : newLog;
@@ -166,15 +183,28 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
         String requestId = response.id();
         PendingLog pendingLog = GLOBAL_PENDING_LOGS.get(requestId);
         if (pendingLog != null) {
+            updateAppIdentityIfNeed(pendingLog, response.uid());
             return pendingLog;
         }
         PendingLog newLog = new PendingLog();
         newLog.logId = UUID.randomUUID().toString();
         newLog.requestId = requestId;
-        newLog.appPackageName = ShowLogManager.getInstance().getApplication().getPackageName();
+        newLog.appPackageName = mIdentityResolver.resolvePackageName(response.uid());
         newLog.sourceDescription = "VPN";
         PendingLog oldLog = GLOBAL_PENDING_LOGS.putIfAbsent(requestId, newLog);
         return oldLog != null ? oldLog : newLog;
+    }
+
+    /**
+     * 在后续请求或响应回调中补齐 App 归属。
+     * 为什么这样做：连接刚建立时系统 UID 可能尚未可查询，允许后续分片补写可以显著降低多 App 日志落成未知来源的概率。
+     */
+    private void updateAppIdentityIfNeed(@NonNull PendingLog pendingLog, int uid) {
+        if (pendingLog.appPackageName != null
+                && !pendingLog.appPackageName.isEmpty()) {
+            return;
+        }
+        pendingLog.appPackageName = mIdentityResolver.resolvePackageName(uid);
     }
 
     @NonNull

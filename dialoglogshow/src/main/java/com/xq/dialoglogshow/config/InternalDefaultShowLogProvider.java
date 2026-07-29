@@ -30,7 +30,7 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
 
     private final Context appContext;
     private final ShowLogProvider delegate;
-    private final Executor defaultExecutor;
+    private final ScheduledThreadPoolExecutor defaultExecutor;
 
     public InternalDefaultShowLogProvider(@NonNull Context context, @Nullable ShowLogProvider userProvider) {
         this.appContext = context.getApplicationContext();
@@ -41,6 +41,11 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
     @Override
     public boolean isDebug() {
         return delegate != null && delegate.isDebug();
+    }
+
+    @Override
+    public boolean isVpnNetworkLogEnabled() {
+        return delegate != null && delegate.isVpnNetworkLogEnabled();
     }
 
     @NonNull
@@ -224,13 +229,6 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
     }
 
     @Override
-    public void onShareFile(@NonNull Context context, @NonNull String filePath) {
-        if (delegate != null) {
-            delegate.onShareFile(context, filePath);
-        }
-    }
-
-    @Override
     public void onConsoleShow() {
         if (delegate != null) {
             delegate.onConsoleShow();
@@ -242,5 +240,13 @@ public class InternalDefaultShowLogProvider implements ShowLogProvider {
         if (delegate != null) {
             delegate.onConsoleDismiss();
         }
+    }
+
+    /**
+     * 释放 SDK 自建线程池。
+     * 为什么这样做：宿主重复初始化时旧 Provider 不再被使用，主动回收默认线程池可避免残留后台线程和任务。
+     */
+    public void release() {
+        defaultExecutor.shutdownNow();
     }
 }

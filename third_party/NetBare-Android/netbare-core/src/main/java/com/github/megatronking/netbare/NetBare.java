@@ -56,6 +56,10 @@ public final class NetBare {
 
     private Application mApp;
     private NetBareConfig mNetBareConfig;
+    /**
+     * 为什么这样做：显式保存实际 Service 类型后，启动和停止都不再依赖包内隐式 Intent，可兼容 Android 高版本组件启动限制。
+     */
+    private Class<? extends NetBareService> mServiceClass;
 
     private boolean mAlive;
 
@@ -78,6 +82,23 @@ public final class NetBare {
     public NetBare attachApplication(@NonNull Application application, boolean debug) {
         mApp = application;
         NetBareLog.setDebug(debug);
+        return this;
+    }
+
+    /**
+     * Attach an application and the concrete NetBare service class.
+     * 为什么这样做：保留旧重载保证已有调用方兼容，新重载让 SDK 可以使用显式 Intent 安全管理服务。
+     *
+     * @param application The application instance.
+     * @param debug Should print logs in console.
+     * @param serviceClass The concrete NetBare service class.
+     * @return The single instance of NetBare.
+     */
+    public NetBare attachApplication(@NonNull Application application,
+                                     boolean debug,
+                                     @NonNull Class<? extends NetBareService> serviceClass) {
+        attachApplication(application, debug);
+        mServiceClass = serviceClass;
         return this;
     }
 
@@ -108,8 +129,7 @@ public final class NetBare {
             throw new RuntimeException("Must set address in NetBareConfig");
         }
         mNetBareConfig = config;
-        Intent intent = new Intent(NetBareService.ACTION_START);
-        intent.setPackage(mApp.getPackageName());
+        Intent intent = createServiceIntent(NetBareService.ACTION_START);
         ContextCompat.startForegroundService(mApp, intent);
     }
 
@@ -118,8 +138,12 @@ public final class NetBare {
      * {@link NetBareListener#onServiceStopped()} will be invoked.
      */
     public void stop() {
-        Intent intent = new Intent(NetBareService.ACTION_STOP);
-        intent.setPackage(mApp.getPackageName());
+        Intent intent = createServiceIntent(NetBareService.ACTION_STOP);
+        if (mServiceClass != null) {
+            // 为什么这样做：停止已运行服务不应再走后台 startService，否则 Android 8+ 可能把“停止动作”本身当成非法后台启动。
+            mApp.stopService(intent);
+            return;
+        }
         mApp.startService(intent);
     }
 
@@ -172,6 +196,25 @@ public final class NetBare {
         for (NetBareListener listener : new LinkedHashSet<>(mListeners)) {
             listener.onServiceStopped();
         }
+    }
+
+    /* package */ void notifyServiceStartFailed(Throwable throwable) {
+        mAlive = false;
+        for (NetBareListener listener : new LinkedHashSet<>(mListeners)) {
+            listener.onServiceStartFailed(throwable);
+        }
+    }
+
+    /**
+     * 构建服务 Intent。
+     * 为什么这样做：新接入优先使用显式组件，旧调用方未提供 Service Class 时仍保留原行为，避免破坏 NetBare 兼容性。
+     */
+    private Intent createServiceIntent(@NonNull String action) {
+        Intent intent = mServiceClass != null
+                ? new Intent(mApp, mServiceClass)
+                : new Intent(action).setPackage(mApp.getPackageName());
+        intent.setAction(action);
+        return intent;
     }
 
 }

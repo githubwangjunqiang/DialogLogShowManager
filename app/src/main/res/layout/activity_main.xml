@@ -31,11 +31,86 @@
         android:textColor="#CBD5E1"
         android:textSize="13sp" />
 
+    <TextView
+        android:id="@+id/tv_capture_app_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_24"
+        android:text="@string/capture_app_title"
+        android:textColor="@color/demo_text_primary"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_current_capture_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:textColor="@color/demo_text_secondary"
+        android:textSize="@dimen/sp_13"
+        tools:text="当前抓包 App：com.example.app" />
+
+    <EditText
+        android:id="@+id/et_capture_app_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_12"
+        android:autofillHints="none"
+        android:hint="@string/capture_app_hint"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions"
+        android:maxLines="1"
+        android:padding="@dimen/dp_12"
+        android:singleLine="true"
+        android:textColor="@color/demo_text_primary"
+        android:textColorHint="@color/demo_text_hint"
+        android:textSize="@dimen/sp_14" />
+
+    <!-- 为什么这样做：这里是两个同等重要的业务操作按钮而非系统对话框 ButtonBar，需要保留实色主次样式。 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_12"
+        android:orientation="horizontal"
+        tools:ignore="ButtonStyle">
+
+        <Button
+            android:id="@+id/btn_select_installed_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_6"
+            android:layout_weight="1"
+            android:backgroundTint="@color/demo_button_secondary"
+            android:text="@string/select_installed_app"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13" />
+
+        <Button
+            android:id="@+id/btn_apply_capture_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:layout_weight="1"
+            android:backgroundTint="@color/demo_button_primary"
+            android:text="@string/apply_capture_app"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_13" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_capture_app_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:text="@string/capture_app_empty_hint"
+        android:textColor="@color/demo_text_hint"
+        android:textSize="@dimen/sp_12" />
+
     <Button
         android:id="@+id/btn_open_console"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="@dimen/dp_24"
         android:backgroundTint="#3B82F6"
         android:text="@string/app_demo_btn_open_console"
         android:textColor="#FFFFFF"

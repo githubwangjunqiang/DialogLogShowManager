@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.model.VpnTrafficLogModel;
 import com.xq.dialoglogshow.storage.entity.VpnTrafficLogEntity;
 
@@ -32,7 +32,10 @@ public class VpnTrafficLogRepository {
     private final CopyOnWriteArrayList<VpnTrafficLogModel> mMemoryLogs = new CopyOnWriteArrayList<>();
     private final ExecutorService mDatabaseExecutor = Executors.newSingleThreadExecutor();
     private final VpnTrafficLogMapper mMapper = new VpnTrafficLogMapper();
-    private VpnTrafficLogStore mTrafficLogStore;
+    /**
+     * 为什么这样做：新增公开异步查询后，查询线程可能和单线程写入队列同时首次访问数据库，volatile 配合锁可避免重复创建 Store。
+     */
+    private volatile VpnTrafficLogStore mTrafficLogStore;
 
     private VpnTrafficLogRepository() {
     }
@@ -49,11 +52,11 @@ public class VpnTrafficLogRepository {
         return sInstance;
     }
 
-    private void ensureStore() {
+    private synchronized void ensureStore() {
         if (mTrafficLogStore != null) {
             return;
         }
-        Context application = ShowLogManager.getInstance().getApplication();
+        Context application = ShowLog.getApplicationInternal();
         if (application == null) {
             throw new IllegalStateException("ShowLog application is null, repository cannot be initialized.");
         }
@@ -90,12 +93,50 @@ public class VpnTrafficLogRepository {
     }
 
     /**
+     * 获取指定 App 的实时内存快照。
+     * 为什么这样做：多 App 模式下实时页和历史页必须使用相同包名语义，避免实时列表仍混入其它目标流量。
+     */
+    @NonNull
+    public ArrayList<VpnTrafficLogModel> getRealtimeLogsByApp(
+            @NonNull String appPackageName) {
+        ArrayList<VpnTrafficLogModel> result = new ArrayList<>();
+        for (VpnTrafficLogModel model : mMemoryLogs) {
+            if (appPackageName.equals(model.appPackageName)) {
+                result.add(model);
+            }
+        }
+        return result;
+    }
+
+    /**
      * 按时间范围查询历史日志
      */
     @NonNull
     public ArrayList<VpnTrafficLogModel> queryLogsByRange(long startTime, long endTime) {
         ensureStore();
         List<VpnTrafficLogEntity> entityList = mTrafficLogStore.queryByTimeRange(startTime, endTime);
+        ArrayList<VpnTrafficLogModel> modelList = new ArrayList<>();
+        for (VpnTrafficLogEntity entity : entityList) {
+            modelList.add(mMapper.toModel(entity));
+        }
+        return modelList;
+    }
+
+    /**
+     * 按 App 与时间范围查询历史日志。
+     */
+    @NonNull
+    public ArrayList<VpnTrafficLogModel> queryLogsByAppAndRange(
+            @NonNull String appPackageName,
+            long startTime,
+            long endTime) {
+        ensureStore();
+        List<VpnTrafficLogEntity> entityList =
+                mTrafficLogStore.queryByAppAndTimeRange(
+                        appPackageName,
+                        startTime,
+                        endTime
+                );
         ArrayList<VpnTrafficLogModel> modelList = new ArrayList<>();
         for (VpnTrafficLogEntity entity : entityList) {
             modelList.add(mMapper.toModel(entity));

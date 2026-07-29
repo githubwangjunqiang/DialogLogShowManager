@@ -16,7 +16,7 @@ import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.dialog.DialogShowLogInfo;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.config.ShowLogProvider;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.utils.ClipboardUtils;
 import com.xq.dialoglogshow.utils.DateUtils;
 import com.xq.dialoglogshow.utils.ShareUtils;
@@ -333,7 +333,7 @@ class MyViewHolderHttpChild extends RecyclerView.ViewHolder {
         super(itemView);
         mBigTextView = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_tvbig);
         viewDelete = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_delete);
-        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        ShowLogProvider provider = ShowLog.getProvider();
         View viewById = itemView.findViewById(R.id.show_sdk_id_dialog_http_log_root);
         if (viewById != null && viewById.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewById.getLayoutParams();

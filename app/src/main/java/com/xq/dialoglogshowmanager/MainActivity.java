@@ -1,22 +1,32 @@
 package com.xq.dialoglogshowmanager;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Keep;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.collector.vpn.VpnController;
 import com.xq.dialoglogshow.collector.vpn.VpnStatusManager;
 import com.xq.dialoglogshow.dialog.DialogShowLog;
+import com.xq.dialoglogshowmanager.ui.entity.InstalledAppInfo;
+import com.xq.dialoglogshowmanager.ui.utils.InstalledAppLoader;
 
 /**
  * Description: SDK Demo 宿主主页面
@@ -26,10 +36,17 @@ import com.xq.dialoglogshow.dialog.DialogShowLog;
  * Author: 王俊强 980766134@qq.com
  * Date: 2026/07/22
  */
+@Keep
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final long THROTTLE_INTERVAL_MS = 500L;
+    /**
+     * 为什么这样做：applicationId 至少需要两个合法标识符片段，先在 Demo 层阻止明显错误输入可避免开发者误以为 VPN 已切换成功。
+     */
+    private static final Pattern APPLICATION_ID_PATTERN = Pattern.compile(
+            "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+    );
     /**
      * 为什么这样做：通过 adb 启动 demo 时，需要一套稳定的参数来自动拉起 VPN/证书安装/测试请求，避免每轮真机联调都依赖手工点界面。
      */
@@ -63,6 +80,20 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     private long lastClickTime = 0L;
+    /**
+     * 为什么这样做：安装列表项与外层按钮使用独立防抖时间，避免列表加载很快时第一次正常选择被按钮点击时间误拦截。
+     */
+    private long mLastAppSelectionTime;
+    /**
+     * 为什么这样做：动态目标在选择、确认和结果刷新之间需要共享同一个输入控件，保存 View 引用比重复查找更清晰。
+     */
+    private EditText mCaptureAppInput;
+    private TextView mCurrentCaptureAppText;
+    private Button mSelectInstalledAppButton;
+    /**
+     * 为什么这样做：安装列表异步返回时 Activity 可能已经进入后台，只有处于 started 状态才允许创建窗口，避免 Window 泄漏。
+     */
+    private boolean mActivityStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +106,28 @@ public class MainActivity extends AppCompatActivity {
         Button btnTestGet = findViewById(R.id.btn_test_get);
         Button btnTestPost = findViewById(R.id.btn_test_post);
         Button btnTestError = findViewById(R.id.btn_test_error);
+        mCaptureAppInput = findViewById(R.id.et_capture_app_id);
+        mCurrentCaptureAppText = findViewById(R.id.tv_current_capture_app);
+        mSelectInstalledAppButton = findViewById(R.id.btn_select_installed_app);
+        Button applyCaptureAppButton = findViewById(R.id.btn_apply_capture_app);
 
         // 为什么这样做：真机验证最容易失败在“请求发早了、VPN 还没开”，因此首页直接把验证顺序展示出来，降低你手动排查成本。
         tvVpnGuide.setText(getString(R.string.app_demo_vpn_verify_guide));
+        initializeCaptureAppSection();
+
+        mSelectInstalledAppButton.setOnClickListener(view -> {
+            if (isFastDoubleClick()) {
+                return;
+            }
+            loadAndShowInstalledApps();
+        });
+
+        applyCaptureAppButton.setOnClickListener(view -> {
+            if (isFastDoubleClick()) {
+                return;
+            }
+            applyCaptureApp();
+        });
 
         // 手动唤起调试控制台 (防抖 500ms)
         btnOpenConsole.setOnClickListener(v -> {
@@ -194,6 +244,184 @@ public class MainActivity extends AppCompatActivity {
         handleAutomationIntent(getIntent());
     }
 
+    /**
+     * 初始化动态抓包区域。
+     * 为什么这样做：SDK 返回的是“宿主 + 额外目标”最终集合，Demo 输入框只展示额外目标，避免用户误删永远生效的宿主包。
+     */
+    private void initializeCaptureAppSection() {
+        Set<String> effectivePackages = ShowLog.getVpnCapturePackageNames();
+        String hostPackageName = getPackageName();
+        String extraPackageName = null;
+        for (String packageName : effectivePackages) {
+            if (!hostPackageName.equals(packageName)) {
+                extraPackageName = packageName;
+                break;
+            }
+        }
+        if (extraPackageName != null) {
+            mCaptureAppInput.setText(extraPackageName);
+            mCaptureAppInput.setSelection(extraPackageName.length());
+        }
+        refreshCurrentCaptureApps();
+    }
+
+    /**
+     * 确认并动态切换抓包目标。
+     * 为什么这样做：留空代表恢复默认宿主，输入或选择包名则通过 SDK 唯一公开 API 更新，确保 Demo 不依赖内部 VPN 管理器。
+     */
+    private void applyCaptureApp() {
+        String packageName = mCaptureAppInput.getText().toString().trim();
+        if (!packageName.isEmpty()
+                && !APPLICATION_ID_PATTERN.matcher(packageName).matches()) {
+            mCaptureAppInput.setError(getString(R.string.invalid_application_id));
+            mCaptureAppInput.requestFocus();
+            return;
+        }
+        try {
+            if (!packageName.isEmpty()
+                    && !InstalledAppLoader.isInstalled(this, packageName)) {
+                mCaptureAppInput.setError(
+                        getString(R.string.application_id_not_installed)
+                );
+                mCaptureAppInput.requestFocus();
+                return;
+            }
+            ShowLog.setVpnCapturePackageNames(
+                    packageName.isEmpty()
+                            ? Collections.emptySet()
+                            : Collections.singleton(packageName)
+            );
+            refreshCurrentCaptureApps();
+            Toast.makeText(
+                    this,
+                    getString(
+                            R.string.capture_app_apply_success,
+                            formatEffectivePackages()
+                    ),
+                    Toast.LENGTH_SHORT
+            ).show();
+        } catch (RuntimeException exception) {
+            String reason = exception.getMessage() != null
+                    ? exception.getMessage()
+                    : exception.getClass().getSimpleName();
+            Toast.makeText(
+                    this,
+                    getString(R.string.capture_app_apply_failed, reason),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    /**
+     * 在后台读取可选 App，完成后展示单选列表。
+     * 为什么这样做：PackageManager 查询和本地化排序不应阻塞主线程，按钮临时禁用还能防止重复创建并发加载任务。
+     */
+    private void loadAndShowInstalledApps() {
+        mSelectInstalledAppButton.setEnabled(false);
+        mSelectInstalledAppButton.setText(R.string.loading_installed_apps);
+        new Thread(() -> {
+            try {
+                List<InstalledAppInfo> installedApps =
+                        InstalledAppLoader.load(getApplicationContext());
+                runOnUiThread(() -> {
+                    restoreInstalledAppButton();
+                    if (!mActivityStarted || isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    showInstalledAppPicker(installedApps);
+                });
+            } catch (RuntimeException exception) {
+                runOnUiThread(() -> {
+                    restoreInstalledAppButton();
+                    if (!mActivityStarted || isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    String reason = exception.getMessage() != null
+                            ? exception.getMessage()
+                            : exception.getClass().getSimpleName();
+                    Toast.makeText(
+                            this,
+                            getString(R.string.installed_app_list_failed, reason),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+            }
+        }, "ShowLog-AppPicker").start();
+    }
+
+    /**
+     * 展示已安装 App 单选列表。
+     * 为什么这样做：同时显示名称和 applicationId，既方便用户识别，也能让开发者核对最终传入 SDK 的真实值。
+     */
+    private void showInstalledAppPicker(List<InstalledAppInfo> installedApps) {
+        if (installedApps.isEmpty()) {
+            Toast.makeText(
+                    this,
+                    R.string.installed_app_list_empty,
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+        String[] displayItems = new String[installedApps.size()];
+        for (int index = 0; index < installedApps.size(); index++) {
+            InstalledAppInfo appInfo = installedApps.get(index);
+            displayItems[index] = appInfo.appName + "\n" + appInfo.packageName;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.installed_app_picker_title)
+                .setItems(displayItems, (dialog, which) -> {
+                    if (isAppSelectionFastDoubleClick()) {
+                        return;
+                    }
+                    String packageName = installedApps.get(which).packageName;
+                    mCaptureAppInput.setText(packageName);
+                    mCaptureAppInput.setSelection(packageName.length());
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    /**
+     * 恢复安装列表按钮。
+     * 为什么这样做：成功、空列表和异常都必须回收加载态，否则一次失败后用户将无法重试。
+     */
+    private void restoreInstalledAppButton() {
+        mSelectInstalledAppButton.setEnabled(true);
+        mSelectInstalledAppButton.setText(R.string.select_installed_app);
+    }
+
+    /**
+     * 刷新 SDK 当前最终抓包范围。
+     */
+    private void refreshCurrentCaptureApps() {
+        mCurrentCaptureAppText.setText(
+                getString(
+                        R.string.current_capture_app,
+                        formatEffectivePackages()
+                )
+        );
+    }
+
+    /**
+     * 格式化最终包名集合。
+     * 为什么这样做：直接展示 SDK 返回值可以让用户确认宿主 App 始终存在，避免误解输入目标会替换默认宿主。
+     */
+    private String formatEffectivePackages() {
+        return TextUtils.join(", ", ShowLog.getVpnCapturePackageNames());
+    }
+
+    /**
+     * 安装列表项点击防抖。
+     */
+    private boolean isAppSelectionFastDoubleClick() {
+        long currentTime = SystemClock.elapsedRealtime();
+        if (currentTime - mLastAppSelectionTime < THROTTLE_INTERVAL_MS) {
+            return true;
+        }
+        mLastAppSelectionTime = currentTime;
+        return false;
+    }
+
     @Override
     protected void onNewIntent(android.content.Intent intent) {
         super.onNewIntent(intent);
@@ -204,11 +432,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        mActivityStarted = true;
         VpnStatusManager.getInstance().addStatusListener(mVpnStatusListener);
     }
 
     @Override
     protected void onStop() {
+        mActivityStarted = false;
         VpnStatusManager.getInstance().removeStatusListener(mVpnStatusListener);
         super.onStop();
     }

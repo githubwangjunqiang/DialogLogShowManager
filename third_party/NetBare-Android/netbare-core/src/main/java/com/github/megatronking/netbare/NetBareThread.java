@@ -56,6 +56,10 @@ import java.util.Map;
 	private FileOutputStream output;
 
 	private PacketsTransfer packetsTransfer;
+	/**
+	 * 为什么这样做：只有虚拟网卡和代理都真正就绪后才广播 started，避免构建失败时上层短暂显示 RUNNING。
+	 */
+	private boolean serviceStartedNotified;
 
 	/* package */ NetBareThread(VpnService vpnService, NetBareConfig config) {
 		super("NetBare");
@@ -66,7 +70,7 @@ import java.util.Map;
 	@Override
 	public void interrupt() {
 		super.interrupt();
-		packetsTransfer.stop();
+		// 为什么这样做：关闭描述符足以唤醒阻塞读，代理集合统一由工作线程 finally 回收可避免和初始化过程并发修改。
 		NetBareUtils.closeQuietly(vpnDescriptor);
 		NetBareUtils.closeQuietly(input);
 		NetBareUtils.closeQuietly(output);
@@ -75,23 +79,43 @@ import java.util.Map;
 	@Override
 	public void run() {
 		super.run();
-
-        // Notify NetBareListener that the service is started now.
-		NetBare.get().notifyServiceStarted();
-
 		try {
 			packetsTransfer = new PacketsTransfer(mVpnService, mConfig);
-		} catch (IOException e) {
-			NetBareLog.wtf(e);
-		}
-		if (packetsTransfer != null) {
+			if (isInterrupted()) {
+				return;
+			}
 			// Establish VPN, it runs a while loop unless failed.
 			establishVpn(packetsTransfer);
+		} catch (IOException e) {
+			NetBareLog.wtf(e);
+			notifyStartFailureIfNeed(e);
+		} catch (RuntimeException e) {
+			// 为什么这样做：Builder.establish 在授权失效、配置非法或系统限制下可能抛运行时异常，必须退出前台服务并把失败传给 SDK。
+			NetBareLog.wtf(e);
+			notifyStartFailureIfNeed(e);
+		} finally {
+			if (packetsTransfer != null) {
+				packetsTransfer.stop();
+			}
+			NetBareUtils.closeQuietly(vpnDescriptor);
+			NetBareUtils.closeQuietly(input);
+			NetBareUtils.closeQuietly(output);
+			if (serviceStartedNotified) {
+				NetBare.get().notifyServiceStopped();
+			}
 		}
+	}
 
-		// Notify NetBareListener that the service is stopped now.
-		NetBare.get().notifyServiceStopped();
-
+	/**
+	 * Report a failure that happened before the VPN became usable.
+	 * 为什么这样做：线程层初始化失败不会回到 Service 的 try/catch，必须在这里结束前台服务并恢复上层 ERROR 状态。
+	 */
+	private void notifyStartFailureIfNeed(Throwable throwable) {
+		if (serviceStartedNotified || isInterrupted()) {
+			return;
+		}
+		NetBare.get().notifyServiceStartFailed(throwable);
+		mVpnService.stopSelf();
 	}
 
 	private void establishVpn(PacketsTransfer packetsTransfer) {
@@ -111,34 +135,48 @@ import java.util.Map;
 		for (String address : mConfig.dnsServers) {
 			builder.addDnsServer(address);
 		}
-		try {
-			for (String packageName : mConfig.allowedApplications) {
+		for (String packageName : mConfig.allowedApplications) {
+			try {
 				builder.addAllowedApplication(packageName);
+			} catch (PackageManager.NameNotFoundException e) {
+				// 为什么这样做：单个动态目标未安装时只跳过该包，不能让后续有效目标和宿主 App 一起失效。
+				NetBareLog.wtf(e);
 			}
-			for (String packageName : mConfig.disallowedApplications) {
+		}
+		for (String packageName : mConfig.disallowedApplications) {
+			try {
 				builder.addDisallowedApplication(packageName);
+			} catch (PackageManager.NameNotFoundException e) {
+				NetBareLog.wtf(e);
 			}
-			// Add self to allowed list.
-			if (!mConfig.allowedApplications.isEmpty()) {
+		}
+		// Add self to allowed list.
+		if (!mConfig.allowedApplications.isEmpty()
+				&& !mConfig.allowedApplications.contains(mVpnService.getPackageName())) {
+			try {
 				builder.addAllowedApplication(mVpnService.getPackageName());
+			} catch (PackageManager.NameNotFoundException e) {
+				NetBareLog.wtf(e);
 			}
-		} catch (PackageManager.NameNotFoundException e) {
-			NetBareLog.wtf(e);
 		}
 		vpnDescriptor = builder.establish();
 		if (vpnDescriptor == null) {
-			return;
+			// 为什么这样做：系统未建立出虚拟网卡时不能让前台服务空转，转为失败才能让 SDK 状态和通知及时收敛。
+			throw new IllegalStateException("VpnService.Builder.establish() returned null.");
 		}
 
 		// Open io with the VPN descriptor.
 		FileDescriptor descriptor = vpnDescriptor.getFileDescriptor();
 		if (descriptor == null) {
-			return;
+			throw new IllegalStateException("VPN file descriptor is null.");
 		}
 		input = new FileInputStream(descriptor);
 		output = new FileOutputStream(descriptor);
 
 		packetsTransfer.start();
+		serviceStartedNotified = true;
+		// 为什么这样做：只有虚拟网卡、文件流和代理服务器全部就绪后，SDK 的 RUNNING 状态才代表真实可抓包。
+		NetBare.get().notifyServiceStarted();
 
 		try {
 			// Read packets from input io and forward them to proxy servers.

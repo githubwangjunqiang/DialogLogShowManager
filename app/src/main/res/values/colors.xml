@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- 为什么这样做：新增动态抓包区域统一使用语义色，后续调整 Demo 主题时不需要逐个修改布局。 -->
+    <color name="demo_text_primary">#FFF8FAFC</color>
+    <color name="demo_text_secondary">#FFCBD5E1</color>
+    <color name="demo_text_hint">#FF94A3B8</color>
+    <color name="demo_button_primary">#FF2563EB</color>
+    <color name="demo_button_secondary">#FF475569</color>
 </resources>

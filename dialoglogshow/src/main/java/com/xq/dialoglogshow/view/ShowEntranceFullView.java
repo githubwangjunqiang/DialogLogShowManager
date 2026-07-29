@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
 import com.xq.dialoglogshow.config.ShowLogProvider;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
@@ -99,7 +99,7 @@ public class ShowEntranceFullView extends View {
 
     private void initData(Context context) {
         AppVersionCode = AppUtils.getAppVersionCode(context, context.getPackageName()) + "";
-        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        ShowLogProvider provider = ShowLog.getProvider();
         RectF debugViewSize = provider.getDebugViewSize();
         if (debugViewSize != null) {
             sizeWidth = (int) debugViewSize.width();

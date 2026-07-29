@@ -3,6 +3,9 @@
     <!-- 为了遵循用户可见文本禁止硬编码规范，定义通用弹窗按钮文案与标题资源 -->
     <string name="show_sdk_close">关闭</string>
     <string name="show_sdk_share">分享</string>
+    <string name="show_sdk_share_log_file">分享日志文件</string>
+    <string name="show_sdk_share_file_not_found">日志文件不存在，无法分享</string>
+    <string name="show_sdk_share_file_failed">日志文件分享失败</string>
     <string name="show_sdk_back">上一级</string>
     <string name="show_sdk_delete">删除</string>
     <string name="show_sdk_delete_failed">删除失败</string>
@@ -71,6 +74,7 @@
     <string name="show_sdk_vpn_action_tip">当前 VPN 单方案已切到 NetBare；开发者可先直接开启 VPN 抓取宿主网络，安装调试证书后再升级为 HTTPS 明文抓取。</string>
     <string name="show_sdk_vpn_permission_denied">未授予 VPN 权限</string>
     <string name="show_sdk_vpn_permission_granted">VPN 权限已授予，正在启动</string>
+    <string name="show_sdk_not_initialized">ShowLog SDK 尚未完成初始化，请先调用唯一的 ShowLog.init 方法</string>
     <string name="show_sdk_vpn_establish_failed">VPN 虚拟网卡建立失败</string>
     <string name="show_sdk_vpn_certificate_generating">调试证书仍在准备中，请稍候几秒后再次开启 VPN。</string>
     <string name="show_sdk_vpn_certificate_required">需要先安装调试证书后，SDK 才能抓取 HTTPS 明文与完整 HTTP 详情。</string>
@@ -80,6 +84,7 @@
     <string name="show_sdk_vpn_notification_title">ShowLog VPN 调试中</string>
     <string name="show_sdk_vpn_notification_text">VPN 网络日志骨架服务正在运行</string>
     <string name="show_sdk_vpn_notification_channel_name">ShowLog VPN</string>
+    <string name="show_sdk_vpn_start_failed">VPN 服务启动失败：%1$s</string>
     <string name="show_sdk_vpn_snapshot_none">尚未识别到连接数据</string>
     <string name="show_sdk_vpn_snapshot_label_packets">数据包</string>
     <string name="show_sdk_vpn_snapshot_label_tcp">TCP</string>

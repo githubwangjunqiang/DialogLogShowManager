@@ -39,6 +39,9 @@ public class ShowLogVpnService extends NetBareService {
                 .setContentText(getString(R.string.show_sdk_vpn_notification_text))
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
+                // 为什么这样做：低优先级且明确标记为服务通知，既满足 FGS 可见性要求，又避免调试 VPN产生打扰性提示。
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .build();
     }
 

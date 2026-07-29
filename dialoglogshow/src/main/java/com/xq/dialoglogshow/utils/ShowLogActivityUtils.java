@@ -17,7 +17,7 @@ import android.graphics.RectF;
 import com.xq.dialoglogshow.collector.vpn.VpnHealthMonitor;
 import com.xq.dialoglogshow.config.ShowLogProvider;
 import com.xq.dialoglogshow.dialog.DialogShowLog;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.view.ShowEntranceFullView;
 import com.xq.dialoglogshow.view.ShowEntranceFullViewVerSion;
 
@@ -136,7 +136,7 @@ public class ShowLogActivityUtils implements Application.ActivityLifecycleCallba
 
     private static View loadFullView(Activity activity, View root) {
         View fullView;
-        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        ShowLogProvider provider = ShowLog.getProvider();
         View customView = provider.getCustomEntranceView(activity);
         if (customView != null) {
             fullView = customView;

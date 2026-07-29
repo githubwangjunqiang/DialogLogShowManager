@@ -6,7 +6,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 
 /**
  * VPN 健康检查监视器
@@ -28,7 +28,7 @@ public final class VpnHealthMonitor {
     private final Runnable mHealthCheckRunnable = new Runnable() {
         @Override
         public void run() {
-            Context appContext = ShowLogManager.getInstance().getApplication();
+            Context appContext = ShowLog.getApplicationInternal();
             if (appContext == null) {
                 return;
             }
@@ -88,7 +88,8 @@ public final class VpnHealthMonitor {
      */
     public void onAppBackground(@NonNull Context context) {
         mAppInForeground = false;
-        refresh(context);
+        // 为什么这样做：Android 12+ 不允许普通后台状态反复拉起前台服务；已运行 VPN 自行维持，恢复动作延迟到下次回前台。
+        stopPolling();
     }
 
     /**
@@ -105,15 +106,14 @@ public final class VpnHealthMonitor {
     }
 
     private boolean shouldKeepMonitoring(@NonNull Context context) {
-        if (!ShowLogManager.getInstance().isVpnNetworkLogEnabled()) {
+        if (!ShowLog.isVpnNetworkLogEnabledInternal()) {
             return false;
         }
         if (!VpnSessionStore.isUserEnabled(context)) {
             return false;
         }
-        // 为什么这样做：用户已经明确要求保持 VPN 开启时，即使应用退到后台，也需要继续巡检；
-        // 否则后台阶段一旦 VPN 被系统回收，就只能等到用户重新回前台才会恢复，仍然会漏掉关键日志。
-        return true;
+        // 为什么这样做：前台可见状态是 Android 12+ 最稳定的 FGS 启动窗口，后台只保留已运行服务，不再主动恢复。
+        return mAppInForeground;
     }
 
     private void startPolling() {

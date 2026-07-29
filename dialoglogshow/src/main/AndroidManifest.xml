@@ -23,8 +23,32 @@
         android:maxSdkVersion="28"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- 为什么这样做：Android 14 起 VPN 前台服务必须声明与 systemExempted 类型匹配的专用权限，否则宿主 target 34+ 时会在提升前台服务阶段失败。 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
 
+    <!-- 该 queries 配置由宿主接入需求维护，VPN 动态包名能力只消费查询结果，不在运行时改写 Manifest。 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
     <application>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.dialoglogshow.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <!-- 为什么这样做：仅暴露 SDK 自己复制出的分享缓存，避免把宿主任意文件目录授权给外部应用。 -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/show_sdk_file_paths" />
+        </provider>
+
         <activity
             android:name=".activity.VpnPermissionActivity"
             android:excludeFromRecents="true"
@@ -34,15 +58,23 @@
         <activity
             android:name=".activity.FileShareActivity"
             android:exported="false" />
+
         <service
             android:name=".collector.vpn.tunnel.ShowLogVpnService"
             android:exported="false"
-            android:permission="android.permission.BIND_VPN_SERVICE">
+            android:foregroundServiceType="systemExempted"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            tools:ignore="ForegroundServicePermission">
+            <!-- 为什么这样做：Lint 无法静态识别“已由用户授权配置的 VPN”这一 systemExempted 合法条件，因此只抑制误报，绝不额外申请无关的精确闹钟权限。 -->
             <intent-filter>
                 <action android:name="android.net.VpnService" />
                 <action android:name="com.github.megatronking.netbare.action.Start" />
                 <action android:name="com.github.megatronking.netbare.action.Stop" />
             </intent-filter>
+            <!-- 为什么这样做：当前 VPN 配置依赖进程内证书和拦截器，系统在进程重建后无法独立恢复，因此不能错误宣称支持 Always-on。 -->
+            <meta-data
+                android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
+                android:value="false" />
         </service>
     </application>
 

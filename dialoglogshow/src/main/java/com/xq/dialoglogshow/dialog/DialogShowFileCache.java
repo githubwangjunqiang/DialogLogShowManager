@@ -16,7 +16,7 @@ import com.xq.dialoglogshow.activity.ReaderTxtDialog;
 import com.xq.dialoglogshow.adapter.MyAdapter;
 import com.xq.dialoglogshow.adapter.cache_log.MyAdapterCacheFileAdapter;
 import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.utils.MyItemDecoration;
 import com.xq.dialoglogshow.utils.ShareUtils;
 import com.xq.dialoglogshow.utils.ShowTask;
@@ -94,7 +94,7 @@ public class DialogShowFileCache extends Dialog {
                     addPath(data.path);
                 } else {
                     // 文件：优先调用 Provider 响应事件
-                    ShowLogManager.getInstance().getProvider().onOpenTextFile(data.path);
+                    ShowLog.getProvider().onOpenTextFile(data.path);
                     new ReaderTxtDialog(getContext(), data.path).show();
                 }
 

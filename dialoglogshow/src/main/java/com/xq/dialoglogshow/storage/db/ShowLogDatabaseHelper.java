@@ -1,6 +1,7 @@
 package com.xq.dialoglogshow.storage.db;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -16,7 +17,7 @@ import androidx.annotation.NonNull;
 public class ShowLogDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "show_log_debug.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public ShowLogDatabaseHelper(@NonNull Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,10 +29,44 @@ public class ShowLogDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(VpnTrafficLogTable.CREATE_INDEX_TIMESTAMP_SQL);
         db.execSQL(VpnTrafficLogTable.CREATE_INDEX_HOST_SQL);
         db.execSQL(VpnTrafficLogTable.CREATE_INDEX_PROTOCOL_SQL);
+        db.execSQL(VpnTrafficLogTable.CREATE_INDEX_APP_TIMESTAMP_SQL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // 为什么这样做：SDK 侧禁止 silently drop 表重建，一期先保留空实现，后续版本升级必须在这里显式追加迁移逻辑。
+        if (oldVersion < 2) {
+            // 为什么这样做：部分早期数据库可能与当前 version=1 表定义不一致，先查列再迁移可同时兼容“已有字段”和“旧表缺字段”两种安装状态。
+            if (!hasColumn(db, VpnTrafficLogTable.TABLE_NAME,
+                    VpnTrafficLogTable.COLUMN_APP_PACKAGE_NAME)) {
+                db.execSQL(
+                        "ALTER TABLE " + VpnTrafficLogTable.TABLE_NAME
+                                + " ADD COLUMN "
+                                + VpnTrafficLogTable.COLUMN_APP_PACKAGE_NAME
+                                + " TEXT"
+                );
+            }
+            db.execSQL(VpnTrafficLogTable.CREATE_INDEX_APP_TIMESTAMP_SQL);
+        }
+    }
+
+    /**
+     * 检查旧表是否已有目标列。
+     * 为什么这样做：SQLite 旧版本不支持通用的 ADD COLUMN IF NOT EXISTS，只能通过 PRAGMA 安全判断并确保 Cursor 总是释放。
+     */
+    private boolean hasColumn(SQLiteDatabase db,
+                              @NonNull String tableName,
+                              @NonNull String columnName) {
+        Cursor cursor = db.rawQuery("PRAGMA table_info(" + tableName + ")", null);
+        try {
+            int nameColumnIndex = cursor.getColumnIndexOrThrow("name");
+            while (cursor.moveToNext()) {
+                if (columnName.equals(cursor.getString(nameColumnIndex))) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            cursor.close();
+        }
     }
 }

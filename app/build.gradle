@@ -8,12 +8,12 @@ configurations.configureEach {
 }
 
 android {
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.xq.dialoglogshowmanager"
         minSdk 23
-        targetSdk 33
+        targetSdk 35
         versionCode 15
         versionName "3.2.1"
 

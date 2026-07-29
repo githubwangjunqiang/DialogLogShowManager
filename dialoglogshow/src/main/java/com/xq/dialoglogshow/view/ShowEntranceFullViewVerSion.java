@@ -20,7 +20,7 @@ import android.widget.TextView;
 import androidx.core.util.Pair;
 
 import com.xq.dialoglogshow.config.ShowLogProvider;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
@@ -101,7 +101,7 @@ public class ShowEntranceFullViewVerSion extends androidx.appcompat.widget.AppCo
     private Path mPath = new Path();
 
     private void initData(Context context) {
-        ShowLogProvider provider = ShowLogManager.getInstance().getProvider();
+        ShowLogProvider provider = ShowLog.getProvider();
         RectF debugViewSize = provider.getDebugViewSize();
         if (debugViewSize != null) {
             minWidth = (int) debugViewSize.width();

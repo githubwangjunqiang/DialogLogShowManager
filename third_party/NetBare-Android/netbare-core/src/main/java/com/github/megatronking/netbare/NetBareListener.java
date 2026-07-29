@@ -35,4 +35,13 @@ public interface NetBareListener {
      */
     void onServiceStopped();
 
+    /**
+     * 前台提升或 VPN 配置初始化失败时回调。
+     * 为什么这样做：高版本系统会在 Service 内部校验前台类型和权限，只有把异常回传给上层，SDK 才能展示可诊断状态而不是静默停止。
+     *
+     * @param throwable 服务启动失败原因
+     */
+    default void onServiceStartFailed(Throwable throwable) {
+    }
+
 }

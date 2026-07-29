@@ -32,7 +32,7 @@ import com.xq.dialoglogshow.config.VpnPayloadDecryptor;
 import com.xq.dialoglogshow.entity.BaseShowData;
 import com.xq.dialoglogshow.entity.HttpLogData;
 import com.xq.dialoglogshow.entity.PushData;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.model.VpnTrafficLogModel;
 import com.xq.dialoglogshow.utils.AppUtils;
 import com.xq.dialoglogshow.utils.DateUtils;
@@ -124,7 +124,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
         mMyAdapter.mClickAdapter = new MyAdapter.ClickAdapter() {
             @Override
             public void clickDeleteHttpLog(BaseShowData data, int position) {
-                boolean b = ShowLogManager.getInstance().getProvider().onDeleteHttpLog(data);
+                boolean b = ShowLog.getProvider().onDeleteHttpLog(data);
                 if (!b) {
                     Toast.makeText(getContext(), R.string.show_sdk_delete_failed, Toast.LENGTH_SHORT).show();
                     return;
@@ -195,7 +195,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 Toast.makeText(getContext(), R.string.show_sdk_clear_data, Toast.LENGTH_SHORT).show();
                 return;
             }
-            boolean b = ShowLogManager.getInstance().getProvider().onClearAllHttpLogs();
+            boolean b = ShowLog.getProvider().onClearAllHttpLogs();
             if (!b) {
                 Toast.makeText(getContext(), R.string.show_sdk_delete_failed, Toast.LENGTH_SHORT).show();
                 return;
@@ -212,7 +212,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
             setting_config.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
 
-            ShowLogManager.getInstance().getProvider().setupCustomTab(setting_config, this);
+            ShowLog.getProvider().setupCustomTab(setting_config, this);
 
         });
         //本地key-value
@@ -252,7 +252,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
             @Override
             public void onClick(View view) {
                 //缓存文件夹
-                String cacheDocPath = ShowLogManager.getInstance().getProvider().provideAllCacheDocPath();
+                String cacheDocPath = ShowLog.getProvider().provideAllCacheDocPath();
                 new DialogShowFileCache(getContext(), cacheDocPath).show();
             }
         });
@@ -337,7 +337,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 }
                 
                 // 2. 获取开发者通过回调传入的额外自定义数据，追加到预制信息后面
-                ArrayList<BaseShowData> developerData = ShowLogManager.getInstance().getProvider().provideRestData();
+                ArrayList<BaseShowData> developerData = ShowLog.getProvider().provideRestData();
                 if (developerData != null && !developerData.isEmpty()) {
                     resultList.addAll(developerData);
                 }
@@ -345,14 +345,14 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 return resultList;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     private void loadDataHttp() {
         if (mRecyclerView.getAdapter() != mMyAdapter) {
             mRecyclerView.setAdapter(mMyAdapter);
         }
-        if (ShowLogManager.getInstance().getProvider().isSortUrlForTime()) {
+        if (ShowLog.getProvider().isSortUrlForTime()) {
             loadDataHttpSort();
         } else {
             loadDataHttpOld();
@@ -383,7 +383,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
-                ArrayList<HttpLogData> list = ShowLogManager.getInstance().getProvider()
+                ArrayList<HttpLogData> list = ShowLog.getProvider()
                         .provideHttpLogs(startTime, endTime);
 
                 if (list != null && !list.isEmpty()) {
@@ -436,7 +436,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 return null;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     /**
@@ -465,7 +465,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
             protected ArrayList<BaseShowData> doInBackground(Object[] objects) {
                 long start = startTime;
 
-                ArrayList<HttpLogData> list = ShowLogManager.getInstance().getProvider()
+                ArrayList<HttpLogData> list = ShowLog.getProvider()
                         .provideHttpLogs(start, endTime);
 
                 if (list != null && !list.isEmpty()) {
@@ -490,7 +490,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 return null;
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     /**
@@ -510,7 +510,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<BaseShowData> baseShowData = ShowLogManager.getInstance().getProvider().provideKeyValueData();
+                ArrayList<BaseShowData> baseShowData = ShowLog.getProvider().provideKeyValueData();
                 if (isCancelled()) {
                     return null;
                 }
@@ -523,7 +523,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     /**
@@ -543,7 +543,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<PushData> baseShowData = ShowLogManager.getInstance().getProvider().providePushLogs();
+                ArrayList<PushData> baseShowData = ShowLog.getProvider().providePushLogs();
                 if (isCancelled()) {
                     return null;
                 }
@@ -572,7 +572,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     /**
@@ -593,7 +593,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
 
             @Override
             protected ArrayList<BaseShowData> doInBackground(Object... voids) {
-                ArrayList<BaseShowData> baseShowData = ShowLogManager.getInstance().getProvider().provideUserInfo();
+                ArrayList<BaseShowData> baseShowData = ShowLog.getProvider().provideUserInfo();
                 if (isCancelled()) {
                     return null;
                 }
@@ -606,7 +606,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
                 hideLoading();
             }
         };
-        mAsyncTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mAsyncTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
     }
 
     private void showLoading() {
@@ -857,7 +857,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
             return rawBody;
         }
         // 为什么这样做：解密器能力已经并入 SDK 对外唯一契约 ShowLogProvider，内部统一从 Provider 读取，避免再维护第二套注册入口。
-        VpnPayloadDecryptor vpnPayloadDecryptor = ShowLogManager.getInstance().getProvider().getVpnPayloadDecryptor();
+        VpnPayloadDecryptor vpnPayloadDecryptor = ShowLog.getProvider().getVpnPayloadDecryptor();
         if (vpnPayloadDecryptor == null) {
             return rawBody;
         }
@@ -1160,7 +1160,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
             getWindow().setAttributes(attributes);
         }
         getWindow().setWindowAnimations(R.style.dialog_httplog);
-        ShowLogManager.getInstance().getProvider().onConsoleShow();
+        ShowLog.getProvider().onConsoleShow();
     }
 
     @Override
@@ -1189,7 +1189,7 @@ public class DialogShowLog extends Dialog implements VpnStatusManager.StatusList
         if (mAsyncTask != null) {
             mAsyncTask.cancel(true);
         }
-        ShowLogManager.getInstance().getProvider().onConsoleDismiss();
+        ShowLog.getProvider().onConsoleDismiss();
     }
 
 

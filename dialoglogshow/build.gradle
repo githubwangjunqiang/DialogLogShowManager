@@ -6,19 +6,19 @@ plugins {
 /**
  * 统一在模块内显式维护版本，是为了避免 JitPack 发布阶段动态改源码，导致 tag、源码与产物版本发生漂移。
  */
-version = "5.0.2"
+version = "5.0.4"
 
 /**
  * 这里显式声明发布坐标，是为了让 showlog 与底层 netbare-core 的 POM 依赖保持可预测，便于 JitPack 和本地 Maven 一致解析。
  */
-def PUBLISH_GROUP_ID = "com.tasow.showlog"
+def PUBLISH_GROUP_ID = "com.xq.showlog"
 def PUBLISH_ARTIFACT_ID = "showlog"
 android {
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
+        targetSdk 35
 
 //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -61,52 +61,6 @@ afterEvaluate {
     version = project.version
 
     publishing {
-        repositories {
-
-//            handler.mavenLocal()
-//            handler.maven {
-//                url "D:\\as\\maven\\sdk"
-//            }
-            it.maven {
-                url = "/Users/songguo77/AndroidStudioProjects/DialogLogShowManager/repo"
-//                url = "/Users/songguo77/AndroidStudioProjects/tasow-android/repo"
-                name = "本地"
-            }
-            it.maven {
-                url = "/Users/songguo77/AndroidStudioProjects/YangBo/repo"
-                name = "杨波"
-            }
-            it.maven {
-                url = "/Users/songguo77/AndroidStudioProjects/ShuDong/repo"
-                name = "树洞"
-            }
-//             仓库用户名密码
-//            it.maven { MavenArtifactRepository mavenArtifactRepository ->
-//                // maven 仓库地址
-//                allowInsecureProtocol = true
-//                name = "远程"
-//                url = 'http://adt-nexus/repository/gpplay/'
-//                // 访问仓库的 账号和密码
-//                credentials {
-//                    username = "admin"
-//                    password = "Admin_nexus_12@45"
-//                }
-//            }
-            it.maven { MavenArtifactRepository mavenArtifactRepository ->
-                // maven 仓库地址
-                allowInsecureProtocol = true
-                name = "远程"
-//                url = 'http://maven.corp.songguo7.com:8360/nexus/content/groups/public/'
-                url = 'http://maven.corp.songguo7.com:8360/nexus/content/repositories/android/'
-                // 访问仓库的 账号和密码
-                credentials {
-                    username = "admin"
-                    password = "zxcvzxcv"
-                }
-            }
-        }
-
-
         publications {
             release(MavenPublication) {
                 from this.components.findByName("release")

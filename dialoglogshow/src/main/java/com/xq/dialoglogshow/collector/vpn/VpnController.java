@@ -11,12 +11,13 @@ import android.net.VpnService;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.activity.VpnPermissionActivity;
 import com.xq.dialoglogshow.collector.vpn.netbare.ShowLogNetBareManager;
 import com.xq.dialoglogshow.collector.vpn.tunnel.ShowLogVpnService;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 
 import java.util.List;
 
@@ -90,6 +91,9 @@ public class VpnController {
      * 检查当前是否已经具备 VPN 启动权限
      */
     public boolean isVpnPrepared(@NonNull Context context) {
+        if (!ShowLogNetBareManager.getInstance().ensureInitialized()) {
+            return false;
+        }
         return ShowLogNetBareManager.getInstance().getPrepareIntent() == null;
     }
 
@@ -98,6 +102,9 @@ public class VpnController {
      */
     @Nullable
     public Intent getPrepareIntent(@NonNull Context context) {
+        if (!ShowLogNetBareManager.getInstance().ensureInitialized()) {
+            return null;
+        }
         return ShowLogNetBareManager.getInstance().getPrepareIntent();
     }
 
@@ -107,6 +114,14 @@ public class VpnController {
     public void startVpn(@NonNull Context context) {
         Context appContext = context.getApplicationContext();
         ShowLogNetBareManager netBareManager = ShowLogNetBareManager.getInstance();
+        if (!netBareManager.ensureInitialized()) {
+            // 为什么这样做：初始化缺失属于可诊断接入错误，UI 应展示错误而不是继续进入系统 API 导致主线程崩溃。
+            VpnStatusManager.getInstance().updateStatus(
+                    VpnStatusManager.Status.ERROR,
+                    appContext.getString(R.string.show_sdk_not_initialized)
+            );
+            return;
+        }
         Intent prepareIntent = getPrepareIntent(appContext);
         if (prepareIntent != null) {
             VpnStatusManager.getInstance().updateStatus(VpnStatusManager.Status.PREPARE_REQUIRED, null);
@@ -119,8 +134,16 @@ public class VpnController {
         VpnSessionStore.setUserEnabled(appContext, true);
         VpnSessionStore.resetRestoreThrottle(appContext);
         VpnStatusManager.getInstance().updateStatus(VpnStatusManager.Status.STARTING, null);
-        netBareManager.startCapture(appContext);
-        VpnHealthMonitor.getInstance().refresh(appContext);
+        try {
+            netBareManager.startCapture(appContext);
+            VpnHealthMonitor.getInstance().refresh(appContext);
+        } catch (RuntimeException runtimeException) {
+            // 为什么这样做：Android 12+ 可能即时拒绝不满足条件的前台服务启动，SDK必须把失败转成状态而不是让宿主主线程崩溃。
+            VpnStatusManager.getInstance().updateStatus(
+                    VpnStatusManager.Status.ERROR,
+                    runtimeException.getMessage()
+            );
+        }
     }
 
     /**
@@ -186,7 +209,7 @@ public class VpnController {
      */
     public void ensureVpnRunningIfNeeded(@NonNull Context context, @NonNull String reason) {
         Context appContext = context.getApplicationContext();
-        if (!ShowLogManager.getInstance().isVpnNetworkLogEnabled()) {
+        if (!ShowLog.isVpnNetworkLogEnabledInternal()) {
             return;
         }
         if (!VpnSessionStore.isUserEnabled(appContext)) {
@@ -228,7 +251,7 @@ public class VpnController {
      * 是否正在运行
      */
     public boolean isVpnRunning() {
-        Application application = ShowLogManager.getInstance().getApplication();
+        Application application = ShowLog.getApplicationInternal();
         if (application != null) {
             return isVpnRunning(application);
         }
@@ -307,7 +330,10 @@ public class VpnController {
     }
 
     private boolean isSystemVpnConnected(@NonNull Context context) {
-        ConnectivityManager connectivityManager = context.getSystemService(ConnectivityManager.class);
+        ConnectivityManager connectivityManager = ContextCompat.getSystemService(
+                context,
+                ConnectivityManager.class
+        );
         if (connectivityManager == null) {
             return false;
         }
@@ -325,7 +351,10 @@ public class VpnController {
     }
 
     private boolean isShowLogVpnServiceRunning(@NonNull Context context) {
-        ActivityManager activityManager = context.getSystemService(ActivityManager.class);
+        ActivityManager activityManager = ContextCompat.getSystemService(
+                context,
+                ActivityManager.class
+        );
         if (activityManager == null) {
             return false;
         }

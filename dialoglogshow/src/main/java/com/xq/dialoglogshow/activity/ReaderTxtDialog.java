@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.adapter.ReaderTXTAdapter;
-import com.xq.dialoglogshow.entity.BaseShowData;
-import com.xq.dialoglogshow.manager.ShowLogManager;
+import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.utils.PagedTextLoader;
+import com.xq.dialoglogshow.utils.ShareUtils;
 import com.xq.dialoglogshow.utils.ShowTask;
 import com.xq.dialoglogshow.utils.SizeUtils;
 
@@ -49,6 +49,10 @@ public class ReaderTxtDialog extends Dialog {
 
     private PagedTextLoader mPagedTextLoader;
     private ShowTask<List<String>> mShowTask;
+    /**
+     * 为什么这样做：系统分享面板启动和文件复制都属于重操作，记录时间可避免快速连点创建多份临时文件。
+     */
+    private long lastShareClickTime;
 
 
     @Override
@@ -99,7 +103,13 @@ public class ReaderTxtDialog extends Dialog {
         mShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShowLogManager.getInstance().getProvider().onShareFile(getContext(), filePath);
+                long now = System.currentTimeMillis();
+                if (now - lastShareClickTime < 500L) {
+                    return;
+                }
+                lastShareClickTime = now;
+                // 为什么这样做：文件分享属于 SDK 自有能力，宿主只需提供日志目录，不应重复处理 URI 与临时权限。
+                ShareUtils.shareFile(getContext(), filePath);
             }
         });
 
@@ -156,7 +166,7 @@ public class ReaderTxtDialog extends Dialog {
                 return null;
             }
         };
-        mShowTask.executeOnExecutor(ShowLogManager.getInstance().getProvider().getLoadExecutor());
+        mShowTask.executeOnExecutor(ShowLog.getProvider().getLoadExecutor());
 
     }
 

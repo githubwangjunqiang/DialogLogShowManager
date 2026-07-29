@@ -7,6 +7,85 @@ plugins {
 //    id 'com.android.library' version '7.4.2' apply false
 }
 
+/**
+ * 两个 SDK 发布模块共用同一组仓库，是为了避免模块各自维护地址后出现漏配或坐标发布到不同位置。
+ */
+def sdkPublishingProjects = [
+        project(':netbare-core'),
+        project(':dialoglogshow')
+]
+
+configure(sdkPublishingProjects) { sdkProject ->
+    sdkProject.plugins.withId('maven-publish') {
+        sdkProject.publishing {
+            repositories {
+                maven {
+                    // 本地仓库固定放在当前工程内，便于验证 POM 与 AAR 时不依赖其他项目。
+                    name = "Local"
+                    url = rootProject.uri(rootProject.file("repo"))
+                }
+                maven {
+                    // 这里只发布产物到杨波项目的仓库目录，不触发该项目的任何构建任务。
+                    name = "YangBo"
+                    url = rootProject.uri("/Users/songguo77/AndroidStudioProjects/YangBo/repo")
+                }
+                maven {
+                    // 树洞仓库与其他目标保持相同坐标，避免宿主切换仓库后解析到不同依赖关系。
+                    name = "ShuDong"
+                    url = rootProject.uri("/Users/songguo77/AndroidStudioProjects/ShuDong/repo")
+                }
+                maven {
+                    // 远程仓库沿用现有发布入口，统一配置后两个 AAR 才能被同一次宿主解析完整获取。
+                    name = "Remote"
+                    url = rootProject.uri("http://maven.corp.songguo7.com:8360/nexus/content/repositories/android/")
+                    allowInsecureProtocol = true
+                    credentials {
+                        username = "admin"
+                        password = "zxcvzxcv"
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 聚合任务只负责单个目标仓库，是为了避免一次命令误把正式产物发布到全部仓库。
+ */
+def sdkPublishTargets = [
+        [taskSuffix: "Local", repositoryName: "Local", legacyRepositoryName: "本地", displayName: "本地"],
+        [taskSuffix: "YangBo", repositoryName: "YangBo", legacyRepositoryName: "杨波", displayName: "杨波"],
+        [taskSuffix: "ShuDong", repositoryName: "ShuDong", legacyRepositoryName: "树洞", displayName: "树洞"],
+        [taskSuffix: "Remote", repositoryName: "Remote", legacyRepositoryName: "远程", displayName: "远程"]
+]
+
+sdkPublishTargets.each { target ->
+    def repositoryTaskSuffix = "${target.repositoryName}Repository"
+    def publishTaskName = "publishReleasePublicationTo${repositoryTaskSuffix}"
+    def netBareTaskPath = ":netbare-core:${publishTaskName}"
+    def showLogTaskPath = ":dialoglogshow:${publishTaskName}"
+
+    tasks.register("publishSdkTo${target.taskSuffix}") {
+        group = "publishing"
+        description = "按 netbare-core、showlog 的顺序发布到${target.displayName}仓库"
+        dependsOn(netBareTaskPath, showLogTaskPath)
+    }
+
+    // 对 showlog 的完整任务链约束顺序，避免开启 Gradle 并行后提前构建主 AAR；单独执行模块任务时不会引入 netbare 发布任务。
+    project(':dialoglogshow').tasks.configureEach {
+        mustRunAfter(netBareTaskPath)
+    }
+
+    sdkPublishingProjects.each { sdkProject ->
+        // Maven Publish 限制仓库名只能使用 ASCII；保留中文任务别名可兼容项目原有的模块级发布命令。
+        sdkProject.tasks.register("publishReleasePublicationTo${target.legacyRepositoryName}Repository") {
+            group = "publishing"
+            description = "发布 release 构件到${target.displayName}仓库"
+            dependsOn("${sdkProject.path}:${publishTaskName}")
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

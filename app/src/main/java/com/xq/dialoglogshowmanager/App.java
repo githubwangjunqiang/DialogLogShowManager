@@ -67,6 +67,12 @@ public class App extends Application {
                 return true; // 仅 Debug 环境开启控制台
             }
 
+            @Override
+            public boolean isVpnNetworkLogEnabled() {
+                // 为什么这样做：Demo 显式开启 SDK 唯一 VPN 采集链路，验证真实宿主接入时无需额外启动 API。
+                return true;
+            }
+
             @Nullable
             @Override
             public String getCacheDocPath() {
@@ -220,10 +226,6 @@ public class App extends Application {
             }
 
             @Override
-            public void onShareFile(@NonNull Context context, @NonNull String filePath) {
-            }
-
-            @Override
             public void onConsoleShow() {
                 Log.d("App", "控制台弹窗已打开");
             }
@@ -232,7 +234,7 @@ public class App extends Application {
             public void onConsoleDismiss() {
                 Log.d("App", "控制台弹窗已关闭");
             }
-        }, true);
+        });
     }
 
     /**

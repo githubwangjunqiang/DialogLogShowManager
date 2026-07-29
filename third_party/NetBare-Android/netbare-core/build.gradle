@@ -6,19 +6,19 @@ plugins {
 /**
  * 这里显式声明 group，是为了让主 SDK 的 POM 能稳定引用到底层模块，避免依赖 project 名称时出现解析漂移。
  */
-group = "com.tasow.showlog"
+group = "com.xq.showlog"
 /**
  * 这里先给默认版本，是为了兼容单独构建 netbare-core 的场景；正式发布时会在 afterEvaluate 与主 SDK 版本对齐。
  */
-version = "5.0.2"
+version = "5.0.4"
 
 android {
     namespace 'com.github.megatronking.netbare'
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
+        targetSdk 35
         consumerProguardFiles 'proguard-rules.pro'
     }
 

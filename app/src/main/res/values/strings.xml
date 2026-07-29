@@ -4,6 +4,20 @@
     <string name="app_demo_btn_open_console">手动打开调试控制台</string>
     <string name="app_demo_btn_toggle_debug">检查 SDK 调试状态</string>
     <string name="app_demo_vpn_verify_guide">真机验证顺序：1. 点击“手动打开调试控制台”；2. 进入“VPN网络”并按提示安装证书、开启 VPN；3. 回到本页依次点击下面的请求按钮；4. 再回控制台查看历史日志。</string>
+    <string name="capture_app_title">动态设置 VPN 抓包 App</string>
+    <string name="capture_app_hint">输入 applicationId，例如 com.example.app</string>
+    <string name="capture_app_empty_hint">输入框留空并确认，将恢复为仅抓取当前 Demo App。</string>
+    <string name="current_capture_app">当前抓包 App：%1$s</string>
+    <string name="select_installed_app">选择已安装 App</string>
+    <string name="apply_capture_app">确认更换</string>
+    <string name="loading_installed_apps">正在读取已安装 App…</string>
+    <string name="installed_app_picker_title">选择已安装 App</string>
+    <string name="installed_app_list_empty">没有找到可选择的已安装 App</string>
+    <string name="installed_app_list_failed">读取已安装 App 失败：%1$s</string>
+    <string name="invalid_application_id">请输入正确的 applicationId</string>
+    <string name="application_id_not_installed">未找到该 applicationId 对应的已安装 App</string>
+    <string name="capture_app_apply_success">抓包目标已更新：%1$s</string>
+    <string name="capture_app_apply_failed">抓包目标更新失败：%1$s</string>
 
     <!-- 测试按钮 Key，遵循英文小写 snake_case -->
     <string name="test_http_get">测试发起 HTTP GET 请求 (原生)</string>

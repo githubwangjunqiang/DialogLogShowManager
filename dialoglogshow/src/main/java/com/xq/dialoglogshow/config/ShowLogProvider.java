@@ -39,6 +39,14 @@ public interface ShowLogProvider {
     boolean isDebug();
 
     /**
+     * 是否启用 VPN 网络日志能力。
+     * 为什么这样做：把能力开关纳入统一 Provider 契约，可让唯一的双参数初始化入口保持稳定，同时强制宿主明确选择开启或关闭。
+     *
+     * @return true 启用 VPN 网络日志；false 不启用
+     */
+    boolean isVpnNetworkLogEnabled();
+
+    /**
      * 缓存日志文件的根目录路径
      *
      * @return 目录绝对路径 (为 null 则使用 SDK 预设应用缓存目录)
@@ -203,14 +211,6 @@ public interface ShowLogProvider {
      * @param filePath 文本文件路径 (空实现则默认使用 SDK 内置 ReaderTxtDialog 打开)
      */
     void onOpenTextFile(@NonNull String filePath);
-
-    /**
-     * 用户点击“分享”日志文件时的回调
-     *
-     * @param context  上下文
-     * @param filePath 要分享的文件路径 (空实现则默认使用 SDK 内置 FileShareActivity 打开)
-     */
-    void onShareFile(@NonNull Context context, @NonNull String filePath);
 
     /**
      * 控制台弹窗打开显示回调

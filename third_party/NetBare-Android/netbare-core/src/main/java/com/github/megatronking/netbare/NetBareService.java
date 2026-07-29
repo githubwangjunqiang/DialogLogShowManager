@@ -17,8 +17,10 @@ package com.github.megatronking.netbare;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.pm.ServiceInfo;
 import android.content.Intent;
 import android.net.VpnService;
+import android.os.Build;
 import androidx.annotation.NonNull;
 
 import com.github.megatronking.netbare.ssl.SSLEngineFactory;
@@ -77,11 +79,20 @@ public abstract class NetBareService extends VpnService {
         }
         String action = intent.getAction();
         if (ACTION_START.equals(action)) {
-            startNetBare();
-            startForeground(notificationId(), createNotification());
+            try {
+                // 为什么这样做：前台提升必须先于证书、代理和 VPN 线程初始化，避免耗时初始化触发系统的前台服务启动超时。
+                promoteToForeground();
+                startNetBare();
+            } catch (RuntimeException exception) {
+                stopNetBare();
+                stopForegroundCompat();
+                stopSelf();
+                // 为什么这样做：只兜住系统前台服务和配置启动异常，Error 仍交给运行时处理，避免掩盖进程级故障。
+                NetBare.get().notifyServiceStartFailed(exception);
+            }
         } else if (ACTION_STOP.equals(action)) {
             stopNetBare();
-            stopForeground(true);
+            stopForegroundCompat();
             stopSelf();
         } else {
             stopSelf();
@@ -93,7 +104,7 @@ public abstract class NetBareService extends VpnService {
     public void onDestroy() {
         super.onDestroy();
         stopNetBare();
-        stopForeground(true);
+        stopForegroundCompat();
     }
 
     private void startNetBare() {
@@ -117,8 +128,45 @@ public abstract class NetBareService extends VpnService {
             return;
         }
         NetBareLog.i("Stop NetBare service!");
-        mNetBareThread.interrupt();
+        NetBareThread stoppingThread = mNetBareThread;
+        stoppingThread.interrupt();
+        try {
+            // 为什么这样做：动态改包名时必须等待旧虚拟网卡完成释放，避免新旧线程交叉回调导致状态倒退或描述符泄漏。
+            stoppingThread.join(1_000L);
+        } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
+        }
         mNetBareThread = null;
+    }
+
+    /**
+     * 把服务提升到与 VPN 语义匹配的前台类型。
+     * 为什么这样做：Android 14 起 target 34+ 必须同时声明并传入 systemExempted 类型，旧系统继续使用兼容重载。
+     */
+    private void promoteToForeground() {
+        Notification notification = createNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                    notificationId(),
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED
+            );
+            return;
+        }
+        startForeground(notificationId(), notification);
+    }
+
+    /**
+     * 移除前台通知并兼容旧系统。
+     * 为什么这样做：新常量能明确表达移除通知，版本分支则避免低版本运行时访问不存在的 API。
+     */
+    @SuppressWarnings("deprecation")
+    private void stopForegroundCompat() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+            return;
+        }
+        stopForeground(true);
     }
 
 }

@@ -70,6 +70,14 @@ public final class VpnTrafficLogTable {
             "CREATE INDEX IF NOT EXISTS idx_vpn_traffic_log_protocol ON "
                     + TABLE_NAME + "(" + COLUMN_PROTOCOL + ");";
 
+    /**
+     * 为什么这样做：多 App 查询同时固定按时间倒序，组合索引能避免先扫描整张日志表再过滤包名。
+     */
+    public static final String CREATE_INDEX_APP_TIMESTAMP_SQL =
+            "CREATE INDEX IF NOT EXISTS idx_vpn_traffic_log_app_timestamp ON "
+                    + TABLE_NAME + "(" + COLUMN_APP_PACKAGE_NAME + ","
+                    + COLUMN_TIMESTAMP + " DESC);";
+
     private VpnTrafficLogTable() {
     }
 }

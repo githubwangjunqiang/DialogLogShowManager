@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 为什么这样做：只授权 SDK 专属分享目录，既兼容宿主自定义日志路径，也不扩大文件访问范围。 -->
+    <cache-path
+        name="show_sdk_share"
+        path="dialoglogshow/share/" />
+</paths>

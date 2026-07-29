@@ -69,6 +69,42 @@ public class VpnTrafficLogStore {
     }
 
     /**
+     * 查询指定 App 在时间范围内的日志。
+     * 为什么这样做：包名通过 selectionArgs 绑定可以避免特殊字符破坏 SQL，同时命中 App + 时间组合索引。
+     */
+    @NonNull
+    public List<VpnTrafficLogEntity> queryByAppAndTimeRange(
+            @NonNull String appPackageName,
+            long startTime,
+            long endTime) {
+        ArrayList<VpnTrafficLogEntity> entityList = new ArrayList<>();
+        SQLiteDatabase database = mDatabaseHelper.getReadableDatabase();
+        Cursor cursor = database.query(
+                VpnTrafficLogTable.TABLE_NAME,
+                null,
+                VpnTrafficLogTable.COLUMN_APP_PACKAGE_NAME + "=? AND "
+                        + VpnTrafficLogTable.COLUMN_TIMESTAMP + ">=? AND "
+                        + VpnTrafficLogTable.COLUMN_TIMESTAMP + "<?",
+                new String[]{
+                        appPackageName,
+                        String.valueOf(startTime),
+                        String.valueOf(endTime)
+                },
+                null,
+                null,
+                VpnTrafficLogTable.COLUMN_TIMESTAMP + " DESC"
+        );
+        try {
+            while (cursor.moveToNext()) {
+                entityList.add(readEntity(cursor));
+            }
+        } finally {
+            cursor.close();
+        }
+        return entityList;
+    }
+
+    /**
      * 删除单条日志
      */
     public void deleteByLogId(@NonNull String logId) {
