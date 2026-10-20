@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  状态筛选的整体长胶囊轨道。
+  为什么这样做：三个筛选按钮需要看起来属于同一个控件，使用深色内凹轨道把分段包在内部，
+  与上方两个滑动开关的胶囊形态保持一致。
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/dp_17" />
+    <solid android:color="@color/showlog_bg_primary" />
+    <stroke
+        android:width="@dimen/dp_1"
+        android:color="@color/showlog_bg_card_stroke" />
+</shape>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 状态筛选选中分段：在长胶囊轨道内部使用同高的蓝色胶囊，仅覆盖当前分段 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/dp_15" />
+    <solid android:color="@color/showlog_action_btn" />
+</shape>

@@ -363,32 +363,33 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
         mTabFilter2xx.setText(getContext().getString(R.string.showlog_filter_success_count, success));
         mTabFilterError.setText(getContext().getString(R.string.showlog_filter_failure_count, error));
 
-        mTabFilterAll.setBackgroundResource(R.drawable.bg_showlog_tab_unselected);
+        // 未选中分段直接透明，露出外层长胶囊轨道；选中态只覆盖当前分段
+        mTabFilterAll.setBackgroundResource(0);
         mTabFilterAll.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
         mTabFilterAll.setTypeface(null, android.graphics.Typeface.NORMAL);
 
-        mTabFilter2xx.setBackgroundResource(R.drawable.bg_showlog_tab_unselected);
+        mTabFilter2xx.setBackgroundResource(0);
         mTabFilter2xx.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
         mTabFilter2xx.setTypeface(null, android.graphics.Typeface.NORMAL);
 
-        mTabFilterError.setBackgroundResource(R.drawable.bg_showlog_tab_unselected);
+        mTabFilterError.setBackgroundResource(0);
         mTabFilterError.setTextColor(error > 0 ? ContextCompat.getColor(getContext(), R.color.showlog_status_error)
                 : ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
         mTabFilterError.setTypeface(null, android.graphics.Typeface.NORMAL);
 
         switch (mCurrentFilter) {
             case FILTER_ALL:
-                mTabFilterAll.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
+                mTabFilterAll.setBackgroundResource(R.drawable.bg_showlog_filter_segment_selected);
                 mTabFilterAll.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_on_accent));
                 mTabFilterAll.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;
             case FILTER_2XX:
-                mTabFilter2xx.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
+                mTabFilter2xx.setBackgroundResource(R.drawable.bg_showlog_filter_segment_selected);
                 mTabFilter2xx.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_on_accent));
                 mTabFilter2xx.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;
             case FILTER_ERROR:
-                mTabFilterError.setBackgroundResource(R.drawable.bg_showlog_tab_error_selected);
+                mTabFilterError.setBackgroundResource(R.drawable.bg_showlog_filter_segment_error_selected);
                 mTabFilterError.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_primary));
                 mTabFilterError.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;

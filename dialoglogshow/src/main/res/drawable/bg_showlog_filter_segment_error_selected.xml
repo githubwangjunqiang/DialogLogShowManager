@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 状态筛选“失败/异常”选中分段：沿用错误红色，与蓝色分段区分状态语义 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/dp_15" />
+    <solid android:color="@color/showlog_status_error" />
+</shape>

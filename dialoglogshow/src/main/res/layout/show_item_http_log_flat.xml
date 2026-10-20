@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   为什么这样做：列表项只需要让用户快速判断“哪个接口、什么时候、成功还是失败”，
-  因此收敛为两行：第一行放结果徽标、请求方式与时间，第二行放完整接口地址；
+  因此第一行放结果徽标、请求方式与时间，第二行放完整接口地址；
+  接口地址不限制行数，超出一行自动换行，保证长 URL 也能完整辨认；
   卡片背景改为水波纹，保证点击进入详情时有明确按压反馈。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -62,15 +63,13 @@
             tools:text="14:20:05.123" />
     </LinearLayout>
 
-    <!-- 第二行：接口全名，单行中部省略，保证首尾域名与路径都可辨认 -->
+    <!-- 第二行：接口全名，不限制行数，超出一行自动换行，长 URL 不会被截断 -->
     <TextView
         android:id="@+id/tv_full_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_4"
-        android:ellipsize="middle"
-        android:maxLines="1"
         android:textColor="@color/showlog_text_primary"
         android:textSize="@dimen/sp_12"
-        tools:text="https://api.example.com/api/v1/user/login" />
+        tools:text="https://api.example.com/api/v1/user/login?redirect=%2Fdashboard%3Ftab%3Dorders" />
 </LinearLayout>

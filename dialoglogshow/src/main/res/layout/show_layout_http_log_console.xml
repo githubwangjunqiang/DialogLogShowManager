@@ -134,19 +134,22 @@
         android:textSize="@dimen/sp_11"
         android:visibility="gone" />
 
-    <!-- 4. 彩色状态分类 Tab 栏 -->
+    <!-- 4. 彩色状态分类：三个分段收进同一个长胶囊轨道，选中项在轨道内部高亮 -->
     <LinearLayout
+        android:id="@+id/layout_filter_segments"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_34"
         android:layout_marginTop="@dimen/dp_8"
-        android:orientation="horizontal">
+        android:background="@drawable/bg_showlog_filter_segment_container"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_2">
 
         <TextView
             android:id="@+id/tab_filter_all"
             android:layout_width="0dp"
-            android:layout_height="@dimen/dp_30"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_selected"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
@@ -157,10 +160,8 @@
         <TextView
             android:id="@+id/tab_filter_2xx"
             android:layout_width="0dp"
-            android:layout_height="@dimen/dp_30"
-            android:layout_marginStart="@dimen/dp_6"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_unselected"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
@@ -170,10 +171,8 @@
         <TextView
             android:id="@+id/tab_filter_error"
             android:layout_width="0dp"
-            android:layout_height="@dimen/dp_30"
-            android:layout_marginStart="@dimen/dp_6"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_unselected"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"

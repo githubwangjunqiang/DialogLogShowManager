@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  为什么这样做：关闭挂钩的底边需要与弹框卡片顶边重合，若四边都描边，接缝处会出现一条横线；
-  因此填充路径闭合以遮住卡片顶边，描边路径在底部开口，并让底部左右两角向内收圆，
-  使挂钩边框看起来是从卡片外框自然延伸出来的，而不是悬浮在卡片上方的独立按钮。
+  为什么这样做：关闭挂钩的底边需要与弹框卡片顶边重合，若四边都描边，接缝处会出现一条横线。
+  因此填充路径闭合以遮住卡片顶边，描边路径在底部开口；
+  同时把画布从 36dp 加宽到 48dp，左右各留 6dp 作为外扩圆弧，
+  让边框不是垂直切断在卡片顶边上，而是顺着圆弧落到卡片外框，连接更自然。
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="@dimen/dp_36"
+    android:width="@dimen/dp_48"
     android:height="@dimen/dp_37"
-    android:viewportWidth="36"
+    android:viewportWidth="48"
     android:viewportHeight="37">
 
-    <!-- 填充：底边闭合，颜色与弹框卡片一致，用于覆盖卡片顶边的 1dp 描边 -->
+    <!-- 填充：底边闭合，颜色与弹框卡片一致，用于覆盖卡片顶边的 1dp 描边。
+         中间 6..42 为 36dp 视觉页签，左右各 6dp 为向外展开的过渡区。 -->
     <path
         android:fillColor="@color/showlog_bg_primary"
-        android:pathData="M5,37 Q1,37 1,33 L1,11 Q1,1 11,1 L25,1 Q35,1 35,11 L35,33 Q35,37 31,37 Z" />
+        android:pathData="M0,37 Q6,37 6,31 L6,11 Q6,1 16,1 L32,1 Q42,1 42,11 L42,31 Q42,37 48,37 Z" />
 
-    <!-- 描边：底部不闭合，左右下角向内收，形成与卡片边框衔接的开口 -->
+    <!-- 描边：底部不闭合，左右下角向外展开成内凹圆弧。
+         端点落在 y=36.5（卡片 1dp 描边的中心线），与卡片外框描边精确重合，避免半个像素的台阶；
+         填充仍闭合到 y=37，用来完整覆盖卡片顶边的描边。 -->
     <path
         android:fillColor="@android:color/transparent"
-        android:pathData="M5,37 Q1,37 1,33 L1,11 Q1,1 11,1 L25,1 Q35,1 35,11 L35,33 Q35,37 31,37"
+        android:pathData="M0,36.5 Q6,36.5 6,31 L6,11 Q6,1 16,1 L32,1 Q42,1 42,11 L42,31 Q42,36.5 48,36.5"
         android:strokeColor="@color/showlog_bg_card_stroke"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

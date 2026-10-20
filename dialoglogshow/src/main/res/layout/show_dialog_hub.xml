@@ -27,12 +27,20 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <!-- 内容面板：顶部直角、底部圆角，顶部描边在选中 Tab 下方会被 Tab 背景覆盖 -->
+            <!-- 选中页签与内容面板的联合轮廓由该 View 统一绘制：
+                 避免两个独立背景在连接处形成直角接缝，也让描边颜色始终一致 -->
+            <com.xq.dialoglogshow.ui.view.ShowLogHubTabPanelBackground
+                android:id="@+id/v_tab_panel_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:importantForAccessibility="no" />
+
+            <!-- 内容面板：背景与页签边框由 v_tab_panel_background 统一绘制，这里只保留内边距 -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/dp_36"
-                android:background="@drawable/bg_showlog_hub_content"
+                android:background="@null"
                 android:padding="@dimen/dp_8">
 
                 <androidx.viewpager2.widget.ViewPager2
@@ -41,7 +49,8 @@
                     android:layout_height="match_parent" />
             </FrameLayout>
 
-            <!-- 主 Tab 栏：高度 37dp，底部 1dp 故意压住内容面板顶边，以便选中态覆盖该段描边 -->
+            <!-- 主 Tab 栏：高度 37dp；内容面板从 36dp 开始，
+                 选中页签的轮廓由 v_tab_panel_background 直接画到接缝处，文字层不再单独铺背景 -->
             <LinearLayout
                 android:id="@+id/layout_hub_tab_bar"
                 android:layout_width="match_parent"
@@ -88,13 +97,15 @@
         </FrameLayout>
     </LinearLayout>
 
-    <!-- 挂钩关闭按钮：视觉尺寸 36×37dp，底边与卡片顶边重叠 1dp；点击热区由代码用 TouchDelegate 扩大 -->
+    <!-- 挂钩关闭按钮：48×37dp 画布中保留 36dp 视觉宽度，左右各留 6dp 外扩圆弧；
+         marginEnd 取 16dp，使外扩圆弧端点正好落在卡片顶部圆角的起点，避免圆弧切进圆角弧内产生台阶；
+         底边与卡片顶边重叠 1dp，点击热区仍由代码用 TouchDelegate 扩大 -->
     <FrameLayout
         android:id="@+id/btn_close_hub_container"
-        android:layout_width="@dimen/dp_36"
+        android:layout_width="@dimen/dp_48"
         android:layout_height="@dimen/dp_37"
         android:layout_gravity="top|end"
-        android:layout_marginEnd="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_16"
         android:background="@drawable/bg_showlog_close_hook"
         android:clickable="true"
         android:focusable="true"
