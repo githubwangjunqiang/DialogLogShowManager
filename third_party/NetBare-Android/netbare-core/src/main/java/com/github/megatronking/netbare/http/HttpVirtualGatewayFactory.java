@@ -37,6 +37,7 @@ public class HttpVirtualGatewayFactory implements VirtualGatewayFactory {
 
     private List<HttpInterceptorFactory> mFactories;
     private JKS mJKS;
+    private HttpsFallbackLogCallback mFallbackLogCallback;
 
     /**
      * Constructs a {@link HttpVirtualGatewayFactory} instance with {@link JKS} and a collection of
@@ -47,13 +48,28 @@ public class HttpVirtualGatewayFactory implements VirtualGatewayFactory {
      */
     public HttpVirtualGatewayFactory(@NonNull JKS jks,
                                      @NonNull List<HttpInterceptorFactory> factories) {
+        this(jks, factories, null);
+    }
+
+    /**
+     * Constructs a {@link HttpVirtualGatewayFactory} instance with {@link JKS}, a collection of
+     * {@link HttpInterceptorFactory} and an optional HTTPS fallback callback.
+     *
+     * 为什么这样做：没有调试证书时，核心库仍然要把连接级元数据回传给宿主，
+     * 这样宿主可以在自己的仓库里保存“已经拦到 HTTPS 请求”这一事实。
+     */
+    public HttpVirtualGatewayFactory(@NonNull JKS jks,
+                                     @NonNull List<HttpInterceptorFactory> factories,
+                                     @NonNull HttpsFallbackLogCallback fallbackLogCallback) {
         this.mJKS = jks;
         this.mFactories = factories;
+        this.mFallbackLogCallback = fallbackLogCallback;
     }
 
     @Override
     public VirtualGateway create(Session session, Request request, Response response) {
-        return new HttpVirtualGateway(session, request, response, mJKS, new ArrayList<>(mFactories));
+        return new HttpVirtualGateway(session, request, response, mJKS,
+                new ArrayList<>(mFactories), mFallbackLogCallback);
     }
 
     /**

@@ -13,4 +13,12 @@
     <color name="demo_text_hint">#FF94A3B8</color>
     <color name="demo_button_primary">#FF2563EB</color>
     <color name="demo_button_secondary">#FF475569</color>
+    <color name="demo_background">#FF0F172A</color>
+    <color name="demo_surface">#FF111C33</color>
+    <color name="demo_surface_alt">#FF172554</color>
+    <color name="demo_status_success">#FF16A34A</color>
+    <color name="demo_status_warning">#FFF59E0B</color>
+    <color name="demo_status_danger">#FFDC2626</color>
+    <color name="demo_status_neutral">#FF64748B</color>
+    <color name="demo_status_info">#FF0EA5E9</color>
 </resources>

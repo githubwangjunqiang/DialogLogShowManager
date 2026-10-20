@@ -101,6 +101,7 @@
     <string name="show_sdk_vpn_log_time">Time</string>
     <string name="show_sdk_vpn_log_cost">Cost</string>
     <string name="show_sdk_vpn_log_cost_value">%1$d ms</string>
+    <string name="show_sdk_vpn_log_app_name">App Name</string>
     <string name="show_sdk_vpn_log_request_bytes">RequestBytes</string>
     <string name="show_sdk_vpn_log_response_bytes">ResponseBytes</string>
     <string name="show_sdk_vpn_log_parse_status">ParseStatus</string>
@@ -114,5 +115,61 @@
     <string name="show_sdk_vpn_log_message">Message</string>
     <string name="show_sdk_vpn_log_request_success">成功</string>
     <string name="show_sdk_vpn_log_request_failed">失败</string>
-    <string name="show_sdk_vpn_log_list_summary">时间：%1$s\nURL：%2$s\n结果：%3$s    状态码：%4$s    方法：%5$s</string>
+    <string name="show_sdk_vpn_log_minimal_metadata">仅记录到最小元数据，正文或头字段未能完整解析</string>
+    <string name="show_sdk_vpn_log_http_partial_parse_failed">HTTP 抓包未能完整解析，已保留最小元数据</string>
+    <string name="show_sdk_vpn_log_https_partial_parse_failed">HTTPS 抓包未能完整解析，已保留最小元数据</string>
+    <string name="show_sdk_vpn_log_filter_app">筛选App</string>
+    <string name="show_sdk_vpn_log_filter_all">全部日志</string>
+    <string name="show_sdk_vpn_log_current_filter">当前筛选：%1$s</string>
+    <string name="show_sdk_vpn_log_filter_title">选择日志来源</string>
+    <string name="show_sdk_vpn_log_filter_empty">当前日期没有可筛选的应用日志</string>
+    <string name="show_sdk_vpn_log_all_logs">全部日志</string>
+    <string name="show_sdk_vpn_log_list_summary">应用：%1$s\n时间：%2$s\nURL：%3$s\n结果：%4$s    状态码：%5$s    方法：%6$s</string>
+
+    <!-- 全新控制台专用文案 -->
+    <string name="showlog_console_title">网络调试控制台</string>
+    <string name="showlog_today">今天</string>
+    <string name="showlog_prev_day">前一天</string>
+    <string name="showlog_next_day">后一天</string>
+    <string name="showlog_total_summary">共 %1$d 条 (失败 %2$d)</string>
+    <string name="showlog_sort_desc">时间倒序</string>
+    <string name="showlog_sort_asc">时间正序</string>
+    <string name="showlog_view_flat">列表视图</string>
+    <string name="showlog_view_group">接口分组</string>
+    <string name="showlog_search_hint">搜索 URL / Path / Host / 状态码</string>
+    <string name="showlog_filter_all">全部</string>
+    <string name="showlog_filter_2xx">2xx 成功</string>
+    <string name="showlog_filter_error">错误 / 异常</string>
+    <string name="showlog_clear_today">清空当天</string>
+    <string name="showlog_clear_all">清空全部</string>
+    <string name="showlog_empty_tip">暂无网络日志记录</string>
+    <string name="showlog_loading">加载中...</string>
+    <string name="showlog_group_calls">%1$d 次调用</string>
+    <string name="showlog_group_latest">最新: %1$d (%2$d ms)</string>
+    <string name="showlog_tab_overview">概览</string>
+    <string name="showlog_tab_request">请求</string>
+    <string name="showlog_tab_response">响应</string>
+    <string name="showlog_tab_error">异常</string>
+    <string name="showlog_copy_curl">复制 cURL</string>
+    <string name="showlog_copy_url">复制 URL</string>
+    <string name="showlog_copy_body">复制 Body</string>
+    <string name="showlog_copied_toast">已成功复制到剪贴板</string>
+    <string name="showlog_clear_btn_text">清理</string>
+    <string name="showlog_clear_dialog_title">清理网络日志</string>
+    <string name="showlog_clear_dialog_msg">请选择需要清理的日志数据范围：</string>
+    <string name="showlog_clear_scope_today">仅清理当前选中日期 (%1$s)</string>
+    <string name="showlog_clear_scope_all">清空全部历史网络日志 (所有日期)</string>
+    <string name="showlog_cancel">取消</string>
+    <string name="showlog_sort_desc_label">⬇ 时间倒序 (最新在前)</string>
+    <string name="showlog_sort_asc_label">⬆ 时间正序 (最早在前)</string>
+    <string name="showlog_view_flat_short">📋 列表</string>
+    <string name="showlog_view_group_short">🗂️ 接口分组</string>
+
+    <!-- 主中枢调试看板文案 -->
+    <string name="showlog_hub_title">ShowLog 调试中枢</string>
+    <string name="showlog_hub_tab_network">🌐 网络日志</string>
+    <string name="showlog_hub_tab_device">📱 设备信息</string>
+    <string name="showlog_hub_tab_custom">🧩 自定义扩展</string>
+    <string name="showlog_custom_empty_title">欢迎使用自定义扩展面板</string>
+    <string name="showlog_custom_empty_desc">当前尚未注册业务自定义面板。开发者可通过一行代码自由注入业务调试工具（如环境切换、Token 查看、Mock 开关等）：\n\nShowLog.registerCustomPanel(\"业务调试\", provider);\n\n具体请参考《接入指南》。</string>
 </resources>

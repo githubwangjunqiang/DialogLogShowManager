@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.collector.vpn.VpnController;
 import com.xq.dialoglogshow.collector.vpn.VpnStatusManager;
-import com.xq.dialoglogshow.dialog.DialogShowLog;
 import com.xq.dialoglogshowmanager.ui.entity.InstalledAppInfo;
 import com.xq.dialoglogshowmanager.ui.utils.InstalledAppLoader;
+import com.xq.dialoglogshowmanager.ui.utils.StatusBarInsetHelper;
 
 /**
  * Description: SDK Demo 宿主主页面
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StatusBarInsetHelper.applyTopPaddingForStatusBar(findViewById(R.id.network_test_root));
 
         TextView tvVpnGuide = findViewById(R.id.tv_vpn_guide);
         Button btnOpenConsole = findViewById(R.id.btn_open_console);
@@ -106,28 +107,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnTestGet = findViewById(R.id.btn_test_get);
         Button btnTestPost = findViewById(R.id.btn_test_post);
         Button btnTestError = findViewById(R.id.btn_test_error);
-        mCaptureAppInput = findViewById(R.id.et_capture_app_id);
-        mCurrentCaptureAppText = findViewById(R.id.tv_current_capture_app);
-        mSelectInstalledAppButton = findViewById(R.id.btn_select_installed_app);
-        Button applyCaptureAppButton = findViewById(R.id.btn_apply_capture_app);
 
-        // 为什么这样做：真机验证最容易失败在“请求发早了、VPN 还没开”，因此首页直接把验证顺序展示出来，降低你手动排查成本。
+        // 为什么这样做：真机验证最容易失败在“请求发早了、VPN 还没开”，因此二级页直接把验证顺序展示出来，降低你手动排查成本。
         tvVpnGuide.setText(getString(R.string.app_demo_vpn_verify_guide));
-        initializeCaptureAppSection();
-
-        mSelectInstalledAppButton.setOnClickListener(view -> {
-            if (isFastDoubleClick()) {
-                return;
-            }
-            loadAndShowInstalledApps();
-        });
-
-        applyCaptureAppButton.setOnClickListener(view -> {
-            if (isFastDoubleClick()) {
-                return;
-            }
-            applyCaptureApp();
-        });
 
         // 手动唤起调试控制台 (防抖 500ms)
         btnOpenConsole.setOnClickListener(v -> {
@@ -135,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             // 为什么这样做：除了通过悬浮球点击唤起外，允许宿主应用在设置页或隐藏菜单中手动弹出控制台
-            new DialogShowLog(MainActivity.this).show();
+            ShowLog.showConsole(MainActivity.this);
         });
 
         // 检查 SDK 当前运行状态 (防抖 500ms)
@@ -143,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
             if (isFastDoubleClick()) {
                 return;
             }
-            boolean isDebug = ShowLog.getProvider().isDebug();
-            String title = ShowLog.getProvider().getConsoleTitle();
+            int maxLimit = ShowLog.getConfig().maxDatabaseLogLimit;
 
             // 为什么这样做：在界面触发按钮时测试调用 nativelib-release.aar 导出的 BiZhi 本地 native 接口
             boolean nativeInit = false;
@@ -156,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "BiZhi Native API 调用异常", t);
             }
 
-            String message = "SDK Debug: " + isDebug + ", NativeInit: " + nativeInit + ", Lep: " + nativeLep;
+            String message = "ShowLog 正常运行中，存储上限: " + maxLimit + " 条, NativeInit: " + nativeInit;
             Log.d(TAG, message);
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         });
@@ -473,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
         if (autoOpenConsole) {
             mMainHandler.postDelayed(() -> {
                 Log.d(TAG, "自动打开调试控制台");
-                new DialogShowLog(MainActivity.this).show();
+                ShowLog.showConsole(MainActivity.this);
             }, 300L);
         }
         if (autoInstallCert) {
@@ -616,6 +597,7 @@ public class MainActivity extends AppCompatActivity {
             builder.hostnameVerifier((hostname, session) -> true);
             builder.connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS);
             builder.readTimeout(10, java.util.concurrent.TimeUnit.SECONDS);
+            builder.addInterceptor(ShowLog.getOkHttpInterceptor());
             return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);

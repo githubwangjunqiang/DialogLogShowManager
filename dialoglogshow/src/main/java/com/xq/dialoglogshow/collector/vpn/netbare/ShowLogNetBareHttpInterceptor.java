@@ -9,9 +9,11 @@ import com.github.megatronking.netbare.http.HttpRequest;
 import com.github.megatronking.netbare.http.HttpRequestChain;
 import com.github.megatronking.netbare.http.HttpResponse;
 import com.github.megatronking.netbare.http.HttpResponseChain;
+import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.collector.vpn.repository.VpnTrafficLogRepository;
 import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.model.VpnTrafficLogModel;
+import com.xq.dialoglogshow.model.VpnTrafficLogParseStatus;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
@@ -75,11 +77,18 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
     public void intercept(@NonNull HttpRequestChain chain, @NonNull ByteBuffer buffer, int index) throws IOException {
         HttpRequest request = chain.request();
         PendingLog pendingLog = obtainPendingLog(request);
+        seedBaseMetadata(pendingLog, request.time(), request.isHttps(), request.protocol() != null ? request.protocol().name() : null, request.method() != null ? request.method().name() : null, request.host(), request.url());
         pendingLog.requestBytes += buffer.remaining();
-        pendingLog.method = request.method() != null ? request.method().name() : null;
+        if (request.method() != null) {
+            pendingLog.method = request.method().name();
+        }
         pendingLog.protocol = request.isHttps() ? "HTTPS" : "HTTP";
-        pendingLog.host = request.host();
-        pendingLog.url = request.url();
+        if (request.host() != null && request.host().trim().length() > 0) {
+            pendingLog.host = request.host();
+        }
+        if (request.url() != null && request.url().trim().length() > 0) {
+            pendingLog.url = request.url();
+        }
         pendingLog.encrypted = request.isHttps();
         pendingLog.startTime = pendingLog.startTime == 0L ? request.time() : pendingLog.startTime;
         pendingLog.timestamp = pendingLog.startTime;
@@ -92,12 +101,19 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
     public void intercept(@NonNull HttpResponseChain chain, @NonNull ByteBuffer buffer, int index) throws IOException {
         HttpResponse response = chain.response();
         PendingLog pendingLog = obtainPendingLog(response);
+        seedBaseMetadata(pendingLog, response.time(), response.isHttps(), response.protocol() != null ? response.protocol().name() : null, response.method() != null ? response.method().name() : null, response.host(), response.url());
         pendingLog.responseBytes += buffer.remaining();
         pendingLog.statusCode = String.valueOf(response.code());
         pendingLog.protocol = response.isHttps() ? "HTTPS" : "HTTP";
-        pendingLog.host = response.host();
-        pendingLog.url = response.url();
-        pendingLog.method = response.method() != null ? response.method().name() : pendingLog.method;
+        if (response.host() != null && response.host().trim().length() > 0) {
+            pendingLog.host = response.host();
+        }
+        if (response.url() != null && response.url().trim().length() > 0) {
+            pendingLog.url = response.url();
+        }
+        if (response.method() != null) {
+            pendingLog.method = response.method().name();
+        }
         pendingLog.encrypted = response.isHttps();
         pendingLog.responseHeaders = flattenHeaders(response.responseHeaders());
         pendingLog.endTime = Math.max(pendingLog.endTime, response.time());
@@ -114,6 +130,7 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
     @Override
     public void onRequestFinished(@NonNull HttpRequest request) {
         PendingLog pendingLog = obtainPendingLog(request);
+        seedBaseMetadata(pendingLog, request.time(), request.isHttps(), request.protocol() != null ? request.protocol().name() : null, request.method() != null ? request.method().name() : null, request.host(), request.url());
         pendingLog.endTime = Math.max(pendingLog.endTime, request.time());
         pendingLog.parseStatus = resolveParseStatus(pendingLog);
         pendingLog.errorMessage = resolveErrorMessage(pendingLog);
@@ -126,8 +143,11 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
         String requestId = response.id();
         PendingLog pendingLog = GLOBAL_PENDING_LOGS.remove(requestId);
         if (pendingLog == null) {
-            return;
+            // 为什么这样做：有些会话可能只来得及拿到 response 完成回调，直接返回会把这类最小可见日志吞掉。
+            pendingLog = obtainPendingLog(response);
+            GLOBAL_PENDING_LOGS.remove(requestId);
         }
+        seedBaseMetadata(pendingLog, response.time(), response.isHttps(), response.protocol() != null ? response.protocol().name() : null, response.method() != null ? response.method().name() : null, response.host(), response.url());
         pendingLog.endTime = Math.max(pendingLog.endTime, response.time());
         pendingLog.parseStatus = resolveParseStatus(pendingLog);
         pendingLog.errorMessage = resolveErrorMessage(pendingLog);
@@ -136,10 +156,8 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
 
     @NonNull
     private String resolveParseStatus(@NonNull PendingLog pendingLog) {
-        if (!pendingLog.encrypted) {
-            return "SUCCESS";
-        }
-        // 为什么这样做：HTTPS 是否成功明文抓取，不能只看“是否加密”，而要看是否真正拿到了可解析的请求/响应头体。
+        // 为什么这样做：抓包成功不能只看“抓到了流量”，而要看当前会话到底补齐到了什么层级，
+        // 否则“只抓到 host/url”却被误判成完整成功，会误导开发者。
         boolean hasRequestDetail = pendingLog.requestHeaders != null
                 && !pendingLog.requestHeaders.isEmpty()
                 && pendingLog.method != null
@@ -148,17 +166,29 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
         boolean hasResponseDetail = pendingLog.responseHeaders != null && !pendingLog.responseHeaders.isEmpty();
         boolean hasResponseBody = pendingLog.responseBodyBytes.size() > 0;
         boolean hasStatusCode = pendingLog.statusCode != null && pendingLog.statusCode.length() > 0;
-        return (hasRequestDetail || hasRequestBody || hasResponseDetail || hasResponseBody || hasStatusCode) ? "SUCCESS" : "PARTIAL";
+        boolean hasMinimalMetadata = hasUsefulMetadata(pendingLog);
+        boolean hasAllCoreData = hasRequestDetail && hasResponseDetail && hasStatusCode;
+        if (hasAllCoreData || (hasRequestBody && hasResponseBody && hasStatusCode && hasRequestDetail)) {
+            return VpnTrafficLogParseStatus.SUCCESS;
+        }
+        if (hasRequestDetail || hasRequestBody || hasResponseDetail || hasResponseBody || hasStatusCode) {
+            return VpnTrafficLogParseStatus.PARTIAL;
+        }
+        return hasMinimalMetadata ? VpnTrafficLogParseStatus.MINIMAL : VpnTrafficLogParseStatus.FAILED;
     }
 
     private String resolveErrorMessage(@NonNull PendingLog pendingLog) {
-        if ("SUCCESS".equals(resolveParseStatus(pendingLog))) {
+        String parseStatus = resolveParseStatus(pendingLog);
+        if (VpnTrafficLogParseStatus.isSuccess(parseStatus)) {
             return null;
         }
-        if (!pendingLog.encrypted) {
-            return pendingLog.errorMessage;
+        if (VpnTrafficLogParseStatus.MINIMAL.equalsIgnoreCase(parseStatus)) {
+            return resolveString(R.string.show_sdk_vpn_log_minimal_metadata);
         }
-        return "HTTPS 明文抓取失败，请确认已安装并信任调试证书，且宿主应用允许信任用户证书";
+        if (!pendingLog.encrypted) {
+            return resolveString(R.string.show_sdk_vpn_log_http_partial_parse_failed);
+        }
+        return resolveString(R.string.show_sdk_vpn_log_https_partial_parse_failed);
     }
 
     @NonNull
@@ -205,6 +235,79 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
             return;
         }
         pendingLog.appPackageName = mIdentityResolver.resolvePackageName(uid);
+    }
+
+    /**
+     * 为什么这样做：请求或响应任一阶段到达时，先把时间、协议、主机和 URL 填上，才能确保后续即使正文解析失败也至少有一条能落库的最小日志。
+     */
+    private void seedBaseMetadata(@NonNull PendingLog pendingLog,
+                                  long eventTime,
+                                  boolean encrypted,
+                                  @Nullable String protocol,
+                                  @Nullable String method,
+                                  @Nullable String host,
+                                  @Nullable String url) {
+        if (pendingLog.startTime == 0L) {
+            pendingLog.startTime = eventTime;
+        }
+        if (pendingLog.timestamp == 0L) {
+            pendingLog.timestamp = eventTime;
+        }
+        if (pendingLog.endTime == 0L) {
+            pendingLog.endTime = eventTime;
+        }
+        pendingLog.encrypted = pendingLog.encrypted || encrypted;
+        if (pendingLog.protocol == null || pendingLog.protocol.trim().isEmpty()) {
+            pendingLog.protocol = protocol != null ? protocol : (encrypted ? "HTTPS" : "HTTP");
+        }
+        if (pendingLog.method == null || pendingLog.method.trim().isEmpty()) {
+            pendingLog.method = method;
+        }
+        if (pendingLog.host == null || pendingLog.host.trim().isEmpty()) {
+            pendingLog.host = host;
+        }
+        if ((pendingLog.url == null || pendingLog.url.trim().isEmpty()) && url != null && url.trim().length() > 0) {
+            pendingLog.url = url;
+        }
+        if ((pendingLog.url == null || pendingLog.url.trim().isEmpty())
+                && pendingLog.host != null
+                && pendingLog.host.trim().length() > 0) {
+            pendingLog.url = buildFallbackUrl(pendingLog.encrypted, pendingLog.host.trim());
+        }
+    }
+
+    /**
+     * 为什么这样做：最低兜底日志不能只剩一个空 host，至少要给出可点击的协议前缀，帮助开发者确认请求发生在哪个域名上。
+     */
+    @NonNull
+    private String buildFallbackUrl(boolean encrypted, @NonNull String host) {
+        return (encrypted ? "https://" : "http://") + host;
+    }
+
+    /**
+     * 为什么这样做：如果连 request / response 头体都没拿到，也要看是否至少保住了 url、host、时间这些最小元数据。
+     */
+    private boolean hasUsefulMetadata(@NonNull PendingLog pendingLog) {
+        return (pendingLog.host != null && pendingLog.host.trim().length() > 0)
+                || (pendingLog.url != null && pendingLog.url.trim().length() > 0)
+                || pendingLog.startTime > 0L
+                || pendingLog.timestamp > 0L
+                || (pendingLog.method != null && pendingLog.method.trim().length() > 0);
+    }
+
+    /**
+     * 为什么这样做：这里没有持有 Activity/Fragment，只能回退到 Application 资源读取提示文案，避免把用户可见文本硬编码进抓包链路。
+     */
+    @NonNull
+    private String resolveString(int resId) {
+        if (ShowLog.getApplicationInternal() != null) {
+            try {
+                return ShowLog.getApplicationInternal().getString(resId);
+            } catch (Throwable ignored) {
+                // 为什么这样做：资源读取失败不应阻断抓包记录，继续返回资源名比抛错更安全。
+            }
+        }
+        return String.valueOf(resId);
     }
 
     @NonNull
@@ -683,7 +786,7 @@ public class ShowLogNetBareHttpInterceptor extends HttpIndexedInterceptor {
             model.requestBytes = requestBytes;
             model.responseBytes = responseBytes;
             model.encrypted = encrypted;
-            model.parseStatus = parseStatus != null ? parseStatus : "PARTIAL";
+            model.parseStatus = VpnTrafficLogParseStatus.normalize(parseStatus);
             model.requestHeaders = requestHeaders;
             model.requestBody = decodeBody(requestBodyBytes, requestHeaders);
             model.responseHeaders = responseHeaders;

@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 
 import com.github.megatronking.netbare.gateway.VirtualGatewayFactory;
 import com.github.megatronking.netbare.http.HttpInterceptorFactory;
+import com.github.megatronking.netbare.http.HttpsFallbackLogCallback;
 import com.github.megatronking.netbare.http.HttpVirtualGatewayFactory;
 import com.github.megatronking.netbare.ip.IpAddress;
 import com.github.megatronking.netbare.net.Session;
@@ -81,8 +82,23 @@ public final class NetBareConfig {
      */
     public static NetBareConfig defaultHttpConfig(@NonNull JKS jks,
                                                   List<HttpInterceptorFactory> interceptors) {
+        return defaultHttpConfig(jks, interceptors, null);
+    }
+
+    /**
+     * Create a default config using {@link HttpVirtualGatewayFactory} for HTTP protocol.
+     *
+     * @param jks JSK instance, not null.
+     * @param interceptors A collection of {@link HttpInterceptorFactory}.
+     * @param fallbackLogCallback HTTPS 无证书时的兜底日志回调，允许宿主自己决定是否落库。
+     * @return A NetBare config instance.
+     */
+    public static NetBareConfig defaultHttpConfig(@NonNull JKS jks,
+                                                  List<HttpInterceptorFactory> interceptors,
+                                                  HttpsFallbackLogCallback fallbackLogCallback) {
         return defaultConfig().newBuilder()
-                .setVirtualGatewayFactory(new HttpVirtualGatewayFactory(jks, interceptors))
+                .setVirtualGatewayFactory(new HttpVirtualGatewayFactory(jks, interceptors,
+                        fallbackLogCallback))
                 .build();
     }
 

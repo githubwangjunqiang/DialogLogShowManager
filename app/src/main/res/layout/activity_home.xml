@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/demo_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_24"
+        tools:context=".ui.activity.HomeActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_page_title"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:text="@string/home_page_subtitle"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            app:cardBackgroundColor="@color/demo_surface"
+            app:cardCornerRadius="@dimen/dp_16"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/demo_status_info"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_16">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/demo_section_okhttp_title"
+                    android:textColor="@color/demo_text_primary"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_6"
+                    android:text="@string/demo_section_okhttp_desc"
+                    android:textColor="@color/demo_text_secondary"
+                    android:textSize="@dimen/sp_12" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_demo_okhttp_get"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:text="@string/demo_btn_okhttp_get"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_13"
+                    app:backgroundTint="@color/demo_button_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_demo_okhttp_post"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:text="@string/demo_btn_okhttp_post"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_13"
+                    app:backgroundTint="@color/demo_button_secondary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_demo_okhttp_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:text="@string/demo_btn_okhttp_error"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_13"
+                    app:backgroundTint="@color/demo_status_danger" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            app:cardBackgroundColor="@color/demo_surface"
+            app:cardCornerRadius="@dimen/dp_16"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/demo_button_secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_20">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_target_app_manager"
+                    android:textColor="@color/demo_text_primary"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:text="@string/home_target_app_manager_desc"
+                    android:textColor="@color/demo_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_open_target_manager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/home_open_target_app_manager"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_14"
+                    app:backgroundTint="@color/demo_button_primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            app:cardBackgroundColor="@color/demo_surface"
+            app:cardCornerRadius="@dimen/dp_16"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/demo_button_secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_20">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_network_test_lab"
+                    android:textColor="@color/demo_text_primary"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:text="@string/home_network_test_lab_desc"
+                    android:textColor="@color/demo_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_open_network_lab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/home_open_network_test_lab"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_14"
+                    app:backgroundTint="@color/demo_button_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            app:cardBackgroundColor="@color/demo_surface"
+            app:cardCornerRadius="@dimen/dp_16"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/demo_button_secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_20">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_open_console"
+                    android:textColor="@color/demo_text_primary"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:text="@string/home_open_console_desc"
+                    android:textColor="@color/demo_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_open_console"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:text="@string/home_open_console_action"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_14"
+                    app:backgroundTint="@color/demo_status_info" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

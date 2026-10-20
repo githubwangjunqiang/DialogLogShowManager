@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_showlog_dialog"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/dp_20"
+    android:paddingTop="@dimen/dp_20"
+    android:paddingEnd="@dimen/dp_20"
+    android:paddingBottom="@dimen/dp_16">
+
+    <!-- 弹窗标题 -->
+    <TextView
+        android:id="@+id/tv_delete_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除日志"
+        android:textColor="@color/showlog_text_primary"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <!-- 目标内容与说明 -->
+    <TextView
+        android:id="@+id/tv_delete_dialog_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_12"
+        android:lineSpacingExtra="3dp"
+        android:text="确定删除这条网络日志记录吗？"
+        android:textColor="@color/showlog_text_secondary"
+        android:textSize="@dimen/sp_13" />
+
+    <!-- 确认删除按钮（高亮警示红） -->
+    <TextView
+        android:id="@+id/btn_confirm_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:background="@drawable/bg_showlog_tab_error_selected"
+        android:gravity="center"
+        android:padding="@dimen/dp_12"
+        android:text="确认删除"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_13"
+        android:textStyle="bold" />
+
+    <!-- 取消按钮 -->
+    <TextView
+        android:id="@+id/btn_cancel_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        android:text="@string/showlog_cancel"
+        android:textColor="@color/showlog_text_tertiary"
+        android:textSize="@dimen/sp_13" />
+</LinearLayout>

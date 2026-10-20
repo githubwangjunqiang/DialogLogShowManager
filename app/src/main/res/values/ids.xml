@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 为什么这样做：窗口内边距需要保存布局的原始 padding，避免状态栏 inset 重复叠加。 -->
+    <item name="tag_original_padding" type="id" />
+</resources>

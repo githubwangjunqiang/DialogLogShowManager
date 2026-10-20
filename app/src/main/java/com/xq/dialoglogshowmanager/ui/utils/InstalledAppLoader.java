@@ -50,13 +50,19 @@ public final class InstalledAppLoader {
                 continue;
             }
             String packageName = resolveInfo.activityInfo.packageName;
+            ApplicationInfo applicationInfo = resolveInfo.activityInfo.applicationInfo;
             CharSequence label = resolveInfo.loadLabel(packageManager);
             String appName = label != null && label.length() > 0
                     ? label.toString()
                     : packageName;
             uniqueApps.put(
                     packageName,
-                    new InstalledAppInfo(appName, packageName)
+                    new InstalledAppInfo(
+                            appName,
+                            packageName,
+                            applicationInfo.targetSdkVersion,
+                            isSystemApp(applicationInfo)
+                    )
             );
         }
         ArrayList<InstalledAppInfo> installedApps =
@@ -69,6 +75,14 @@ public final class InstalledAppLoader {
                     : first.packageName.compareTo(second.packageName);
         });
         return installedApps;
+    }
+
+    /**
+     * 为什么这样做：系统应用和普通应用在网络权限、证书策略以及可见性上都有差异，必须显式区分后再做状态提示。
+     */
+    private static boolean isSystemApp(@NonNull ApplicationInfo applicationInfo) {
+        return (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0
+                || (applicationInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
     }
 
     /**
@@ -96,6 +110,39 @@ public final class InstalledAppLoader {
             return applicationInfo != null;
         } catch (PackageManager.NameNotFoundException exception) {
             return false;
+        }
+    }
+
+    /**
+     * 为什么这样做：如果目标 App 没有桌面入口，列表里可能不会出现它，但详情页仍然需要通过包名拿到应用名和静态信息。
+     */
+    @NonNull
+    public static InstalledAppInfo loadSingle(@NonNull Context context,
+                                              @NonNull String packageName) {
+        PackageManager packageManager =
+                context.getApplicationContext().getPackageManager();
+        try {
+            ApplicationInfo applicationInfo;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                applicationInfo = packageManager.getApplicationInfo(
+                        packageName,
+                        PackageManager.ApplicationInfoFlags.of(0L)
+                );
+            } else {
+                applicationInfo = getApplicationInfoLegacy(packageManager, packageName);
+            }
+            CharSequence label = applicationInfo.loadLabel(packageManager);
+            String appName = label != null && label.length() > 0
+                    ? label.toString()
+                    : packageName;
+            return new InstalledAppInfo(
+                    appName,
+                    packageName,
+                    applicationInfo.targetSdkVersion,
+                    isSystemApp(applicationInfo)
+            );
+        } catch (PackageManager.NameNotFoundException exception) {
+            return new InstalledAppInfo(packageName, packageName, 0, false);
         }
     }
 

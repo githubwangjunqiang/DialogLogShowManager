@@ -1,262 +1,368 @@
 package com.xq.dialoglogshow;
 
+import android.app.Activity;
 import android.app.Application;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Bundle;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
 
-import com.xq.dialoglogshow.collector.vpn.VpnController;
-import com.xq.dialoglogshow.collector.vpn.VpnCapturePackageStore;
-import com.xq.dialoglogshow.collector.vpn.netbare.ShowLogNetBareManager;
-import com.xq.dialoglogshow.collector.vpn.repository.VpnTrafficLogRepository;
-import com.xq.dialoglogshow.config.InternalDefaultShowLogProvider;
-import com.xq.dialoglogshow.config.ShowLogProvider;
-import com.xq.dialoglogshow.model.VpnTrafficLogModel;
-import com.xq.dialoglogshow.utils.ShowLogActivityUtils;
+import com.xq.dialoglogshow.core.config.ShowLogConfig;
+import com.xq.dialoglogshow.core.custom.CustomPanelManager;
+import com.xq.dialoglogshow.core.custom.CustomPanelProvider;
+import com.xq.dialoglogshow.core.interceptor.ShowLogOkHttpInterceptor;
+import com.xq.dialoglogshow.core.model.HttpLogRecord;
+import com.xq.dialoglogshow.core.repository.HttpLogRepository;
+import com.xq.dialoglogshow.ui.dialog.HttpLogConsoleDialog;
+import com.xq.dialoglogshow.ui.dialog.ShowLogHubDialog;
+import com.xq.dialoglogshow.ui.view.HttpLogFloatView;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import okhttp3.Interceptor;
 
 /**
- * Description: 极简 SDK 顶层门面类
- * 为什么这样做：提供极简的 ShowLog.init(...) 单行静态入口，方便开发者在 Application 中初始化，
- * 避免记复杂的内部 Manager 实例方法。
- *
- * Author: 王俊强 980766134@qq.com
- * Date: 2026/07/22
+ * ShowLog 唯一顶层门面类。
+ * 为什么这样做：
+ * 1. 采用门面模式（Facade），将内部仓储、SQLite 数据库、悬浮球生命周期以及 OkHttp 拦截器全部封装在极简门面之后；
+ * 2. 开发者只需在 Application 中调用 ShowLog.init(this) 即可完成所有准备工作，零学习成本；
+ * 3. 内部自动通过 ActivityLifecycleCallbacks 接管悬浮球挂载，宿主不需要申请 SYSTEM_ALERT_WINDOW 危险权限。
  */
 public final class ShowLog {
 
-    /**
-     * 为什么这样做：Application 是所有 VPN、仓库和生命周期能力的进程级根上下文，只保留应用实例可避免泄漏 Activity。
-     */
-    private static volatile Application application;
-
-    /**
-     * 为什么这样做：SDK 内部只消费统一默认代理，避免各调用点分别处理宿主返回的空值。
-     */
-    private static volatile InternalDefaultShowLogProvider internalProvider;
-
-    /**
-     * 为什么这样做：前后台巡检与自动恢复需要读取初始化时确定的能力开关，统一保存可避免不同组件各自猜测。
-     */
-    private static volatile boolean vpnNetworkLogEnabled;
+    private static volatile Application sApplication;
+    private static volatile ShowLogConfig sConfig;
+    private static volatile ShowLogOkHttpInterceptor sOkHttpInterceptor;
+    private static volatile com.xq.dialoglogshow.core.interceptor.HttpLogBusinessJudger sBusinessJudger;
+    private static volatile boolean sEnabled = true;
+    private static volatile java.lang.ref.WeakReference<Activity> sCurrentActivityRef;
 
     private ShowLog() {
-        // 为什么这样做：ShowLog 只承载唯一静态接入入口，禁止实例化可避免开发者误以为需要持有 SDK 对象。
     }
 
     /**
-     * SDK 唯一初始化入口。
-     * 为什么这样做：VPN 能力开关由 Provider 强制声明，因此初始化只固定接收 Application 和 Provider，不再出现重载或隐藏默认值。
+     * 判断当前是否启用了日志调试监控（生产环境关闭时返回 false）。
+     */
+    public static boolean isEnabled() {
+        return sEnabled;
+    }
+
+    /**
+     * 动态设置是否启用日志调试监控。
+     * 为什么这样做：
+     * 1. 当传入 false 时（生产环境或用户临时关闭），OkHttp 拦截器直接 100% 直通放行，绝不产生克隆 Buffer 与任何性能损耗；
+     * 2. 悬浮球自动从当前界面隐去，控制台与上报接口静默无感，无需修改业务接入代码。
+     */
+    public static synchronized void setEnabled(boolean enabled) {
+        sEnabled = enabled;
+        if (!enabled) {
+            if (sCurrentActivityRef != null) {
+                Activity activity = sCurrentActivityRef.get();
+                if (activity != null) {
+                    detachFloatView(activity);
+                }
+            }
+        } else {
+            if (sConfig != null && sConfig.showFloatingView && sCurrentActivityRef != null) {
+                Activity activity = sCurrentActivityRef.get();
+                if (activity != null && !activity.isFinishing()) {
+                    attachFloatView(activity);
+                }
+            }
+        }
+    }
+
+    /**
+     * 极简初始化（使用默认配置：保留最新 10000 条日志，自动开启免权限悬浮球）。
      *
      * @param application 宿主 Application
-     * @param provider    开发者实现的 ShowLogProvider 契约接口实例
      */
-    public static synchronized void init(@NonNull Application application, @NonNull ShowLogProvider provider) {
-        if (application == null) {
-            throw new IllegalArgumentException("Application cannot be null");
-        }
-        if (provider == null) {
-            throw new IllegalArgumentException("ShowLogProvider cannot be null");
-        }
-        boolean enableVpnNetworkLog = provider.isVpnNetworkLogEnabled();
-        InternalDefaultShowLogProvider newProvider = new InternalDefaultShowLogProvider(application, provider);
-        InternalDefaultShowLogProvider oldProvider = internalProvider;
-
-        // 为什么这样做：必须先发布完整运行时状态再初始化 NetBare，避免其异步证书或监听链路回读到半初始化数据。
-        ShowLog.application = application;
-        ShowLog.vpnNetworkLogEnabled = enableVpnNetworkLog;
-        ShowLog.internalProvider = newProvider;
-
-        // 为什么这样做：NetBare 必须在任何权限检查和自动恢复之前持有 Application，从根源避免 VpnService.prepare 收到 null。
-        ShowLogNetBareManager.getInstance().initializeInternal(application, newProvider.isDebug());
-        registerLifecycleCallbacks(application, newProvider.isDebug(), enableVpnNetworkLog);
-
-        if (oldProvider != null && oldProvider != newProvider) {
-            oldProvider.release();
-        }
-
-        // 为什么这样做：Android 12+ 禁止普通后台状态拉起前台服务，初始化阶段只保存恢复意图，真正启动统一等首个 Activity 可见后执行。
-        if (enableVpnNetworkLog) {
-            return;
-        }
-        // 为什么这样做：只有在 VPN 已经运行时才主动下发停止指令，避免宿主本来就关闭 VPN 功能时仍在 Application 启动阶段多发一次无意义的 Service 调用。
-        if (VpnController.getInstance().isVpnRunning()) {
-            VpnController.getInstance().stopVpn(application);
-        }
+    public static void init(@NonNull Application application) {
+        init(application, ShowLogConfig.defaultConfig());
     }
 
     /**
-     * 获取 SDK 内部代理包装后的 Provider（绝对安全防空）
+     * 自定义配置初始化。
      *
-     * @return InternalDefaultShowLogProvider
+     * @param application 宿主 Application
+     * @param config      自定义配置对象
+     */
+    public static synchronized void init(@NonNull Application application, @NonNull ShowLogConfig config) {
+        if (application == null) {
+            throw new IllegalArgumentException("Application cannot be null!");
+        }
+        if (config == null) {
+            config = ShowLogConfig.defaultConfig();
+        }
+
+        sApplication = application;
+        sConfig = config;
+        sEnabled = config.enabled;
+
+        // 1. 初始化双层高性能仓储与数据库
+        HttpLogRepository.initialize(application, config);
+
+        // 2. 预热 OkHttp 拦截器单例
+        sOkHttpInterceptor = new ShowLogOkHttpInterceptor(config);
+
+        // 3. 注册生命周期接管 Activity 悬浮球挂载
+        registerFloatingLifecycle(application);
+    }
+
+    /**
+     * 获取开箱即用的 OkHttp 拦截器实例。
+     * 开发者在 OkHttpClient.Builder 中仅需调用：.addInterceptor(ShowLog.getOkHttpInterceptor())
+     *
+     * @return okhttp3.Interceptor 实例
      */
     @NonNull
-    public static ShowLogProvider getProvider() {
-        InternalDefaultShowLogProvider provider = internalProvider;
-        if (provider == null) {
-            throw new IllegalStateException("ShowLog SDK has not been initialized. Please call ShowLog.init(application, provider) first.");
+    public static Interceptor getOkHttpInterceptor() {
+        if (sOkHttpInterceptor == null) {
+            throw new IllegalStateException("ShowLog has not been initialized! Please call ShowLog.init(application) in Application.onCreate() first.");
         }
-        return provider;
+        return sOkHttpInterceptor;
     }
 
     /**
-     * 获取 SDK Application。
-     * 为什么这样做：Android Library 不具备 Java 模块级友元可见性，受限方法让跨包内部组件共享根上下文，同时避免重新暴露 Manager 类。
+     * 设置自定义业务成功裁决拦截器。
+     * 为什么这样做：
+     * 宿主接入自动拦截时，不同接口的业务成功标准各异（例如 HTTP 200 但业务 json code != 0 实际为失败）。
+     * 配置该拦截器后，OkHttp 拦截器会自动将报文上下文交给业务判断，并在数据库与控制台中如实以业务成功与否呈现。
+     */
+    public static void setBusinessJudger(@Nullable com.xq.dialoglogshow.core.interceptor.HttpLogBusinessJudger judger) {
+        sBusinessJudger = judger;
+    }
+
+    /**
+     * 获取当前配置的自定义业务成功裁决拦截器。
      */
     @Nullable
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static Application getApplicationInternal() {
-        return application;
+    public static com.xq.dialoglogshow.core.interceptor.HttpLogBusinessJudger getBusinessJudger() {
+        return sBusinessJudger;
     }
 
     /**
-     * 获取 VPN 网络日志能力开关。
-     * 为什么这样做：仅供 SDK 的巡检与恢复链路读取初始化快照，宿主配置仍统一从 Provider 提供。
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static boolean isVpnNetworkLogEnabledInternal() {
-        return vpnNetworkLogEnabled;
-    }
-
-    /**
-     * 动态设置需要额外抓取的 App 包名。
-     * 为什么这样做：宿主 App 始终是默认目标，独立门面 API 可在不破坏 ShowLogProvider 既有实现的前提下动态扩展其它 App。
+     * 强契约非 OkHttp / 自定义网络库日志上报入口。
+     * 为什么这样做：
+     * 利用纯抽象接口 HttpLogPayload 强制要求开发者覆盖所有属性方法，IDE 一键补全避免文档翻找；
+     * 自动完成 JSONObject 美化序列化、业务 success 状态与异常堆栈解析入库。
      *
-     * @param packageNames 额外目标 applicationId/packageName；传 null 或空集合恢复为仅宿主 App
+     * @param payload 纯抽象上报载荷接口实现
      */
-    public static synchronized void setVpnCapturePackageNames(
-            @Nullable Collection<String> packageNames) {
-        Application currentApplication = requireApplication();
-        Set<String> oldEffectivePackages =
-                VpnCapturePackageStore.getEffectivePackageNames(currentApplication);
-        VpnCapturePackageStore.saveExtraPackageNames(
-                currentApplication,
-                packageNames != null ? packageNames : Collections.emptySet()
-        );
-        Set<String> newEffectivePackages =
-                VpnCapturePackageStore.getEffectivePackageNames(currentApplication);
-        if (oldEffectivePackages.equals(newEffectivePackages)) {
+    public static void report(@NonNull com.xq.dialoglogshow.core.model.HttpLogPayload payload) {
+        if (!sEnabled || payload == null) {
             return;
         }
-        ShowLogNetBareManager.getInstance()
-                .applyCapturePackageChanges(currentApplication);
+        report(HttpLogRecord.fromPayload(payload));
     }
 
     /**
-     * 获取当前最终生效的抓包目标。
-     * 为什么这样做：返回值包含宿主 App，开发者可以直接核对实际白名单，而不必自己合并默认值。
+     * 开放式极简数据上报入口（供非 OkHttp 或自定义网络库使用）。
+     *
+     * @param record 构造好的网络日志记录
+     */
+    public static void report(@NonNull HttpLogRecord record) {
+        if (!sEnabled || record == null) {
+            return;
+        }
+        HttpLogRepository.getInstance().enqueueLog(record);
+    }
+
+    /**
+     * 呼出 ShowLog 全景调试中枢（默认自动定位至上次浏览的 Tab，或网络日志）。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void show(@NonNull Activity activity) {
+        if (!sEnabled || activity == null || activity.isFinishing()) {
+            return;
+        }
+        new ShowLogHubDialog(activity).show();
+    }
+
+    /**
+     * 呼出 ShowLog 全景调试中枢并精准定位到指定 Tab。
+     *
+     * @param activity   宿主 Activity 上下文
+     * @param initialTab 初始选中的 Tab：ShowLogHubDialog.TAB_NETWORK / TAB_DEVICE / TAB_CUSTOM
+     */
+    public static void show(@NonNull Activity activity, int initialTab) {
+        if (!sEnabled || activity == null || activity.isFinishing()) {
+            return;
+        }
+        new ShowLogHubDialog(activity, initialTab).show();
+    }
+
+    /**
+     * 呼出网络日志调试面板（兼容旧调用，直接定位到中枢网络日志 Tab）。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void showConsole(@NonNull Activity activity) {
+        show(activity, ShowLogHubDialog.TAB_NETWORK);
+    }
+
+    /**
+     * 呼出网络日志调试面板。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void showNetworkLogs(@NonNull Activity activity) {
+        show(activity, ShowLogHubDialog.TAB_NETWORK);
+    }
+
+    /**
+     * 呼出设备与应用系统全景信息看板（定位至中枢设备信息 Tab）。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void showAppDeviceInfo(@NonNull Activity activity) {
+        show(activity, ShowLogHubDialog.TAB_DEVICE);
+    }
+
+    /**
+     * 呼出自定义扩展面板（定位至中枢自定义扩展 Tab）。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void showCustomPanel(@NonNull Activity activity) {
+        show(activity, ShowLogHubDialog.TAB_CUSTOM);
+    }
+
+    /**
+     * 注册业务自定义面板。
+     *
+     * @param title    Tab 显示标题（例如 "业务环境"、"Mock控制" 等，为 null 时使用默认标题）
+     * @param provider 面板提供者
+     */
+    public static void registerCustomPanel(@Nullable String title, @NonNull CustomPanelProvider provider) {
+        CustomPanelManager.getInstance().registerCustomPanel(title, provider);
+    }
+
+    /**
+     * 动态设置 VPN 额外抓取的目标应用包名。
+     */
+    public static synchronized void setVpnCapturePackageNames(@Nullable java.util.Collection<String> packageNames) {
+        if (sApplication == null) return;
+        com.xq.dialoglogshow.collector.vpn.VpnCapturePackageStore.saveExtraPackageNames(
+                sApplication,
+                packageNames != null ? packageNames : java.util.Collections.emptySet()
+        );
+        com.xq.dialoglogshow.collector.vpn.netbare.ShowLogNetBareManager.getInstance()
+                .applyCapturePackageChanges(sApplication);
+    }
+
+    /**
+     * 获取当前生效的全部抓包目标包名（含宿主自身）。
      */
     @NonNull
-    public static Set<String> getVpnCapturePackageNames() {
-        return VpnCapturePackageStore.getEffectivePackageNames(requireApplication());
+    public static java.util.Set<String> getVpnCapturePackageNames() {
+        if (sApplication == null) return java.util.Collections.emptySet();
+        return com.xq.dialoglogshow.collector.vpn.VpnCapturePackageStore.getEffectivePackageNames(sApplication);
     }
 
     /**
      * 恢复为仅抓取宿主 App。
      */
     public static void resetVpnCapturePackageNames() {
-        setVpnCapturePackageNames(Collections.emptySet());
+        setVpnCapturePackageNames(java.util.Collections.emptySet());
     }
 
     /**
-     * 异步查询指定 App 在时间范围内的 VPN 日志。
-     * 为什么这样做：数据库读取不能阻塞宿主主线程，统一借用 SDK 已约定的后台 Executor，并把结果切回主线程交付。
-     *
-     * @param appPackageName 目标 applicationId/packageName
-     * @param startTime      开始时间，包含
-     * @param endTime        结束时间，不包含
-     * @param callback       查询结果回调
+     * 获取全局 Application 上下文。
      */
-    public static void queryVpnLogsByApp(@NonNull String appPackageName,
-                                         long startTime,
-                                         long endTime,
-                                         @NonNull VpnLogQueryCallback callback) {
-        if (appPackageName == null || appPackageName.trim().isEmpty()) {
-            throw new IllegalArgumentException("appPackageName cannot be empty");
-        }
-        if (callback == null) {
-            throw new IllegalArgumentException("callback cannot be null");
-        }
-        requireApplication();
-        Handler mainHandler = new Handler(Looper.getMainLooper());
-        try {
-            getProvider().getLoadExecutor().execute(() -> {
-                try {
-                    ArrayList<VpnTrafficLogModel> logs = VpnTrafficLogRepository
-                            .getInstance()
-                            .queryLogsByAppAndRange(
-                                    appPackageName.trim(),
-                                    startTime,
-                                    endTime
-                            );
-                    mainHandler.post(() -> callback.onQueryResult(logs));
-                } catch (RuntimeException exception) {
-                    mainHandler.post(() -> callback.onQueryError(exception));
-                }
-            });
-        } catch (RuntimeException exception) {
-            // 为什么这样做：宿主 Executor 可能已经关闭或拒绝任务，此时也必须通过统一回调交付错误，不能让调用方永久等待。
-            mainHandler.post(() -> callback.onQueryError(exception));
-        }
+    @Nullable
+    public static Application getApplication() {
+        return sApplication;
+    }
+
+    @Nullable
+    public static Application getApplicationInternal() {
+        return sApplication;
+    }
+
+    public static boolean isVpnNetworkLogEnabledInternal() {
+        return true;
     }
 
     /**
-     * VPN 日志异步查询回调。
-     * 为什么这样做：结果与异常分开交付，宿主既不会在主线程访问数据库，也不会因 SDK 查询失败而丢失诊断信息。
-     */
-    public interface VpnLogQueryCallback {
-
-        /**
-         * 查询完成。
-         */
-        void onQueryResult(@NonNull ArrayList<VpnTrafficLogModel> logs);
-
-        /**
-         * 查询失败。
-         */
-        void onQueryError(@NonNull Throwable throwable);
-    }
-
-    /**
-     * 获取已初始化的 Application。
-     * 为什么这样做：所有新增动态 API 都依赖进程级状态，统一校验可避免每个入口产生不同的未初始化行为。
+     * 获取全局配置。
      */
     @NonNull
-    private static Application requireApplication() {
-        Application currentApplication = application;
-        if (currentApplication == null) {
-            throw new IllegalStateException("ShowLog SDK has not been initialized. Please call ShowLog.init(application, provider) first.");
-        }
-        return currentApplication;
+    public static ShowLogConfig getConfig() {
+        return sConfig != null ? sConfig : ShowLogConfig.defaultConfig();
     }
 
-    /**
-     * 注册 SDK 生命周期监听。
-     * 为什么这样做：悬浮入口和 VPN 前后台巡检共用同一监听器，统一重注册可保证重复初始化时不会叠加回调。
-     */
-    private static void registerLifecycleCallbacks(@NonNull Application application,
-                                                   boolean debugEnabled,
-                                                   boolean vpnEnabled) {
-        ShowLogActivityUtils lifecycleCallbacks = ShowLogActivityUtils.getInstance();
-        lifecycleCallbacks.open = debugEnabled;
+    private static void registerFloatingLifecycle(@NonNull Application application) {
+        application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity) {
+                // 为什么这样做：在 Resumed 时记录当前前台 Activity，并按状态决定是否挂载悬浮球
+                sCurrentActivityRef = new java.lang.ref.WeakReference<>(activity);
+                attachFloatView(activity);
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity) {
+                // 为什么这样做：在 Paused 时安全移除，防止跨页面遮挡或持有旧 Activity 造成泄漏
+                detachFloatView(activity);
+                if (sCurrentActivityRef != null && sCurrentActivityRef.get() == activity) {
+                    sCurrentActivityRef = null;
+                }
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity) {
+                detachFloatView(activity);
+                if (sCurrentActivityRef != null && sCurrentActivityRef.get() == activity) {
+                    sCurrentActivityRef = null;
+                }
+            }
+        });
+    }
+
+    private static final String FLOAT_VIEW_TAG = "SHOWLOG_FLOAT_VIEW_TAG";
+
+    private static void attachFloatView(@NonNull Activity activity) {
         try {
-            application.unregisterActivityLifecycleCallbacks(lifecycleCallbacks);
-        } catch (Exception ignored) {
+            ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+            // 为什么这样做：如果全局调试已关闭，或者配置不展示悬浮球，确保彻底从界面上移除
+            if (!sEnabled || (sConfig != null && !sConfig.showFloatingView)) {
+                detachFloatView(activity);
+                return;
+            }
+            if (decorView.findViewWithTag(FLOAT_VIEW_TAG) == null) {
+                HttpLogFloatView floatView = new HttpLogFloatView(activity);
+                floatView.setTag(FLOAT_VIEW_TAG);
+                decorView.addView(floatView);
+            }
+        } catch (Throwable ignored) {
         }
-        if (!debugEnabled && !vpnEnabled) {
-            return;
-        }
+    }
+
+    private static void detachFloatView(@NonNull Activity activity) {
         try {
-            application.registerActivityLifecycleCallbacks(lifecycleCallbacks);
-        } catch (Exception exception) {
-            exception.printStackTrace();
+            ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+            HttpLogFloatView floatView = decorView.findViewWithTag(FLOAT_VIEW_TAG);
+            if (floatView != null) {
+                decorView.removeView(floatView);
+            }
+        } catch (Throwable ignored) {
         }
     }
 }

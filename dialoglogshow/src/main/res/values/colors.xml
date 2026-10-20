@@ -5,4 +5,22 @@
     <color name="show_sdk_vpn_status_text">#E4E4E7</color>
     <color name="show_sdk_vpn_tip_text">#A1A1AA</color>
     <color name="show_sdk_vpn_action_text">#06B6D4</color>
+
+    <!-- 全新暗黑现代控制台配色方案 -->
+    <color name="showlog_bg_primary">#121214</color>
+    <color name="showlog_bg_surface">#1A1A1E</color>
+    <color name="showlog_bg_card">#222228</color>
+    <color name="showlog_bg_card_stroke">#33333D</color>
+    <color name="showlog_bg_pill">#2C2C36</color>
+    <color name="showlog_bg_pill_selected">#3B82F6</color>
+    <color name="showlog_text_primary">#F4F4F5</color>
+    <color name="showlog_text_secondary">#A1A1AA</color>
+    <color name="showlog_text_tertiary">#71717A</color>
+    <color name="showlog_text_method">#38BDF8</color>
+    <color name="showlog_status_2xx">#22C55E</color>
+    <color name="showlog_status_3xx">#3B82F6</color>
+    <color name="showlog_status_4xx">#F59E0B</color>
+    <color name="showlog_status_5xx">#EF4444</color>
+    <color name="showlog_status_error">#DC2626</color>
+    <color name="showlog_action_btn">#0EA5E9</color>
 </resources>

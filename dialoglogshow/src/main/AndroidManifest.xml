@@ -55,9 +55,6 @@
             android:exported="false"
             android:finishOnTaskLaunch="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity
-            android:name=".activity.FileShareActivity"
-            android:exported="false" />
 
         <service
             android:name=".collector.vpn.tunnel.ShowLogVpnService"

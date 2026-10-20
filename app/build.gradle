@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 configurations.configureEach {
@@ -29,10 +30,18 @@ android {
     buildFeatures {
         // 为什么这样做：当前联调入口通过 BuildConfig.DEBUG 严格限制只在 debug 包生效；显式开启 buildConfig 生成，避免不同 AGP 默认值差异导致编译失败。
         buildConfig true
+        compose true
+    }
+    composeOptions {
+        // 为什么这样做：项目当前 Kotlin 版本是 1.8.22，使用官方兼容的 Compose 编译器，避免升级全工程 Kotlin 造成无关回归。
+        kotlinCompilerExtensionVersion '1.4.8'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
     }
     namespace 'com.xq.dialoglogshowmanager'
 }
@@ -43,6 +52,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.2'
+    implementation platform('androidx.compose:compose-bom:2023.10.01')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.compose.material3:material3:1.1.2'
+    implementation 'androidx.compose.material3:material3-window-size-class:1.1.2'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation files('libs/nativelib-release.aar')
     // 为什么这样做：NetBare 依赖旧版 guava 19.0，本工程其它 AndroidX 传递依赖会额外带入 listenablefuture 单独工件；这里显式排除后者，避免安装包阶段出现重复类冲突。
     implementation(project(path: ':dialoglogshow')) {

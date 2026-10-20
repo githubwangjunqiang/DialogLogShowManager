@@ -18,19 +18,62 @@
         android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
         android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
         android:textColor="@color/show_sdk_vpn_action_text"
-        android:textSize="14sp" />
+        android:textSize="@dimen/show_sdk_vpn_action_text_size" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/show_sdk_vpn_header_block_margin_top"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/show_sdk_id_vpn_log_header_filter_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:paddingLeft="@dimen/show_sdk_vpn_action_padding_horizontal"
+            android:paddingTop="@dimen/show_sdk_vpn_action_padding_vertical"
+            android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
+            android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
+            android:text="@string/show_sdk_vpn_log_filter_app"
+            android:textColor="@color/show_sdk_vpn_action_text"
+            android:textSize="@dimen/show_sdk_vpn_action_text_size" />
+
+        <TextView
+            android:id="@+id/show_sdk_id_vpn_log_header_all_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/show_sdk_vpn_header_button_gap"
+            android:background="@drawable/show_sdk_btn_dark_bg"
+            android:paddingLeft="@dimen/show_sdk_vpn_action_padding_horizontal"
+            android:paddingTop="@dimen/show_sdk_vpn_action_padding_vertical"
+            android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
+            android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
+            android:text="@string/show_sdk_vpn_log_filter_all"
+            android:textColor="@color/show_sdk_vpn_action_text"
+            android:textSize="@dimen/show_sdk_vpn_action_text_size" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/show_sdk_id_vpn_log_header_cert_action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/show_sdk_vpn_action_margin_top"
+        android:layout_marginTop="@dimen/show_sdk_vpn_header_block_margin_top"
         android:background="@drawable/show_sdk_btn_dark_bg"
         android:paddingLeft="@dimen/show_sdk_vpn_action_padding_horizontal"
         android:paddingTop="@dimen/show_sdk_vpn_action_padding_vertical"
         android:paddingRight="@dimen/show_sdk_vpn_action_padding_horizontal"
         android:paddingBottom="@dimen/show_sdk_vpn_action_padding_vertical"
+        android:text="@string/show_sdk_vpn_install_certificate"
         android:textColor="@color/show_sdk_vpn_action_text"
-        android:textSize="14sp" />
+        android:textSize="@dimen/show_sdk_vpn_action_text_size" />
+
+    <TextView
+        android:id="@+id/show_sdk_id_vpn_log_header_filter_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/show_sdk_vpn_filter_state_margin_top"
+        android:textColor="@color/show_sdk_vpn_tip_text"
+        android:textSize="@dimen/show_sdk_vpn_filter_state_text_size" />
 
 </LinearLayout>

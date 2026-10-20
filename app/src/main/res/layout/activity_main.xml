@@ -1,190 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/network_test_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A"
+    android:background="@color/demo_background"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="vertical"
-        android:padding="24dp"
+        android:padding="@dimen/dp_24"
         tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_demo_title_welcome"
-        android:textColor="#F8FAFC"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tv_vpn_guide"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="#CBD5E1"
-        android:textSize="13sp" />
-
-    <TextView
-        android:id="@+id/tv_capture_app_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_24"
-        android:text="@string/capture_app_title"
-        android:textColor="@color/demo_text_primary"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tv_current_capture_app"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:textColor="@color/demo_text_secondary"
-        android:textSize="@dimen/sp_13"
-        tools:text="当前抓包 App：com.example.app" />
-
-    <EditText
-        android:id="@+id/et_capture_app_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_12"
-        android:autofillHints="none"
-        android:hint="@string/capture_app_hint"
-        android:imeOptions="actionDone"
-        android:inputType="textNoSuggestions"
-        android:maxLines="1"
-        android:padding="@dimen/dp_12"
-        android:singleLine="true"
-        android:textColor="@color/demo_text_primary"
-        android:textColorHint="@color/demo_text_hint"
-        android:textSize="@dimen/sp_14" />
-
-    <!-- 为什么这样做：这里是两个同等重要的业务操作按钮而非系统对话框 ButtonBar，需要保留实色主次样式。 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_12"
-        android:orientation="horizontal"
-        tools:ignore="ButtonStyle">
-
-        <Button
-            android:id="@+id/btn_select_installed_app"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_6"
-            android:layout_weight="1"
-            android:backgroundTint="@color/demo_button_secondary"
-            android:text="@string/select_installed_app"
-            android:textColor="@color/white"
+            android:text="@string/network_test_page_title"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:text="@string/network_test_page_subtitle"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13" />
+
+        <TextView
+            android:id="@+id/tv_vpn_guide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            android:textColor="@color/demo_text_secondary"
             android:textSize="@dimen/sp_13" />
 
         <Button
-            android:id="@+id/btn_apply_capture_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_6"
-            android:layout_weight="1"
+            android:id="@+id/btn_open_console"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_24"
             android:backgroundTint="@color/demo_button_primary"
-            android:text="@string/apply_capture_app"
+            android:text="@string/app_demo_btn_open_console"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_13" />
-    </LinearLayout>
+            android:textSize="@dimen/sp_15" />
 
-    <TextView
-        android:id="@+id/tv_capture_app_hint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:text="@string/capture_app_empty_hint"
-        android:textColor="@color/demo_text_hint"
-        android:textSize="@dimen/sp_12" />
+        <Button
+            android:id="@+id/btn_check_status"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_16"
+            android:backgroundTint="@color/demo_button_secondary"
+            android:text="@string/app_demo_btn_toggle_debug"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_open_console"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="@dimen/dp_24"
-        android:backgroundTint="#3B82F6"
-        android:text="@string/app_demo_btn_open_console"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_test_get"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_16"
+            android:backgroundTint="@color/demo_status_success"
+            android:text="@string/test_http_get"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_check_status"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#334155"
-        android:text="@string/app_demo_btn_toggle_debug"
-        android:textColor="#E2E8F0"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_test_post"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_12"
+            android:backgroundTint="@color/demo_status_info"
+            android:text="@string/test_https_post"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_test_get"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#059669"
-        android:text="@string/test_http_get"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_test_error"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_12"
+            android:backgroundTint="@color/demo_status_danger"
+            android:text="@string/test_http_error"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_test_post"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#0891B2"
-        android:text="@string/test_https_post"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_okhttp_weather"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_12"
+            android:backgroundTint="@color/demo_status_warning"
+            android:text="@string/test_okhttp_weather_get"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_test_error"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#DC2626"
-        android:text="@string/test_http_error"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_okhttp_form"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_12"
+            android:backgroundTint="@color/demo_surface_alt"
+            android:text="@string/test_okhttp_form_post"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
-    <Button
-        android:id="@+id/btn_okhttp_weather"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#8B5CF6"
-        android:text="@string/test_okhttp_weather_get"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
-
-    <Button
-        android:id="@+id/btn_okhttp_form"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#D97706"
-        android:text="@string/test_okhttp_form_post"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
-
-    <Button
-        android:id="@+id/btn_okhttp_json"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#EC4899"
-        android:text="@string/test_okhttp_json_post"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_okhttp_json"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/dp_12"
+            android:backgroundTint="@color/demo_status_neutral"
+            android:text="@string/test_okhttp_json_post"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_15" />
 
     </LinearLayout>
 </ScrollView>

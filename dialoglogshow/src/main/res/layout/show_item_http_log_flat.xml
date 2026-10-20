@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dp_6"
+    android:background="@drawable/bg_showlog_card"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_10">
+
+    <!-- 第一行：状态码徽章 + Method + 耗时 + 大小 + 时间 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_status_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_showlog_pill"
+            android:paddingStart="@dimen/dp_6"
+            android:paddingTop="@dimen/dp_2"
+            android:paddingEnd="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_2"
+            android:text="200"
+            android:textColor="@color/showlog_status_2xx"
+            android:textSize="@dimen/sp_11"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:text="POST"
+            android:textColor="@color/showlog_text_method"
+            android:textSize="@dimen/sp_12"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_8"
+            android:text="128 ms"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+
+        <TextView
+            android:id="@+id/tv_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:text="2.4 KB"
+            android:textColor="@color/showlog_text_tertiary"
+            android:textSize="@dimen/sp_10" />
+
+        <TextView
+            android:id="@+id/tv_timestamp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="14:20:05.123"
+            android:textColor="@color/showlog_text_tertiary"
+            android:textSize="@dimen/sp_11" />
+    </LinearLayout>
+
+    <!-- 第二行：Path 路径 (强调大号粗体) -->
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_4"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:text="/api/v1/user/login"
+        android:textColor="@color/showlog_text_primary"
+        android:textSize="@dimen/sp_13"
+        android:textStyle="bold" />
+
+    <!-- 第三行：Host 域名 -->
+    <TextView
+        android:id="@+id/tv_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="api.example.com"
+        android:textColor="@color/showlog_text_tertiary"
+        android:textSize="@dimen/sp_11" />
+
+    <!-- 第四行：错误堆栈单行提示 (失败时展现) -->
+    <TextView
+        android:id="@+id/tv_error_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_4"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/showlog_status_error"
+        android:textSize="@dimen/sp_11"
+        android:visibility="gone" />
+</LinearLayout>

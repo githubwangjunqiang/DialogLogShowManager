@@ -50,7 +50,8 @@ import java.util.List;
     private List<HttpInterceptor> mInterceptors;
 
     /* package */ HttpVirtualGateway(Session session, Request request, Response response, JKS jks,
-                                     final List<HttpInterceptorFactory> factories) {
+                                     final List<HttpInterceptorFactory> factories,
+                                     HttpsFallbackLogCallback fallbackLogCallback) {
         super(session, request, response);
 
         HttpSessionFactory sessionFactory = new HttpSessionFactory();
@@ -65,7 +66,12 @@ import java.util.List;
         }
 
         // Add default interceptors.
-        HttpSSLCodecInterceptor codecInterceptor = new HttpSSLCodecInterceptor(sslEngineFactory, request, response);
+        HttpSSLCodecInterceptor codecInterceptor = new HttpSSLCodecInterceptor(
+                sslEngineFactory,
+                request,
+                response,
+                fallbackLogCallback
+        );
         this.mInterceptors = new ArrayList<>(8);
 
         mInterceptors.add(new HttpSniffInterceptor(sessionFactory.create(session.id)));

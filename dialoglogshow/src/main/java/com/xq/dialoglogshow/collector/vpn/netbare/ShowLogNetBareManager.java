@@ -139,7 +139,7 @@ public class ShowLogNetBareManager implements NetBareListener {
         if (application == null) {
             return false;
         }
-        initializeInternal(application, ShowLog.getProvider().isDebug());
+        initializeInternal(application, true);
         return true;
     }
 
@@ -173,7 +173,7 @@ public class ShowLogNetBareManager implements NetBareListener {
         if (application == null) {
             throw new IllegalStateException("ShowLog application is null.");
         }
-        initializeInternal(application, ShowLog.getProvider().isDebug());
+        initializeInternal(application, true);
         if (mJks == null) {
             throw new IllegalStateException("NetBare JKS is null.");
         }
@@ -188,7 +188,8 @@ public class ShowLogNetBareManager implements NetBareListener {
         String localVpnAddress = "10.23.0.2";
         NetBareConfig.Builder configBuilder = NetBareConfig.defaultHttpConfig(
                         mJks,
-                        createInterceptorFactories(identityResolver)
+                        createInterceptorFactories(identityResolver),
+                        request -> VpnHttpsFallbackLogRecorder.recordHttpsRequest(request)
                 )
                 .newBuilder()
                 .setSession(context.getString(R.string.show_sdk_vpn_session_name))

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/demo_surface"
+    app:cardCornerRadius="@dimen/dp_16"
+    app:cardUseCompatPadding="true"
+    app:strokeColor="@color/demo_button_secondary"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_16">
+
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold"
+            tools:text="树洞" />
+
+        <TextView
+            android:id="@+id/tv_package_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_6"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13"
+            tools:text="包名：cn.edu.pku.treehole" />
+
+        <TextView
+            android:id="@+id/tv_target_sdk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_6"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13"
+            tools:text="targetSdk：34" />
+
+        <TextView
+            android:id="@+id/tv_system_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_6"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13"
+            tools:text="系统应用：否" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_trust_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_chip"
+                android:paddingLeft="@dimen/dp_12"
+                android:paddingTop="@dimen/dp_6"
+                android:paddingRight="@dimen/dp_12"
+                android:paddingBottom="@dimen/dp_6"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_12"
+                tools:text="证书信任：未知" />
+
+            <TextView
+                android:id="@+id/tv_capture_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:background="@drawable/bg_status_chip"
+                android:paddingLeft="@dimen/dp_12"
+                android:paddingTop="@dimen/dp_6"
+                android:paddingRight="@dimen/dp_12"
+                android:paddingBottom="@dimen/dp_6"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_12"
+                tools:text="抓包能力：未知" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_status_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:textColor="@color/demo_text_hint"
+            android:textSize="@dimen/sp_12"
+            tools:text="状态说明：还没有可分析的日志，需要先打开目标 App 再回来刷新。" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

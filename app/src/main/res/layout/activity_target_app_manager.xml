@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/target_app_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/demo_background"
+    android:fillViewport="true"
+    android:overScrollMode="ifContentScrolls"
+    tools:context=".ui.activity.TargetAppManagerActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_24">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/target_app_manager_title"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:text="@string/target_app_manager_subtitle"
+            android:textColor="@color/demo_text_secondary"
+            android:textSize="@dimen/sp_13" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_24"
+            app:cardBackgroundColor="@color/demo_surface"
+            app:cardCornerRadius="@dimen/dp_16"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/demo_button_secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dp_20">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/target_app_input_label"
+                    android:textColor="@color/demo_text_primary"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_capture_app_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:autofillHints="none"
+                    android:hint="@string/capture_app_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"
+                    android:padding="@dimen/dp_12"
+                    android:singleLine="true"
+                    android:textColor="@color/demo_text_primary"
+                    android:textColorHint="@color/demo_text_hint"
+                    android:textSize="@dimen/sp_14" />
+
+                <TextView
+                    android:id="@+id/tv_selected_app_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:text="@string/capture_app_current_selection_empty"
+                    android:textColor="@color/demo_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:orientation="horizontal"
+                    tools:ignore="ButtonStyle">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_jump_to_app_list"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_6"
+                        android:layout_weight="1"
+                        android:text="@string/target_app_jump_to_list"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_14"
+                        app:backgroundTint="@color/demo_button_secondary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_refresh_installed_app"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_6"
+                        android:layout_weight="1"
+                        android:text="@string/target_app_refresh"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_14"
+                        app:backgroundTint="@color/demo_status_info" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_12"
+                    android:orientation="horizontal"
+                    tools:ignore="ButtonStyle">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_apply_capture_app"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/dp_6"
+                        android:layout_weight="1"
+                        android:text="@string/target_app_apply"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_14"
+                        app:backgroundTint="@color/demo_button_primary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_open_target_app"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_6"
+                        android:layout_weight="1"
+                        android:text="@string/target_app_open_selected"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp_14"
+                        app:backgroundTint="@color/demo_status_success" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tv_target_app_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/target_app_status_loading"
+            android:textColor="@color/demo_text_hint"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/target_app_list_title"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/lv_target_app_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_12"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="@dimen/dp_8"
+            android:nestedScrollingEnabled="false"
+            android:paddingBottom="@dimen/dp_24"
+            tools:listitem="@layout/item_target_app_status" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

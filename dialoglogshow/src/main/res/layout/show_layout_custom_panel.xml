@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 动态容器：若业务注册了 CustomPanelProvider，挂载至此 -->
+    <FrameLayout
+        android:id="@+id/container_custom_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- 默认引导空态视图：业务尚未注册自定义面板时展示 -->
+    <ScrollView
+        android:id="@+id/scroll_custom_empty_guide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_20">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🧩"
+                android:textSize="48sp" />
+
+            <TextView
+                android:id="@+id/tv_custom_guide_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_12"
+                android:text="@string/showlog_custom_empty_title"
+                android:textColor="@color/showlog_text_primary"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_custom_guide_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:background="@drawable/bg_showlog_card"
+                android:lineSpacingExtra="@dimen/dp_4"
+                android:padding="@dimen/dp_16"
+                android:text="@string/showlog_custom_empty_desc"
+                android:textColor="@color/showlog_text_secondary"
+                android:textSize="@dimen/sp_13" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:text="💡 提示：自定义面板与网络日志、设备信息享有同等一级调试地位"
+                android:textColor="@color/showlog_action_btn"
+                android:textSize="@dimen/sp_11" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

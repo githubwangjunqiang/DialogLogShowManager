@@ -46,13 +46,18 @@ import java.nio.ByteBuffer;
     private HttpSSLResponseCodec mResponseCodec;
 
     private NetBareXLog mLog;
+    private final HttpsFallbackLogCallback mFallbackLogCallback;
 
     private boolean mClientAlpnResolved;
 
-    /* package */ HttpSSLCodecInterceptor(SSLEngineFactory engineFactory, Request request, Response response) {
+    /* package */ HttpSSLCodecInterceptor(SSLEngineFactory engineFactory,
+                                          Request request,
+                                          Response response,
+                                          HttpsFallbackLogCallback fallbackLogCallback) {
         this.mEngineFactory = engineFactory;
         this.mRequest = request;
         this.mResponse = response;
+        this.mFallbackLogCallback = fallbackLogCallback;
         mRequestCodec = new HttpSSLRequestCodec(engineFactory);
         mResponseCodec = new HttpSSLResponseCodec(engineFactory);
 
@@ -138,6 +143,25 @@ import java.nio.ByteBuffer;
             // Merge buffers
             decodeResponse(chain, buffer);
         }
+    }
+
+    @Override
+    public void onRequestFinished(@NonNull HttpRequest request) {
+        super.onRequestFinished(request);
+        if (request.isHttps()
+                && mFallbackLogCallback != null
+                // 为什么这样做：只有当 HTTPS 最终没有解析出请求方法或请求头时，才说明这条链路真的没有产出正文日志；
+                // 这样既能覆盖证书缺失/握手失败的兜底场景，也不会和正常明文抓包重复落库。
+                && (request.method() == null
+                || request.requestHeaders() == null
+                || request.requestHeaders().isEmpty())) {
+            mFallbackLogCallback.onHttpsRequestFinished(request);
+        }
+    }
+
+    @Override
+    public void onResponseFinished(@NonNull HttpResponse response) {
+        super.onResponseFinished(response);
     }
 
     @Override

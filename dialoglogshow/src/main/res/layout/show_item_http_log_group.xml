@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dp_6"
+    android:background="@drawable/bg_showlog_card"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_10">
+
+    <!-- 分组头部卡片 (可点击折叠/展开) -->
+    <LinearLayout
+        android:id="@+id/layout_group_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_group_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="POST"
+            android:textColor="@color/showlog_text_method"
+            android:textSize="@dimen/sp_12"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_group_path"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:layout_weight="1"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="/api/v1/user/login"
+            android:textColor="@color/showlog_text_primary"
+            android:textSize="@dimen/sp_13"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_group_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:background="@drawable/bg_showlog_pill"
+            android:paddingStart="@dimen/dp_6"
+            android:paddingTop="@dimen/dp_2"
+            android:paddingEnd="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_2"
+            android:text="3 次调用"
+            android:textColor="@color/showlog_action_btn"
+            android:textSize="@dimen/sp_11" />
+
+        <TextView
+            android:id="@+id/tv_expand_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_6"
+            android:text="▼"
+            android:textColor="@color/showlog_text_tertiary"
+            android:textSize="@dimen/sp_10" />
+    </LinearLayout>
+
+    <!-- 分组副标题：Host 与最新调用摘要 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_4"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_group_host"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="api.example.com"
+            android:textColor="@color/showlog_text_tertiary"
+            android:textSize="@dimen/sp_11" />
+
+        <TextView
+            android:id="@+id/tv_group_latest_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="最新: 200 (85 ms)"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+    </LinearLayout>
+
+    <!-- 展开后的子列表容器 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_group_children"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:visibility="gone" />
+</LinearLayout>

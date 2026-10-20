@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_showlog_dialog"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/dp_12"
+    android:paddingTop="@dimen/dp_12"
+    android:paddingEnd="@dimen/dp_12"
+    android:paddingBottom="@dimen/dp_8">
+
+    <!-- 1. 顶部主标题栏与全局操作按钮 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_console_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/showlog_console_title"
+                android:textColor="@color/showlog_text_primary"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_total_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_8"
+                android:background="@drawable/bg_showlog_pill"
+                android:paddingStart="@dimen/dp_6"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_6"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="0条"
+                android:textColor="@color/showlog_text_secondary"
+                android:textSize="@dimen/sp_11" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- 快捷跳转到设备与应用全景看板 -->
+            <TextView
+                android:id="@+id/btn_nav_to_device_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_8"
+                android:background="@drawable/bg_showlog_pill"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_8"
+                android:paddingTop="@dimen/dp_4"
+                android:paddingEnd="@dimen/dp_8"
+                android:paddingBottom="@dimen/dp_4"
+                android:text="📱 设备信息"
+                android:textColor="@color/showlog_action_btn"
+                android:textSize="@dimen/sp_11" />
+
+            <!-- 核心清理按钮：点击后弹窗选择清理当天或清理全部 -->
+            <TextView
+                android:id="@+id/btn_action_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_showlog_pill"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_4"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_4"
+                android:text="🗑️ 清理"
+                android:textColor="@color/showlog_status_5xx"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+
+            <!-- 关闭弹窗按钮 -->
+            <ImageView
+                android:id="@+id/btn_close_console"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginStart="@dimen/dp_12"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="@dimen/dp_2"
+                android:src="@drawable/ic_showlog_close" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 2. 日期导航卡片条 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/bg_showlog_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_8"
+        android:paddingBottom="@dimen/dp_6">
+
+        <TextView
+            android:id="@+id/btn_date_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_showlog_pill"
+            android:paddingStart="@dimen/dp_8"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_4"
+            android:text="@string/showlog_prev_day"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+
+        <TextView
+            android:id="@+id/tv_current_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/showlog_today"
+            android:textColor="@color/showlog_action_btn"
+            android:textSize="@dimen/sp_13"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_date_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_showlog_pill"
+            android:paddingStart="@dimen/dp_8"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_4"
+            android:text="@string/showlog_next_day"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+    </LinearLayout>
+
+    <!-- 3. 控制操作栏：分段选择器（列表 vs 分组） + 时间排序按钮（一目了然） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- 视图分段选择器：当前选中高亮，未选暗色，一眼辨识 -->
+        <LinearLayout
+            android:id="@+id/container_segmented_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_showlog_segmented_container"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/btn_seg_flat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_showlog_tab_selected"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_4"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_4"
+                android:text="@string/showlog_view_flat_short"
+                android:textColor="#FF0F172A"
+                android:textSize="@dimen/sp_11"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btn_seg_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_4"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_4"
+                android:text="@string/showlog_view_group_short"
+                android:textColor="@color/showlog_text_secondary"
+                android:textSize="@dimen/sp_11" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- 时间排序指示按钮（显示倒序/正序与流向箭头） -->
+        <TextView
+            android:id="@+id/btn_toggle_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_showlog_pill"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_4"
+            android:text="@string/showlog_sort_desc_label"
+            android:textColor="@color/showlog_action_btn"
+            android:textSize="@dimen/sp_11"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 4. 搜索框 -->
+    <EditText
+        android:id="@+id/et_search_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:background="@drawable/bg_showlog_search"
+        android:hint="@string/showlog_search_hint"
+        android:imeOptions="actionSearch"
+        android:maxLines="1"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_6"
+        android:singleLine="true"
+        android:textColor="@color/showlog_text_primary"
+        android:textColorHint="@color/showlog_text_tertiary"
+        android:textSize="@dimen/sp_12" />
+
+    <!-- 5. 状态码分类选择 Tab 组（当前选中的高亮常亮，带各自统计数量） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_8"
+        android:orientation="horizontal">
+
+        <!-- Tab 1: 全部 -->
+        <TextView
+            android:id="@+id/tab_filter_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_4"
+            android:layout_weight="1"
+            android:background="@drawable/bg_showlog_tab_selected"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            android:text="全部 (0)"
+            android:textColor="#FF0F172A"
+            android:textSize="@dimen/sp_11"
+            android:textStyle="bold" />
+
+        <!-- Tab 2: 2xx 成功 -->
+        <TextView
+            android:id="@+id/tab_filter_2xx"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_2"
+            android:layout_marginEnd="@dimen/dp_2"
+            android:layout_weight="1"
+            android:background="@drawable/bg_showlog_tab_unselected"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            android:text="2xx 成功 (0)"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+
+        <!-- Tab 3: 错误与异常 -->
+        <TextView
+            android:id="@+id/tab_filter_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_4"
+            android:layout_weight="1"
+            android:background="@drawable/bg_showlog_tab_unselected"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingBottom="@dimen/dp_6"
+            android:text="错误/异常 (0)"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+    </LinearLayout>
+
+    <!-- 6. 列表数据区 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_http_logs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="@dimen/dp_32"
+            android:layout_height="@dimen/dp_32"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/showlog_empty_tip"
+            android:textColor="@color/showlog_text_tertiary"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>
