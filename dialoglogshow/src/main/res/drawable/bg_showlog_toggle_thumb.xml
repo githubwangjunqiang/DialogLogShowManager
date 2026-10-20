@@ -2,7 +2,7 @@
 <!-- 滑动开关的滑块：蓝色强调底，承载当前选中项的文字 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <!-- 轨道内高 28dp 的一半，选中滑块与轨道同形，保持胶囊感 -->
-    <corners android:radius="@dimen/dp_14" />
+    <!-- 与内缩后的 24dp 轨道等高，保留完整圆角但不压缩外层触控范围。 -->
+    <corners android:radius="@dimen/dp_12" />
     <solid android:color="@color/showlog_action_btn" />
 </shape>

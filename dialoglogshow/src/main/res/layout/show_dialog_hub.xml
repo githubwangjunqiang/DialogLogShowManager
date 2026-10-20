@@ -49,22 +49,30 @@
                     android:layout_height="match_parent" />
             </FrameLayout>
 
-            <!-- 主 Tab 栏：高度 37dp；内容面板从 36dp 开始，
-                 选中页签的轮廓由 v_tab_panel_background 直接画到接缝处，文字层不再单独铺背景 -->
-            <LinearLayout
-                android:id="@+id/layout_hub_tab_bar"
+            <!-- 主 Tab 按标题自然测量宽度；数量增加或标题较长时横向滚动，避免等分后标题被截断。 -->
+            <HorizontalScrollView
+                android:id="@+id/scroll_hub_tab_bar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_37"
-                android:orientation="horizontal">
+                android:fillViewport="false"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/layout_hub_tab_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tab_hub_network"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:minWidth="@dimen/dp_60"
+                    android:paddingStart="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_12"
                     android:text="@string/showlog_hub_tab_network"
                     android:textColor="@color/showlog_action_btn"
                     android:textSize="@dimen/sp_13"
@@ -72,41 +80,45 @@
 
                 <TextView
                     android:id="@+id/tab_hub_device"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:minWidth="@dimen/dp_60"
+                    android:paddingStart="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_12"
                     android:text="@string/showlog_hub_tab_device"
                     android:textColor="@color/showlog_text_secondary"
                     android:textSize="@dimen/sp_13" />
 
                 <TextView
                     android:id="@+id/tab_hub_custom"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:minWidth="@dimen/dp_60"
+                    android:paddingStart="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_12"
                     android:text="@string/showlog_hub_tab_custom"
                     android:textColor="@color/showlog_text_secondary"
                     android:textSize="@dimen/sp_13" />
 
                 <TextView
                     android:id="@+id/tab_hub_file_browser"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
+                    android:minWidth="@dimen/dp_60"
+                    android:paddingStart="@dimen/dp_12"
+                    android:paddingEnd="@dimen/dp_12"
                     android:text="@string/file_browser"
                     android:textColor="@color/showlog_text_secondary"
                     android:textSize="@dimen/sp_13"
                     android:visibility="gone" />
-            </LinearLayout>
+                    </LinearLayout>
+            </HorizontalScrollView>
         </FrameLayout>
     </LinearLayout>
 

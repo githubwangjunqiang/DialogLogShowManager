@@ -22,9 +22,6 @@ import com.xq.dialoglogshow.R;
  * 3. 描边沿用内容面板的灰色描边，避免高饱和蓝色边框在深色弹框中过于突兀。
  */
 public final class ShowLogHubTabPanelBackground extends View {
-
-    private static final int DEFAULT_TAB_COUNT = 3;
-
     /** 判断页签是否贴近内容面板左右边缘的像素容差，避免浮点误差导致边缘页签仍绘制内凹圆弧。 */
     private static final float JOINT_EPSILON_PX = 0.5f;
 
@@ -37,8 +34,8 @@ public final class ShowLogHubTabPanelBackground extends View {
     private final float mJointCorner;
     private final float mBottomCorner;
 
-    private int mSelectedIndex;
-    private int mTabCount = DEFAULT_TAB_COUNT;
+    private float mSelectedTabLeft;
+    private float mSelectedTabRight;
 
     public ShowLogHubTabPanelBackground(@NonNull Context context) {
         this(context, null);
@@ -69,17 +66,17 @@ public final class ShowLogHubTabPanelBackground extends View {
     }
 
     /**
-     * 更新当前选中的页签位置。
-     * 为什么这样做：选中态轮廓依赖 Tab 索引计算左右连接圆弧，切换 Tab 时必须主动重绘。
+     * 更新滚动视口内选中页签的可视边界。
+     * 为什么这样做：Tab 宽度由标题决定且可横向滚动，固定等分会让选中轮廓与真实页签错位。
      */
-    public void setSelectedTab(int selectedIndex, int tabCount) {
-        int safeCount = Math.max(tabCount, 1);
-        int safeIndex = Math.max(0, Math.min(selectedIndex, safeCount - 1));
-        if (mSelectedIndex == safeIndex && mTabCount == safeCount) {
+    public void setSelectedTab(float tabLeft, float tabRight) {
+        float safeLeft = Math.max(0f, Math.min(tabLeft, getWidth()));
+        float safeRight = Math.max(safeLeft, Math.min(tabRight, getWidth()));
+        if (mSelectedTabLeft == safeLeft && mSelectedTabRight == safeRight) {
             return;
         }
-        mSelectedIndex = safeIndex;
-        mTabCount = safeCount;
+        mSelectedTabLeft = safeLeft;
+        mSelectedTabRight = safeRight;
         invalidate();
     }
 
@@ -114,14 +111,9 @@ public final class ShowLogHubTabPanelBackground extends View {
         float jointCorner = mJointCorner;
         float bottomCorner = mBottomCorner;
 
-        // RTL 下 LinearLayout 会镜像 Tab 顺序，选中轮廓也必须镜像，否则会圈到相邻 Tab
-        int visualIndex = mSelectedIndex;
-        if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
-            visualIndex = mTabCount - 1 - mSelectedIndex;
-        }
-        float tabWidth = (right - left) / mTabCount;
-        float tabLeft = left + visualIndex * tabWidth;
-        float tabRight = tabLeft + tabWidth;
+        // 直接使用滚动视口中选中 Tab 的可视位置，RTL 和横向滚动均无需再次换算索引。
+        float tabLeft = Math.max(left, Math.min(mSelectedTabLeft, right));
+        float tabRight = Math.max(tabLeft, Math.min(mSelectedTabRight, right));
 
         mPath.reset();
         mPath.moveTo(left, panelTop);

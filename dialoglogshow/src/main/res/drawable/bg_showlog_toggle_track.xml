@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 滑动开关的轨道：与日志卡片同色系，描边略亮，保证在内容面板上可辨识 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <!-- 32dp 轨道的一半高度，保证轨道是完整胶囊而不是圆角矩形 -->
-    <corners android:radius="@dimen/dp_16" />
-    <solid android:color="@color/showlog_bg_surface" />
-    <stroke
-        android:width="@dimen/dp_1"
-        android:color="@color/showlog_bg_card_stroke" />
-</shape>
+<!-- 保留 32dp 触控区域，只将可视轨道上下内缩，避免胶囊显得过厚。 -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetTop="@dimen/dp_4"
+    android:insetBottom="@dimen/dp_4">
+
+    <shape android:shape="rectangle">
+        <corners android:radius="@dimen/dp_12" />
+        <solid android:color="@color/showlog_bg_surface" />
+        <stroke
+            android:width="@dimen/dp_1"
+            android:color="@color/showlog_bg_card_stroke" />
+    </shape>
+</inset>

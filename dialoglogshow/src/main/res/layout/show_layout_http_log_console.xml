@@ -99,7 +99,10 @@
             android:layout_width="@dimen/dp_132"
             android:layout_height="@dimen/dp_32"
             android:background="@drawable/bg_showlog_toggle_track"
-            android:padding="@dimen/dp_2" />
+            android:paddingStart="@dimen/dp_2"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_2"
+            android:paddingBottom="@dimen/dp_4" />
 
         <View
             android:layout_width="0dp"
@@ -111,7 +114,10 @@
             android:layout_width="@dimen/dp_112"
             android:layout_height="@dimen/dp_32"
             android:background="@drawable/bg_showlog_toggle_track"
-            android:padding="@dimen/dp_2" />
+            android:paddingStart="@dimen/dp_2"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_2"
+            android:paddingBottom="@dimen/dp_4" />
     </LinearLayout>
 
     <!-- 3. 当前搜索关键字：仅在有搜索条件时显示，点击可重新编辑；

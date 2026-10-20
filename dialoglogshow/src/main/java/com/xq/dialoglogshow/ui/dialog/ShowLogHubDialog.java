@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -64,6 +66,7 @@ public final class ShowLogHubDialog extends Dialog {
     private TextView mTabHubDevice;
     private TextView mTabHubCustom;
     private TextView mTabHubFileBrowser;
+    private HorizontalScrollView mTabScrollView;
     private ViewPager2 mVpPages;
     private ShowLogHubTabPanelBackground mTabPanelBackground;
 
@@ -158,8 +161,16 @@ public final class ShowLogHubDialog extends Dialog {
         mTabHubDevice = findViewById(R.id.tab_hub_device);
         mTabHubCustom = findViewById(R.id.tab_hub_custom);
         mTabHubFileBrowser = findViewById(R.id.tab_hub_file_browser);
+        mTabScrollView = findViewById(R.id.scroll_hub_tab_bar);
         mVpPages = findViewById(R.id.vp_hub_pages);
         mTabPanelBackground = findViewById(R.id.v_tab_panel_background);
+        // ViewTreeObserver 兼容 minSdk 21，确保用户手动滚动 Tab 栏时选中轮廓仍跟随实际位置。
+        mTabScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            TextView selectedTab = getTabAt(mVpPages.getCurrentItem());
+            if (selectedTab != null && selectedTab.getWidth() > 0) {
+                updateSelectedTabOutline(selectedTab);
+            }
+        });
         if (mTabCount > BASE_TAB_COUNT) {
             mTabHubFileBrowser.setVisibility(View.VISIBLE);
             String fileTabTitle = mConfig.fileBrowserTabTitle;
@@ -294,8 +305,45 @@ public final class ShowLogHubDialog extends Dialog {
 
         // 选中页签的轮廓由统一背景 View 绘制，切换时必须同步索引，否则边框会停留在旧位置
         if (mTabPanelBackground != null) {
-            mTabPanelBackground.setSelectedTab(selectedPosition, mTabCount);
+            // 用实际布局边界同步连体轮廓，避免自适应宽度和横向滚动后仍按等分位置描边。
+            mTabScrollView.post(() -> {
+                int currentPosition = mVpPages.getCurrentItem();
+                TextView selectedTab = getTabAt(currentPosition);
+                if (selectedTab == null || selectedTab.getVisibility() != View.VISIBLE) {
+                    return;
+                }
+                selectedTab.requestRectangleOnScreen(
+                        new Rect(0, 0, selectedTab.getWidth(), selectedTab.getHeight()), true);
+                selectedTab.post(() -> updateSelectedTabOutline(selectedTab));
+            });
         }
+    }
+
+    @Nullable
+    private TextView getTabAt(int position) {
+        if (position == TAB_NETWORK) {
+            return mTabHubNetwork;
+        } else if (position == TAB_DEVICE) {
+            return mTabHubDevice;
+        } else if (position == TAB_CUSTOM) {
+            return mTabHubCustom;
+        } else if (position == TAB_FILE_BROWSER && mTabCount > BASE_TAB_COUNT) {
+            return mTabHubFileBrowser;
+        }
+        return null;
+    }
+
+    private void updateSelectedTabOutline(@NonNull TextView selectedTab) {
+        if (mTabPanelBackground.getWidth() <= 0) {
+            return;
+        }
+        int[] tabLocation = new int[2];
+        int[] backgroundLocation = new int[2];
+        selectedTab.getLocationOnScreen(tabLocation);
+        mTabPanelBackground.getLocationOnScreen(backgroundLocation);
+        float tabLeft = tabLocation[0] - backgroundLocation[0];
+        float tabRight = tabLeft + selectedTab.getWidth();
+        mTabPanelBackground.setSelectedTab(tabLeft, tabRight);
     }
 
     private void resetTab(TextView tab) {
