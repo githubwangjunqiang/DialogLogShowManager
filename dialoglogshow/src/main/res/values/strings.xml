@@ -188,5 +188,6 @@
     <string name="showlog_hub_tab_device">📱 设备信息</string>
     <string name="showlog_hub_tab_custom">🧩 自定义扩展</string>
     <string name="showlog_custom_empty_title">欢迎使用自定义扩展面板</string>
-    <string name="showlog_custom_empty_desc">当前尚未注册业务自定义面板。开发者可通过一行代码自由注入业务调试工具（如环境切换、Token 查看、Mock 开关等）：\n\nShowLog.registerCustomPanel(\"业务调试\", provider);\n\n具体请参考《接入指南》。</string>
+    <string name="showlog_custom_empty_desc">当前尚未注册业务自定义扩展面板。开发者可通过 ShowLog.registerCustomPanel(\"业务调试\", provider) 注入业务调试工具。\n\nSDK 会向 CustomPanelProvider 回调承载父布局与弹框对象：业务方可自由填充 UI、绑定业务逻辑，并在需要时调用 dialog.dismiss() 关闭弹框。\n\n具体请参考《接入指南》。</string>
+    <string name="showlog_custom_panel_load_error">自定义扩展面板加载异常：\n%1$s</string>
 </resources>

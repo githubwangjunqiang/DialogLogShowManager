@@ -49,6 +49,8 @@ public final class ShowLogHubDialog extends Dialog {
 
     private long mLastClickTime = 0L;
     private final int mInitialTab;
+    /** 同一弹框的页签标题和面板实现固定取自同一次注册，避免运行中注册造成标题与内容错配。 */
+    private final CustomPanelManager.Registration mCustomPanelRegistration;
 
     private TextView mTabHubNetwork;
     private TextView mTabHubDevice;
@@ -67,6 +69,7 @@ public final class ShowLogHubDialog extends Dialog {
     public ShowLogHubDialog(@NonNull Context context, int initialTab) {
         super(context);
         this.mInitialTab = (initialTab >= TAB_NETWORK && initialTab < TAB_COUNT) ? initialTab : TAB_NETWORK;
+        this.mCustomPanelRegistration = CustomPanelManager.getInstance().getRegistration();
     }
 
     @Override
@@ -88,6 +91,37 @@ public final class ShowLogHubDialog extends Dialog {
         setupViewPager();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mDeviceView != null && mVpPages != null) {
+            mDeviceView.setDeviceTabActive(mVpPages.getCurrentItem() == TAB_DEVICE);
+        }
+        // 为什么这样做：同一弹框实例重新 show 时，ViewPager2 不一定会再次派发 onPageSelected，
+        // 需要主动恢复自定义面板，否则业务方看到的仍是释放后的空态。
+        if (mCustomView != null && mVpPages != null && mVpPages.getCurrentItem() == TAB_CUSTOM) {
+            mCustomView.renderCustomContent();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        if (mDeviceView != null) {
+            mDeviceView.setDeviceTabActive(false);
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void dismiss() {
+        // 为什么这样做：dismiss 是弹框关闭的统一出口（返回键 cancel 最终也会走到这里），
+        // 在此回调业务方 onDestroyView，确保自定义面板持有的资源被及时释放。
+        if (mCustomView != null) {
+            mCustomView.release();
+        }
+        super.dismiss();
+    }
+
     private void initViews() {
         mTabHubNetwork = findViewById(R.id.tab_hub_network);
         mTabHubDevice = findViewById(R.id.tab_hub_device);
@@ -101,7 +135,7 @@ public final class ShowLogHubDialog extends Dialog {
         expandCloseHookTouchArea(closeHook);
 
         // 动态设置自定义面板的标题
-        String customTitle = CustomPanelManager.getInstance().getTitle();
+        String customTitle = mCustomPanelRegistration.title;
         if (customTitle != null && !customTitle.isEmpty()) {
             mTabHubCustom.setText(customTitle.startsWith("🧩") ? customTitle : ("🧩 " + customTitle));
         }
@@ -127,6 +161,9 @@ public final class ShowLogHubDialog extends Dialog {
         mNetworkView = new HttpLogConsoleView(getContext());
         mDeviceView = new AppDeviceInfoView(getContext());
         mCustomView = new CustomPanelPageView(getContext());
+        mCustomView.setRegistration(mCustomPanelRegistration);
+        // 把真实弹框对象注入承载视图，业务方回调中才能主动控制弹框关闭
+        mCustomView.setHostDialog(this);
 
         View[] pages = new View[]{mNetworkView, mDeviceView, mCustomView};
 
@@ -162,9 +199,15 @@ public final class ShowLogHubDialog extends Dialog {
 
                 // 切换到设备面板时自动刷新一次最新内存与性能状态
                 if (position == TAB_DEVICE && mDeviceView != null) {
+                    mDeviceView.setDeviceTabActive(true);
                     mDeviceView.loadData();
-                } else if (position == TAB_CUSTOM && mCustomView != null) {
-                    mCustomView.renderCustomContent();
+                } else {
+                    if (mDeviceView != null) {
+                        mDeviceView.setDeviceTabActive(false);
+                    }
+                    if (position == TAB_CUSTOM && mCustomView != null) {
+                        mCustomView.renderCustomContent();
+                    }
                 }
             }
         });

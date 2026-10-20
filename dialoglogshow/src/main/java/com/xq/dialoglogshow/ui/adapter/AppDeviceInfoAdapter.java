@@ -17,8 +17,10 @@ import com.xq.dialoglogshow.R;
 import com.xq.dialoglogshow.core.model.AppDeviceInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * 设备与应用全景信息列表适配器。
@@ -39,6 +41,46 @@ public final class AppDeviceInfoAdapter extends RecyclerView.Adapter<AppDeviceIn
         mSourceList.clear();
         mSourceList.addAll(items);
         filterAndNotify();
+    }
+
+    /**
+     * 更新高频变化的性能值，同时保留当前分类、搜索条件和列表滚动位置。
+     */
+    public void updateRealtimeValues(@NonNull List<AppDeviceInfo.InfoItem> updates) {
+        Map<String, AppDeviceInfo.InfoItem> updatesByKey = new HashMap<>();
+        for (AppDeviceInfo.InfoItem item : updates) {
+            updatesByKey.put(item.key, item);
+        }
+
+        Map<String, AppDeviceInfo.InfoItem> changedItems = new HashMap<>();
+        for (int i = 0; i < mSourceList.size(); i++) {
+            AppDeviceInfo.InfoItem current = mSourceList.get(i);
+            AppDeviceInfo.InfoItem update = updatesByKey.get(current.key);
+            if (update != null && !current.value.equals(update.value)) {
+                AppDeviceInfo.InfoItem replacement = new AppDeviceInfo.InfoItem(
+                        current.category, current.key, update.value, update.isImportant
+                );
+                mSourceList.set(i, replacement);
+                changedItems.put(replacement.key, replacement);
+            }
+        }
+
+        if (changedItems.isEmpty()) {
+            return;
+        }
+
+        // 搜索词可能匹配数值本身，数值变化时需要重新判断命中集合；否则只刷新受影响的可见行。
+        if (!mKeyword.isEmpty()) {
+            filterAndNotify();
+            return;
+        }
+        for (int i = 0; i < mDisplayList.size(); i++) {
+            AppDeviceInfo.InfoItem replacement = changedItems.get(mDisplayList.get(i).key);
+            if (replacement != null) {
+                mDisplayList.set(i, replacement);
+                notifyItemChanged(i);
+            }
+        }
     }
 
     public void setCategory(@NonNull String category) {

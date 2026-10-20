@@ -72,10 +72,18 @@ public class HttpLogSdkDemoActivity extends AppCompatActivity {
         });
 
         // 注册业务自定义调试面板演示（证明自定义面板与网络日志、设备信息享有同等一级地位）
-        ShowLog.registerCustomPanel("业务环境切换", context -> {
+        ShowLog.registerCustomPanel("业务环境切换", (parent, dialog) -> {
+            android.content.Context context = parent.getContext();
+
+            // 业务方自行决定承载父布局内部如何填充：这里用 ScrollView + LinearLayout 构建可滚动面板
+            android.widget.ScrollView scrollView = new android.widget.ScrollView(context);
             android.widget.LinearLayout layout = new android.widget.LinearLayout(context);
             layout.setOrientation(android.widget.LinearLayout.VERTICAL);
             layout.setPadding(32, 32, 32, 32);
+            scrollView.addView(layout, new android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                    android.widget.FrameLayout.LayoutParams.WRAP_CONTENT));
+            parent.addView(scrollView);
 
             TextView tvTitle = new TextView(context);
             tvTitle.setText("🛠️ 宿主 App 业务环境配置面板 (自定义扩展)");
@@ -91,12 +99,16 @@ public class HttpLogSdkDemoActivity extends AppCompatActivity {
             tvDesc.setPadding(0, 24, 0, 24);
             layout.addView(tvDesc);
 
-            com.google.android.material.button.MaterialButton btnSwitch = new com.google.android.material.button.MaterialButton(context);
+            MaterialButton btnSwitch = new MaterialButton(context);
             btnSwitch.setText("切换至 PRE 预发环境");
             btnSwitch.setOnClickListener(v -> Toast.makeText(context, "已切换至预发网关节点！", Toast.LENGTH_SHORT).show());
             layout.addView(btnSwitch);
 
-            return layout;
+            // 演示业务方通过 SDK 抛出的弹框对象，在适当时机主动关闭调试弹框
+            MaterialButton btnClose = new MaterialButton(context);
+            btnClose.setText("关闭调试弹框");
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+            layout.addView(btnClose);
         });
 
         // 1. 打开全景调试中枢 (Hub) 主按钮

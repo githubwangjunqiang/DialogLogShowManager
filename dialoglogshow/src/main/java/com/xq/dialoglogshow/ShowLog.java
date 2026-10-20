@@ -229,10 +229,13 @@ public final class ShowLog {
     }
 
     /**
-     * 注册业务自定义面板。
+     * 注册业务自定义扩展面板。
+     * 为什么这样做：
+     * SDK 只向业务方提供承载父布局与当前调试弹框对象，面板内部 UI、数据加载和交互逻辑完全由业务方掌控；
+     * 业务方可在任意业务时机调用回调中的 dialog.dismiss() 关闭调试弹框。
      *
-     * @param title    Tab 显示标题（例如 "业务环境"、"Mock控制" 等，为 null 时使用默认标题）
-     * @param provider 面板提供者
+     * @param title    Tab 显示标题（例如 "业务环境"、"Mock控制" 等，为 null 时沿用当前标题或默认标题）
+     * @param provider 面板提供者，回调在主线程执行
      */
     public static void registerCustomPanel(@Nullable String title, @NonNull CustomPanelProvider provider) {
         CustomPanelManager.getInstance().registerCustomPanel(title, provider);

@@ -258,27 +258,22 @@ public final class AppDeviceInfoCollector {
     }
 
     private static void collectPerformanceProfile(@NonNull Context context, @NonNull List<AppDeviceInfo.InfoItem> items) {
-        // App 虚拟机堆内存
+        // 将实时指标集中放在静态能力信息前，便于用户连续观察资源变化。
+        collectRealtimePerformanceProfile(context, items);
+
+        // 以下指标在单次会话中基本稳定，不需要周期性重新采集。
         Runtime runtime = Runtime.getRuntime();
         long maxHeap = runtime.maxMemory() / 1024 / 1024;
-        long totalHeap = runtime.totalMemory() / 1024 / 1024;
-        long freeHeap = runtime.freeMemory() / 1024 / 1024;
-        long usedHeap = totalHeap - freeHeap;
-
-        items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "App 当前已用堆内存", usedHeap + " MB (空闲 " + freeHeap + " MB)", true));
         items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "App 虚拟机最大堆上限 (Max Heap)", maxHeap + " MB", true));
 
-        // 系统物理 RAM
+        // 系统物理 RAM 总量
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (am != null) {
             ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
             am.getMemoryInfo(memInfo);
 
             long totalRamMb = memInfo.totalMem / 1024 / 1024;
-            long availRamMb = memInfo.availMem / 1024 / 1024;
             items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "手机整机物理内存 (RAM)", String.format(Locale.getDefault(), "%.1f GB (%d MB)", totalRamMb / 1024.0f, totalRamMb), true));
-            items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "系统当前可用空闲 RAM", String.format(Locale.getDefault(), "%.1f GB (%d MB)", availRamMb / 1024.0f, availRamMb)));
-            items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "系统低内存警告状态 (Low Memory)", memInfo.lowMemory ? "⚠️ 处于低内存紧急状态" : "正常充足", memInfo.lowMemory));
         }
 
         // CPU 物理核数
@@ -287,6 +282,62 @@ public final class AppDeviceInfoCollector {
 
         // GPU 渲染环境提示
         items.add(new AppDeviceInfo.InfoItem(AppDeviceInfo.CATEGORY_PERFORMANCE, "硬件加速渲染状态", "已开启 (OpenGL ES / Vulkan 硬件渲染)"));
+    }
+
+    /**
+     * 采集适合高频刷新的性能指标，不重复扫描应用签名、APK 文件或硬件画像。
+     */
+    public static void collectRealtimePerformanceProfile(
+            @NonNull Context context,
+            @NonNull List<AppDeviceInfo.InfoItem> items
+    ) {
+        Runtime runtime = Runtime.getRuntime();
+        long freeHeapBytes = runtime.freeMemory();
+        long freeHeapMb = freeHeapBytes / 1024 / 1024;
+        long usedHeapMb = (runtime.totalMemory() - freeHeapBytes) / 1024 / 1024;
+        items.add(new AppDeviceInfo.InfoItem(
+                AppDeviceInfo.CATEGORY_PERFORMANCE,
+                "App 当前已用堆内存",
+                usedHeapMb + " MB (空闲 " + freeHeapMb + " MB)",
+                true
+        ));
+
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            try {
+                ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+                am.getMemoryInfo(memInfo);
+                long availRamMb = memInfo.availMem / 1024 / 1024;
+                items.add(new AppDeviceInfo.InfoItem(
+                        AppDeviceInfo.CATEGORY_PERFORMANCE,
+                        "系统当前可用空闲 RAM",
+                        String.format(Locale.getDefault(), "%.1f GB (%d MB)", availRamMb / 1024.0f, availRamMb)
+                ));
+                items.add(new AppDeviceInfo.InfoItem(
+                        AppDeviceInfo.CATEGORY_PERFORMANCE,
+                        "系统低内存警告状态 (Low Memory)",
+                        memInfo.lowMemory ? "⚠️ 处于低内存紧急状态" : "正常充足",
+                        memInfo.lowMemory
+                ));
+            } catch (RuntimeException ignored) {
+                addUnavailableRealtimeMemoryItems(items);
+            }
+        } else {
+            addUnavailableRealtimeMemoryItems(items);
+        }
+    }
+
+    private static void addUnavailableRealtimeMemoryItems(@NonNull List<AppDeviceInfo.InfoItem> items) {
+        items.add(new AppDeviceInfo.InfoItem(
+                AppDeviceInfo.CATEGORY_PERFORMANCE,
+                "系统当前可用空闲 RAM",
+                "暂不可用"
+        ));
+        items.add(new AppDeviceInfo.InfoItem(
+                AppDeviceInfo.CATEGORY_PERFORMANCE,
+                "系统低内存警告状态 (Low Memory)",
+                "暂不可用"
+        ));
     }
 
     private static void collectSignatures(@NonNull Context context, @NonNull List<AppDeviceInfo.InfoItem> items) {
