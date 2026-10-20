@@ -83,6 +83,37 @@ OkHttpClient client = new OkHttpClient.Builder()
 
 后续使用这个 `client` 发起的请求才会进入网络日志；可调用 `ShowLog.showNetworkLogs(activity)` 直接查看。若使用非 OkHttp 网络库，请按第 6 节手动上报。
 
+如果业务接口会在 HTTP 2xx 响应中通过 JSON 业务码表达成功或失败，可在 `ShowLog.init(...)` 后（通常仍在 `Application.onCreate()` 中）注册自定义裁决器。下面示例约定 `code == 0` 为业务成功，其余业务码为失败；请按宿主 API 的实际约定调整：
+
+```java
+import com.xq.dialoglogshow.ShowLog;
+import com.xq.dialoglogshow.core.interceptor.HttpLogBusinessJudger;
+
+ShowLog.setBusinessJudger(context -> {
+    // HTTP 层失败优先判为失败，避免业务 JSON 覆盖真实传输错误。
+    if (context.getHttpCode() < 200 || context.getHttpCode() >= 300) {
+        return new HttpLogBusinessJudger.JudgementResult(
+                false,
+                "HTTP " + context.getHttpCode()
+        );
+    }
+
+    org.json.JSONObject response = context.optResponseBodyAsJson();
+    if (response != null) {
+        int code = response.optInt("code", 0);
+        String message = response.optString("msg", response.optString("message", "OK"));
+        if (code != 0) {
+            return new HttpLogBusinessJudger.JudgementResult(false, "业务错误(" + code + "): " + message);
+        }
+    }
+
+    // 若没有配置业务 JSON 或响应不是合法 JSON，沿用 HTTP 2xx 的成功判断。
+    return new HttpLogBusinessJudger.JudgementResult(true, "OK");
+});
+```
+
+裁决结果会影响网络日志中的成功/失败状态、筛选和提示信息；没有注册裁决器时，默认仅按 HTTP 状态码是否为 2xx 判断。
+
 ## 3. 功能怎么用
 
 初始化后可通过悬浮球打开调试中枢，也可从业务代码直接跳转到指定功能：
