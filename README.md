@@ -44,22 +44,18 @@
 
 ## 2. 快速接入
 
-以下以 Maven AAR 接入为例。仓库配置及本地 AAR 离线方式见第 4 节。
+以下仅介绍通过 JitPack 接入 ShowLog SDK；仓库配置和依赖坐标详见第 4 节。
 
 ```groovy
 // settings.gradle 的 dependencyResolutionManagement.repositories 中
-maven { url 'https://your-maven-repo.example.com/repository/android/' }
 maven { url 'https://jitpack.io' }
 ```
 
 ```groovy
 // app/build.gradle
 dependencies {
-    // 使用 JitPack 的 netbare-core 替代 showlog POM 中旧坐标的传递依赖
-    implementation('com.xq.showlog:showlog:6.0') {
-        exclude group: 'com.xq.showlog', module: 'netbare-core'
-    }
-    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0'
+    // 主 SDK（JitPack 会自动解析 netbare-core 传递依赖）
+    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:showlog:6.0'
 }
 ```
 
@@ -67,10 +63,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("com.xq.showlog:showlog:6.0") {
-        exclude(group = "com.xq.showlog", module = "netbare-core")
-    }
-    implementation("com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0")
+    implementation("com.github.githubwangjunqiang.DialogLogShowManager:showlog:6.0")
 }
 ```
 
@@ -159,36 +152,42 @@ ShowLog.showFileBrowser(activity);      // 文件浏览（需配置 fileBrowserR
 
 ## 4. 依赖引入与初始化配置详解
 
-ShowLog 目前**仅提供 AAR 接入方式**，不提供源码模块依赖（`implementation project(':dialoglogshow')`）。主 SDK AAR 通过团队私有 Maven 仓库分发；`netbare-core` 使用 JitPack 坐标单独引入，具体配置见下文。
+ShowLog 对外统一通过 JitPack 获取 AAR，请按以下配置接入。
 
-### 4.1 配置 Maven 仓库
+### 4.1 配置 JitPack 仓库
 
-在工程根目录的 `settings.gradle`（或 `settings.gradle.kts`）中配置团队提供的私有 Maven 仓库：
+在工程根目录的 `settings.gradle`（或 `settings.gradle.kts`）中添加 JitPack 仓库：
 
 ```groovy
 dependencyResolutionManagement {
     repositories {
-        // ShowLog 主 SDK 所在的团队私有 Maven 仓库（以实际下发地址为准）
-        maven { url 'https://your-maven-repo.example.com/repository/android/' }
-        // JitPack：解析 netbare-core
-        maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
+        // JitPack：ShowLog SDK 对外唯一支持的依赖仓库
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-### 4.2 引入 AAR 依赖
+Kotlin DSL (`settings.gradle.kts`) 写法：
 
-在业务模块（如 `app/build.gradle`）的 `dependencies` 中添加：
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+### 4.2 引入 SDK 依赖
+
+在业务模块（如 `app/build.gradle`）中添加主 SDK 依赖：
 
 ```groovy
 dependencies {
-    // 使用 JitPack 的 netbare-core 替代 showlog POM 中旧坐标的传递依赖
-    implementation('com.xq.showlog:showlog:6.0') {
-        exclude group: 'com.xq.showlog', module: 'netbare-core'
-    }
-    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0'
+    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:showlog:6.0'
 }
 ```
 
@@ -196,29 +195,13 @@ dependencies {
 
 ```kotlin
 dependencies {
-    implementation("com.xq.showlog:showlog:6.0") {
-        exclude(group = "com.xq.showlog", module = "netbare-core")
-    }
-    implementation("com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0")
+    implementation("com.github.githubwangjunqiang.DialogLogShowManager:showlog:6.0")
 }
 ```
 
-> `netbare-core` 使用 JitPack 坐标 `com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0`；请确保已在仓库配置中添加 `https://jitpack.io`。排除旧的 `com.xq.showlog:netbare-core` 传递依赖，避免同时解析两个不同坐标的同一模块。
+> 主 SDK 的 POM 已声明 JitPack 上的 `netbare-core:6.0` 传递依赖，宿主只需添加 `showlog` 这一条依赖，无需单独声明 `netbare-core`。
 
-### 4.3 本地 AAR 离线集成（可选）
-
-若只能拿到本地 AAR 文件，需要同时引入主 SDK 与底层抓包模块，并自行保证 AndroidX、BouncyCastle、Guava 等运行时依赖存在：
-
-```groovy
-dependencies {
-    implementation files('libs/showlog-6.0.aar')
-    implementation files('libs/netbare-core-6.0.aar')
-}
-```
-
-> 上述 AAR 文件名以团队实际下发为准。本地 AAR 方式不会自动解析 Maven 传递依赖，且必须保留 AAR 内的 `proguard.txt`（详见第 9 节），否则 Release 包可能出现类被裁剪的问题。优先建议使用 4.2 的仓库依赖方式。
-
-### 4.4 初始化配置 (Application)
+### 4.3 初始化配置 (Application)
 
 在宿主 App 的 `Application.onCreate()` 中完成初始化。
 
@@ -556,8 +539,7 @@ ShowLog 仅以 AAR 形式分发，模块内已通过 `consumerProguardFiles "con
 
 - 不需要在宿主 `proguard-rules.pro` 中重复添加 `com.xq.dialoglogshow.**` 的保留规则；
 - 业务方实现的 `CustomPanelProvider`、自定义面板 View 均通过代码直接注册与调用，不依赖反射，同样不需要额外 `-keep`；
-- 本地 AAR 离线集成时，请确保 `proguard.txt` 随 AAR 一起保留；若自行解包、裁剪或二次打包 AAR，删除该文件可能导致 Release 包中弹框、数据模型或自定义扩展回调被 R8 裁剪；
-- ShowLog 当前只提供 AAR 接入方式，不提供源码模块集成，因此不存在“源码接入需要自行补混淆规则”的场景。
+- Consumer ProGuard 规则会随 JitPack AAR 自动提供，宿主无需另外复制配置。
 
 ---
 
