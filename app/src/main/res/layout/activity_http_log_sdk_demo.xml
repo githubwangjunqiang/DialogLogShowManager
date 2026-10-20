@@ -181,6 +181,27 @@
                 app:strokeColor="@color/demo_button_secondary" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tv_file_browser_demo_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:textColor="@color/demo_text_hint"
+            android:textSize="@dimen/sp_12"
+            android:text="@string/file_browser_demo_path" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_direct_file_browser"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:text="@string/standalone_btn_nav_file_browser"
+            android:textColor="@color/demo_text_primary"
+            android:textSize="@dimen/sp_13"
+            app:cornerRadius="@dimen/dp_8"
+            app:strokeColor="@color/demo_button_secondary" />
+
         <!-- 卡片 3：真实网络请求测试区 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

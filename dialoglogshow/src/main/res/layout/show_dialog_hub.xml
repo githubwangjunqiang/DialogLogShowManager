@@ -93,6 +93,19 @@
                     android:text="@string/showlog_hub_tab_custom"
                     android:textColor="@color/showlog_text_secondary"
                     android:textSize="@dimen/sp_13" />
+
+                <TextView
+                    android:id="@+id/tab_hub_file_browser"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/file_browser"
+                    android:textColor="@color/showlog_text_secondary"
+                    android:textSize="@dimen/sp_13"
+                    android:visibility="gone" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>

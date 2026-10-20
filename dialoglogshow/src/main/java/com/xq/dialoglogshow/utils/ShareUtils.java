@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import com.xq.dialoglogshow.R;
@@ -85,13 +86,29 @@ public final class ShareUtils {
      * 同时避免对外暴露宿主原始目录。
      *
      * @param context  用于启动系统分享面板的上下文
-     * @param filePath 待分享日志文件的绝对路径
+     * @param filePath 待分享文件的绝对路径
      */
     public static void shareFile(@NonNull Context context, @NonNull String filePath) {
+        shareFile(context, filePath, null);
+    }
+
+    /**
+     * 分享指定文件，并在系统面板启动或分享失败后于主线程通知调用方，避免大文件复制期间重复排队。
+     */
+    public static void shareFile(@NonNull Context context,
+                                 @NonNull String filePath,
+                                 @Nullable OnShareCompletedListener listener) {
         Context appContext = context.getApplicationContext();
         File sourceFile = new File(filePath);
-        if (!sourceFile.isFile() || !sourceFile.canRead()) {
-            Toast.makeText(appContext, R.string.show_sdk_share_file_not_found, Toast.LENGTH_SHORT).show();
+        boolean readable;
+        try {
+            readable = sourceFile.isFile() && sourceFile.canRead();
+        } catch (SecurityException exception) {
+            readable = false;
+        }
+        if (!readable) {
+            Toast.makeText(appContext, R.string.file_not_found_cannot_share, Toast.LENGTH_SHORT).show();
+            notifyShareCompleted(listener, false);
             return;
         }
 
@@ -111,20 +128,37 @@ public final class ShareUtils {
                 sharedFile = candidateFile;
             } catch (Exception exception) {
                 exception.printStackTrace();
-                if (candidateFile != null && candidateFile.exists()) {
-                    candidateFile.delete();
+                try {
+                    if (candidateFile != null && candidateFile.exists()) {
+                        candidateFile.delete();
+                    }
+                } catch (SecurityException ignored) {
+                    // 为什么这样做：缓存清理权限异常不应逃出工作线程并杀死宿主进程。
                 }
             }
 
             File result = sharedFile;
             MAIN_HANDLER.post(() -> {
-                if (result == null || !result.isFile()) {
-                    Toast.makeText(appContext, R.string.show_sdk_share_file_failed, Toast.LENGTH_SHORT).show();
+                boolean available;
+                try {
+                    available = result != null && result.isFile();
+                } catch (SecurityException exception) {
+                    available = false;
+                }
+                if (!available) {
+                    Toast.makeText(appContext, R.string.file_share_failed, Toast.LENGTH_SHORT).show();
+                    notifyShareCompleted(listener, false);
                     return;
                 }
-                openShareChooser(appContext, result);
+                notifyShareCompleted(listener, openShareChooser(appContext, result));
             });
         });
+    }
+
+    private static void notifyShareCompleted(@Nullable OnShareCompletedListener listener, boolean success) {
+        if (listener != null) {
+            MAIN_HANDLER.post(() -> listener.onCompleted(success));
+        }
     }
 
     /**
@@ -184,7 +218,7 @@ public final class ShareUtils {
     /**
      * 启动系统分享面板，并只授予接收应用临时读取权限。
      */
-    private static void openShareChooser(@NonNull Context context, @NonNull File sharedFile) {
+    private static boolean openShareChooser(@NonNull Context context, @NonNull File sharedFile) {
         try {
             String authority = context.getPackageName() + ".dialoglogshow.fileprovider";
             Uri uri = FileProvider.getUriForFile(context, authority, sharedFile);
@@ -202,13 +236,20 @@ public final class ShareUtils {
 
             Intent chooser = Intent.createChooser(
                     shareIntent,
-                    context.getString(R.string.show_sdk_share_log_file)
+                    context.getString(R.string.share_file)
             );
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chooser);
+            return true;
         } catch (Exception exception) {
             exception.printStackTrace();
-            Toast.makeText(context, R.string.show_sdk_share_file_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.file_share_failed, Toast.LENGTH_SHORT).show();
+            return false;
         }
+    }
+
+    /** 分享面板启动或分享准备失败后的主线程结果回调。 */
+    public interface OnShareCompletedListener {
+        void onCompleted(boolean success);
     }
 }

@@ -7,7 +7,10 @@ import androidx.annotation.NonNull;
 
 import com.xq.dialoglogshow.ShowLog;
 import com.xq.dialoglogshow.core.config.ShowLogConfig;
+import com.xq.dialoglogshowmanager.ui.utils.FileBrowserDemoData;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -30,9 +33,18 @@ public class App extends Application {
 
         Log.d(TAG, "onCreate: 启动全新的 ShowLog 网络日志监控调试 SDK");
 
-        // 1. 初始化 ShowLog：配置默认保留最新 10000 条日志，自动开启免权限悬浮球
+        // 为什么这样做：样例文件放在应用私有目录，避免 Demo 为文件浏览额外申请共享存储权限。
+        File fileBrowserRoot = FileBrowserDemoData.getRootDirectory(this);
+        try {
+            FileBrowserDemoData.createSamplesIfNeeded(fileBrowserRoot);
+        } catch (IOException exception) {
+            Log.e(TAG, "创建文件浏览演示样例失败，文件 Tab 将展示目录访问状态", exception);
+        }
+
+        // 1. 初始化 ShowLog：将 Demo 样例目录作为可选文件浏览 Tab 的根目录
         ShowLog.init(this, new ShowLogConfig.Builder()
                 .maxDatabaseLogLimit(10000)
+                .fileBrowserRootPath(fileBrowserRoot.getAbsolutePath())
                 .build());
 
         // 1.1 配置全局业务成功裁决拦截器（解耦 HTTP 传输状态码与真实业务成败）

@@ -16,6 +16,7 @@ import com.xq.dialoglogshow.core.repository.HttpLogRepository;
 import com.xq.dialoglogshowmanager.App;
 import com.xq.dialoglogshowmanager.R;
 import com.xq.dialoglogshowmanager.ui.utils.ClickThrottleUtils;
+import com.xq.dialoglogshowmanager.ui.utils.FileBrowserDemoData;
 import com.xq.dialoglogshowmanager.ui.utils.StatusBarInsetHelper;
 
 import java.io.IOException;
@@ -55,6 +56,12 @@ public class HttpLogSdkDemoActivity extends AppCompatActivity {
         mTvRequestFeedback = findViewById(R.id.tv_request_feedback);
         mTvSdkStatusIndicator = findViewById(R.id.tv_sdk_status_indicator);
         mSwitchToggleSdk = findViewById(R.id.switch_toggle_sdk);
+
+        TextView tvFileBrowserPath = findViewById(R.id.tv_file_browser_demo_path);
+        tvFileBrowserPath.setText(getString(
+                R.string.file_browser_demo_path,
+                FileBrowserDemoData.getRootDirectory(this).getAbsolutePath()
+        ));
 
         // 0. 全局调试监控开关绑定
         mSwitchToggleSdk.setChecked(ShowLog.isEnabled());
@@ -137,6 +144,16 @@ public class HttpLogSdkDemoActivity extends AppCompatActivity {
         findViewById(R.id.btn_direct_custom).setOnClickListener(v -> {
             if (ClickThrottleUtils.isFastClick(v)) return;
             ShowLog.showCustomPanel(this);
+        });
+
+        // 为什么这样做：Demo 需要提供无需寻找悬浮球的直达入口，便于反复验证目录、预览和系统分享流程。
+        findViewById(R.id.btn_direct_file_browser).setOnClickListener(v -> {
+            if (ClickThrottleUtils.isFastClick(v)) return;
+            if (!ShowLog.isEnabled()) {
+                Toast.makeText(this, R.string.file_browser_demo_disabled, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ShowLog.showFileBrowser(this);
         });
 
         // 2. 跳转到旧版入口（备用）

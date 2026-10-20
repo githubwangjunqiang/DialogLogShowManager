@@ -176,20 +176,20 @@ public final class ShowLog {
         if (!sEnabled || activity == null || activity.isFinishing()) {
             return;
         }
-        new ShowLogHubDialog(activity).show();
+        new ShowLogHubDialog(activity, sConfig != null ? sConfig : ShowLogConfig.defaultConfig()).show();
     }
 
     /**
      * 呼出 ShowLog 全景调试中枢并精准定位到指定 Tab。
      *
      * @param activity   宿主 Activity 上下文
-     * @param initialTab 初始选中的 Tab：ShowLogHubDialog.TAB_NETWORK / TAB_DEVICE / TAB_CUSTOM
+     * @param initialTab 初始选中的 Tab：ShowLogHubDialog.TAB_NETWORK / TAB_DEVICE / TAB_CUSTOM / TAB_FILE_BROWSER
      */
     public static void show(@NonNull Activity activity, int initialTab) {
         if (!sEnabled || activity == null || activity.isFinishing()) {
             return;
         }
-        new ShowLogHubDialog(activity, initialTab).show();
+        new ShowLogHubDialog(activity, initialTab, sConfig != null ? sConfig : ShowLogConfig.defaultConfig()).show();
     }
 
     /**
@@ -226,6 +226,15 @@ public final class ShowLog {
      */
     public static void showCustomPanel(@NonNull Activity activity) {
         show(activity, ShowLogHubDialog.TAB_CUSTOM);
+    }
+
+    /**
+     * 呼出全景调试中枢并定位到文件浏览 Tab；未配置目录时按主中枢默认页处理。
+     *
+     * @param activity 宿主 Activity 上下文
+     */
+    public static void showFileBrowser(@NonNull Activity activity) {
+        show(activity, ShowLogHubDialog.TAB_FILE_BROWSER);
     }
 
     /**

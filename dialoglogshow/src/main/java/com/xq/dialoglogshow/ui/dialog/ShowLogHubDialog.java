@@ -19,11 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.xq.dialoglogshow.R;
+import com.xq.dialoglogshow.core.config.ShowLogConfig;
 import com.xq.dialoglogshow.core.custom.CustomPanelManager;
 import com.xq.dialoglogshow.ui.view.AppDeviceInfoView;
 import com.xq.dialoglogshow.ui.view.CustomPanelPageView;
 import com.xq.dialoglogshow.ui.view.HttpLogConsoleView;
+import com.xq.dialoglogshow.ui.view.FileBrowserView;
 import com.xq.dialoglogshow.ui.view.ShowLogHubTabPanelBackground;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ShowLog 统一全景调试中枢主弹窗 (ShowLog Hub)。
@@ -40,35 +45,58 @@ public final class ShowLogHubDialog extends Dialog {
     public static final int TAB_NETWORK = 0;
     public static final int TAB_DEVICE = 1;
     public static final int TAB_CUSTOM = 2;
+    public static final int TAB_FILE_BROWSER = 3;
 
-    /** 主中枢页签数量：轮廓绘制需要按固定分段计算选中位置，新增页签时必须同步修改。 */
-    private static final int TAB_COUNT = 3;
+    /** 默认页签数量；文件 Tab 是否追加由初始化配置决定。 */
+    private static final int BASE_TAB_COUNT = 3;
 
     private static final long THROTTLE_MS = 350L;
     private static int sLastSelectedTab = TAB_NETWORK;
 
     private long mLastClickTime = 0L;
     private final int mInitialTab;
+    private final ShowLogConfig mConfig;
+    private final int mTabCount;
     /** 同一弹框的页签标题和面板实现固定取自同一次注册，避免运行中注册造成标题与内容错配。 */
     private final CustomPanelManager.Registration mCustomPanelRegistration;
 
     private TextView mTabHubNetwork;
     private TextView mTabHubDevice;
     private TextView mTabHubCustom;
+    private TextView mTabHubFileBrowser;
     private ViewPager2 mVpPages;
     private ShowLogHubTabPanelBackground mTabPanelBackground;
 
     private HttpLogConsoleView mNetworkView;
     private AppDeviceInfoView mDeviceView;
     private CustomPanelPageView mCustomView;
+    private FileBrowserView mFileBrowserView;
 
     public ShowLogHubDialog(@NonNull Context context) {
-        this(context, sLastSelectedTab);
+        this(context, sLastSelectedTab, ShowLogConfig.defaultConfig());
     }
 
     public ShowLogHubDialog(@NonNull Context context, int initialTab) {
+        this(context, initialTab, ShowLogConfig.defaultConfig());
+    }
+
+    /**
+     * 按 SDK 初始化配置构建中枢，确保文件 Tab 与配置的路径/标题来自同一不可变快照。
+     */
+    public ShowLogHubDialog(@NonNull Context context, @NonNull ShowLogConfig config) {
+        this(context, sLastSelectedTab, config);
+    }
+
+    /**
+     * 创建指定初始页签的中枢。
+     */
+    public ShowLogHubDialog(@NonNull Context context, int initialTab, @NonNull ShowLogConfig config) {
         super(context);
-        this.mInitialTab = (initialTab >= TAB_NETWORK && initialTab < TAB_COUNT) ? initialTab : TAB_NETWORK;
+        this.mConfig = config != null ? config : ShowLogConfig.defaultConfig();
+        this.mTabCount = mConfig.fileBrowserRootPath == null ? BASE_TAB_COUNT : BASE_TAB_COUNT + 1;
+        this.mInitialTab = (initialTab >= TAB_NETWORK && initialTab < mTabCount) ? initialTab : TAB_NETWORK;
+        // 为什么这样做：配置为空时上一轮记忆的文件页索引已不存在，立即纠正静态记忆避免下次再次越界。
+        sLastSelectedTab = mInitialTab;
         this.mCustomPanelRegistration = CustomPanelManager.getInstance().getRegistration();
     }
 
@@ -119,6 +147,9 @@ public final class ShowLogHubDialog extends Dialog {
         if (mCustomView != null) {
             mCustomView.release();
         }
+        if (mFileBrowserView != null) {
+            mFileBrowserView.release();
+        }
         super.dismiss();
     }
 
@@ -126,8 +157,18 @@ public final class ShowLogHubDialog extends Dialog {
         mTabHubNetwork = findViewById(R.id.tab_hub_network);
         mTabHubDevice = findViewById(R.id.tab_hub_device);
         mTabHubCustom = findViewById(R.id.tab_hub_custom);
+        mTabHubFileBrowser = findViewById(R.id.tab_hub_file_browser);
         mVpPages = findViewById(R.id.vp_hub_pages);
         mTabPanelBackground = findViewById(R.id.v_tab_panel_background);
+        if (mTabCount > BASE_TAB_COUNT) {
+            mTabHubFileBrowser.setVisibility(View.VISIBLE);
+            String fileTabTitle = mConfig.fileBrowserTabTitle;
+            mTabHubFileBrowser.setText(fileTabTitle != null
+                    ? fileTabTitle
+                    : getContext().getString(R.string.file_browser));
+        } else {
+            mTabHubFileBrowser.setVisibility(View.GONE);
+        }
 
         // 关闭事件绑定到整个挂钩容器，图标本身不再单独响应，避免只有 20dp 图标可点
         View closeHook = findViewById(R.id.btn_close_hub_container);
@@ -155,6 +196,12 @@ public final class ShowLogHubDialog extends Dialog {
             if (isThrottled() || mVpPages.getCurrentItem() == TAB_CUSTOM) return;
             mVpPages.setCurrentItem(TAB_CUSTOM, true);
         });
+        if (mTabCount > BASE_TAB_COUNT) {
+            mTabHubFileBrowser.setOnClickListener(v -> {
+                if (isThrottled() || mVpPages.getCurrentItem() == TAB_FILE_BROWSER) return;
+                mVpPages.setCurrentItem(TAB_FILE_BROWSER, true);
+            });
+        }
     }
 
     private void setupViewPager() {
@@ -164,8 +211,15 @@ public final class ShowLogHubDialog extends Dialog {
         mCustomView.setRegistration(mCustomPanelRegistration);
         // 把真实弹框对象注入承载视图，业务方回调中才能主动控制弹框关闭
         mCustomView.setHostDialog(this);
-
-        View[] pages = new View[]{mNetworkView, mDeviceView, mCustomView};
+        List<View> pageList = new ArrayList<>();
+        pageList.add(mNetworkView);
+        pageList.add(mDeviceView);
+        pageList.add(mCustomView);
+        if (mTabCount > BASE_TAB_COUNT) {
+            mFileBrowserView = new FileBrowserView(getContext(), mConfig.fileBrowserRootPath);
+            pageList.add(mFileBrowserView);
+        }
+        View[] pages = pageList.toArray(new View[0]);
 
         mVpPages.setAdapter(new RecyclerView.Adapter<HubPageViewHolder>() {
             @NonNull
@@ -224,6 +278,9 @@ public final class ShowLogHubDialog extends Dialog {
         resetTab(mTabHubNetwork);
         resetTab(mTabHubDevice);
         resetTab(mTabHubCustom);
+        if (mTabHubFileBrowser != null) {
+            resetTab(mTabHubFileBrowser);
+        }
 
         if (selectedPosition == TAB_NETWORK) {
             highlightTab(mTabHubNetwork);
@@ -231,11 +288,13 @@ public final class ShowLogHubDialog extends Dialog {
             highlightTab(mTabHubDevice);
         } else if (selectedPosition == TAB_CUSTOM) {
             highlightTab(mTabHubCustom);
+        } else if (selectedPosition == TAB_FILE_BROWSER && mTabHubFileBrowser != null) {
+            highlightTab(mTabHubFileBrowser);
         }
 
         // 选中页签的轮廓由统一背景 View 绘制，切换时必须同步索引，否则边框会停留在旧位置
         if (mTabPanelBackground != null) {
-            mTabPanelBackground.setSelectedTab(selectedPosition, TAB_COUNT);
+            mTabPanelBackground.setSelectedTab(selectedPosition, mTabCount);
         }
     }
 

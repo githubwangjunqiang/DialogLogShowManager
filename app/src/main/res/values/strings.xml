@@ -117,6 +117,9 @@
     <string name="standalone_btn_nav_network">🌐 直达网络日志</string>
     <string name="standalone_btn_nav_device">📱 直达设备系统</string>
     <string name="standalone_btn_nav_custom">🧩 直达自定义扩展 (演示)</string>
+    <string name="standalone_btn_nav_file_browser">📁 直达文件浏览（测试文本、图片预览与系统分享）</string>
+    <string name="file_browser_demo_path">样例根目录：%1$s</string>
+    <string name="file_browser_demo_disabled">ShowLog 调试功能已关闭，无法打开文件浏览。</string>
     <string name="standalone_btn_device_info">📱 查看应用与设备全景信息看板</string>
     <string name="standalone_actions_title">真实开源网络请求测试</string>
     <string name="standalone_btn_get">1. 发送 GET 请求 (获取 Post 详情)</string>

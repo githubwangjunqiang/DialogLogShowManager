@@ -1,6 +1,7 @@
 package com.xq.dialoglogshow.core.config;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,6 +49,14 @@ public final class ShowLogConfig {
      */
     public final boolean showFloatingView;
 
+    /** 文件浏览功能的根目录路径；为空时主中枢不展示文件 Tab。 */
+    @Nullable
+    public final String fileBrowserRootPath;
+
+    /** 文件浏览 Tab 的自定义标题；为空时由资源提供默认标题。 */
+    @Nullable
+    public final String fileBrowserTabTitle;
+
     private ShowLogConfig(Builder builder) {
         // 为什么这样做：对数据库上限执行区间钳制，杜绝负数、0 或极端百万级配置引起闪退或卡死。
         this.maxDatabaseLogLimit = Math.max(MIN_DATABASE_LIMIT, Math.min(builder.maxDatabaseLogLimit, MAX_DATABASE_LIMIT));
@@ -55,6 +64,29 @@ public final class ShowLogConfig {
         this.redactHeaders = Collections.unmodifiableSet(new HashSet<>(builder.redactHeaders));
         this.enabled = builder.enabled;
         this.showFloatingView = builder.showFloatingView;
+        this.fileBrowserRootPath = normalizePath(builder.fileBrowserRootPath);
+        this.fileBrowserTabTitle = normalizeTitle(builder.fileBrowserTabTitle);
+    }
+
+    /**
+     * 将可选配置统一规整，避免空白路径被错误视为已启用的文件浏览功能。
+     */
+    @Nullable
+    private static String normalizePath(@Nullable String value) {
+        if (value == null) {
+            return null;
+        }
+        // 为什么这样做：路径首尾空格可能是合法文件名的一部分，只用 trim 判断空值但不改写有效路径。
+        return value.trim().isEmpty() ? null : value;
+    }
+
+    @Nullable
+    private static String normalizeTitle(@Nullable String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.trim();
+        return normalized.isEmpty() ? null : normalized;
     }
 
     @NonNull
@@ -68,6 +100,8 @@ public final class ShowLogConfig {
         private final Set<String> redactHeaders = new HashSet<>();
         private boolean enabled = true;
         private boolean showFloatingView = true;
+        private String fileBrowserRootPath;
+        private String fileBrowserTabTitle;
 
         public Builder() {
             // 为什么这样做：默认对主流认证和身份凭证字段进行脱敏保护，防止调试日志泄露敏感 Token。
@@ -116,6 +150,22 @@ public final class ShowLogConfig {
          */
         public Builder showFloatingView(boolean show) {
             this.showFloatingView = show;
+            return this;
+        }
+
+        /**
+         * 设置文件浏览主 Tab 的根目录；路径需由宿主应用自身具备读取权限。
+         */
+        public Builder fileBrowserRootPath(@Nullable String path) {
+            this.fileBrowserRootPath = path;
+            return this;
+        }
+
+        /**
+         * 设置文件浏览主 Tab 标题；为空时显示默认标题“文件浏览”。
+         */
+        public Builder fileBrowserTabTitle(@Nullable String title) {
+            this.fileBrowserTabTitle = title;
             return this;
         }
 
