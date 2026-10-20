@@ -49,12 +49,28 @@
 ```groovy
 // settings.gradle 的 dependencyResolutionManagement.repositories 中
 maven { url 'https://your-maven-repo.example.com/repository/android/' }
+maven { url 'https://jitpack.io' }
 ```
 
 ```groovy
 // app/build.gradle
 dependencies {
-    implementation 'com.xq.showlog:showlog:6.0'
+    // 使用 JitPack 的 netbare-core 替代 showlog POM 中旧坐标的传递依赖
+    implementation('com.xq.showlog:showlog:6.0') {
+        exclude group: 'com.xq.showlog', module: 'netbare-core'
+    }
+    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0'
+}
+```
+
+如果宿主使用 `build.gradle.kts`：
+
+```kotlin
+dependencies {
+    implementation("com.xq.showlog:showlog:6.0") {
+        exclude(group = "com.xq.showlog", module = "netbare-core")
+    }
+    implementation("com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0")
 }
 ```
 
@@ -143,7 +159,7 @@ ShowLog.showFileBrowser(activity);      // 文件浏览（需配置 fileBrowserR
 
 ## 4. 依赖引入与初始化配置详解
 
-ShowLog 目前**仅提供 AAR 接入方式**，不提供源码模块依赖（`implementation project(':dialoglogshow')`）。AAR 通过团队私有 Maven 仓库分发，主 SDK 会自动传递依赖底层抓包模块与相关 AndroidX 组件。
+ShowLog 目前**仅提供 AAR 接入方式**，不提供源码模块依赖（`implementation project(':dialoglogshow')`）。主 SDK AAR 通过团队私有 Maven 仓库分发；`netbare-core` 使用 JitPack 坐标单独引入，具体配置见下文。
 
 ### 4.1 配置 Maven 仓库
 
@@ -152,8 +168,10 @@ ShowLog 目前**仅提供 AAR 接入方式**，不提供源码模块依赖（`im
 ```groovy
 dependencyResolutionManagement {
     repositories {
-        // 团队私有 Maven 仓库地址（以实际下发地址为准）
+        // ShowLog 主 SDK 所在的团队私有 Maven 仓库（以实际下发地址为准）
         maven { url 'https://your-maven-repo.example.com/repository/android/' }
+        // JitPack：解析 netbare-core
+        maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
     }
@@ -166,12 +184,26 @@ dependencyResolutionManagement {
 
 ```groovy
 dependencies {
-    // ShowLog 主 SDK（AAR）
-    implementation 'com.xq.showlog:showlog:6.0'
+    // 使用 JitPack 的 netbare-core 替代 showlog POM 中旧坐标的传递依赖
+    implementation('com.xq.showlog:showlog:6.0') {
+        exclude group: 'com.xq.showlog', module: 'netbare-core'
+    }
+    implementation 'com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0'
 }
 ```
 
-> `showlog` 的 POM 会自动解析 `com.xq.showlog:netbare-core:6.0`、AndroidX 等传递依赖，无需手动添加。
+若宿主使用 `build.gradle.kts`：
+
+```kotlin
+dependencies {
+    implementation("com.xq.showlog:showlog:6.0") {
+        exclude(group = "com.xq.showlog", module = "netbare-core")
+    }
+    implementation("com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0")
+}
+```
+
+> `netbare-core` 使用 JitPack 坐标 `com.github.githubwangjunqiang.DialogLogShowManager:netbare-core:6.0`；请确保已在仓库配置中添加 `https://jitpack.io`。排除旧的 `com.xq.showlog:netbare-core` 传递依赖，避免同时解析两个不同坐标的同一模块。
 
 ### 4.3 本地 AAR 离线集成（可选）
 
