@@ -1,6 +1,6 @@
 # ShowLog SDK 开发者接入指南
 
-> **版本**：v5.0.4<br>
+> **版本**：v6.0<br>
 > **适用平台**：Android 5.0+ (API 21+)<br>
 > **更新时间**：2026-10-20
 
@@ -54,7 +54,7 @@ maven { url 'https://your-maven-repo.example.com/repository/android/' }
 ```groovy
 // app/build.gradle
 dependencies {
-    implementation 'com.xq.showlog:showlog:5.0.4'
+    implementation 'com.xq.showlog:showlog:6.0'
 }
 ```
 
@@ -167,11 +167,11 @@ dependencyResolutionManagement {
 ```groovy
 dependencies {
     // ShowLog 主 SDK（AAR）
-    implementation 'com.xq.showlog:showlog:5.0.4'
+    implementation 'com.xq.showlog:showlog:6.0'
 }
 ```
 
-> `showlog` 的 POM 会自动解析 `com.xq.showlog:netbare-core:5.0.4`、AndroidX 等传递依赖，无需手动添加。
+> `showlog` 的 POM 会自动解析 `com.xq.showlog:netbare-core:6.0`、AndroidX 等传递依赖，无需手动添加。
 
 ### 4.3 本地 AAR 离线集成（可选）
 
@@ -179,8 +179,8 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation files('libs/showlog-5.0.4.aar')
-    implementation files('libs/netbare-core-5.0.4.aar')
+    implementation files('libs/showlog-6.0.aar')
+    implementation files('libs/netbare-core-6.0.aar')
 }
 ```
 

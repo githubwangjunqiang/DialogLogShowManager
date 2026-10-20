@@ -10,7 +10,7 @@ group = "com.xq.showlog"
 /**
  * 这里先给默认版本，是为了兼容单独构建 netbare-core 的场景；正式发布时会在 afterEvaluate 与主 SDK 版本对齐。
  */
-version = "5.0.4"
+version = "6.0"
 
 android {
     namespace 'com.github.megatronking.netbare'

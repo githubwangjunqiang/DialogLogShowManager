@@ -6,7 +6,7 @@ plugins {
 /**
  * 统一在模块内显式维护版本，是为了避免 JitPack 发布阶段动态改源码，导致 tag、源码与产物版本发生漂移。
  */
-version = "5.0.4"
+version = "6.0"
 
 /**
  * 这里显式声明发布坐标，是为了让 showlog 与底层 netbare-core 的 POM 依赖保持可预测，便于 JitPack 和本地 Maven 一致解析。
