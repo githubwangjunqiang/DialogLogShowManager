@@ -23,4 +23,6 @@
     <color name="showlog_status_5xx">#EF4444</color>
     <color name="showlog_status_error">#DC2626</color>
     <color name="showlog_action_btn">#0EA5E9</color>
+    <!-- 蓝色强调底上的深色文字；统一成资源，避免各处重复硬编码 -->
+    <color name="showlog_text_on_accent">#0F172A</color>
 </resources>

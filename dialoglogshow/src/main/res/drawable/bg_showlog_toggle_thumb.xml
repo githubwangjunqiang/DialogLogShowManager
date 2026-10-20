@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 滑动开关的滑块：蓝色强调底，承载当前选中项的文字 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/dp_8" />
+    <solid android:color="@color/showlog_action_btn" />
+</shape>

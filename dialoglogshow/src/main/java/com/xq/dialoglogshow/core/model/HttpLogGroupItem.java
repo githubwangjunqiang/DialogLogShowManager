@@ -65,6 +65,12 @@ public final class HttpLogGroupItem implements Serializable {
     public int latestStatusCode;
 
     /**
+     * 最新一次调用是否业务成功。
+     * 为什么这样做：分组摘要需要与日志条目使用同一业务成功口径，失败时才能在列表外层标红提示。
+     */
+    public boolean latestSuccess;
+
+    /**
      * 在 UI 列表中是否处于展开状态。
      */
     public boolean isExpanded;
@@ -89,6 +95,7 @@ public final class HttpLogGroupItem implements Serializable {
             latestTimestamp = record.timestamp;
             latestDurationMs = record.durationMs;
             latestStatusCode = record.statusCode;
+            latestSuccess = record.success;
         }
     }
 }

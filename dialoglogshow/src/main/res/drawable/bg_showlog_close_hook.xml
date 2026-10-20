@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  为什么这样做：关闭挂钩的底边需要与弹框卡片顶边重合，若四边都描边，接缝处会出现一条横线；
+  因此填充路径闭合以遮住卡片顶边，描边路径在底部开口，并让底部左右两角向内收圆，
+  使挂钩边框看起来是从卡片外框自然延伸出来的，而不是悬浮在卡片上方的独立按钮。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/dp_36"
+    android:height="@dimen/dp_37"
+    android:viewportWidth="36"
+    android:viewportHeight="37">
+
+    <!-- 填充：底边闭合，颜色与弹框卡片一致，用于覆盖卡片顶边的 1dp 描边 -->
+    <path
+        android:fillColor="@color/showlog_bg_primary"
+        android:pathData="M5,37 Q1,37 1,33 L1,11 Q1,1 11,1 L25,1 Q35,1 35,11 L35,33 Q35,37 31,37 Z" />
+
+    <!-- 描边：底部不闭合，左右下角向内收，形成与卡片边框衔接的开口 -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M5,37 Q1,37 1,33 L1,11 Q1,1 11,1 L25,1 Q35,1 35,11 L35,33 Q35,37 31,37"
+        android:strokeColor="@color/showlog_bg_card_stroke"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1" />
+</vector>

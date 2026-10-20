@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 后一天入口：使用右向三角替代文字按钮，减少日期行横向占用 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/dp_24"
+    android:height="@dimen/dp_24"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/showlog_text_secondary"
+        android:pathData="M9,6 L18,12 L9,18 Z" />
+</vector>

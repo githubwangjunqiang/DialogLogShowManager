@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  为什么这样做：搜索输入从主界面迁移到独立弹框，弹框只负责收集关键字；
+  确定/取消/清除三个动作都会先关闭弹框，再由回调统一刷新主列表，避免输入状态与列表状态分叉。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_showlog_search_dialog"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_16">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/showlog_search_network_log"
+        android:textColor="@color/showlog_text_primary"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_search_keyword_input"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"
+        android:layout_marginTop="@dimen/dp_12"
+        android:background="@drawable/bg_showlog_search"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:hint="@string/showlog_search_hint"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:textColor="@color/showlog_text_primary"
+        android:textColorHint="@color/showlog_text_secondary"
+        android:textSize="@dimen/sp_13" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_16"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_search_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_32"
+            android:background="@drawable/bg_showlog_pill"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:text="@string/showlog_clear"
+            android:textColor="@color/showlog_status_5xx"
+            android:textSize="@dimen/sp_12" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/btn_search_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_32"
+            android:background="@drawable/bg_showlog_pill"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:text="@string/showlog_cancel"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:id="@+id/btn_search_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_32"
+            android:layout_marginStart="@dimen/dp_8"
+            android:background="@drawable/bg_showlog_tab_selected"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingStart="@dimen/dp_12"
+            android:paddingEnd="@dimen/dp_12"
+            android:text="@string/showlog_confirm"
+            android:textColor="@color/showlog_text_on_accent"
+            android:textSize="@dimen/sp_12"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

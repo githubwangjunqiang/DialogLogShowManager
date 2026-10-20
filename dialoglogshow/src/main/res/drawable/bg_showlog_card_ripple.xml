@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  为什么这样做：日志 item 是可点击的，纯色卡片缺少按压反馈；
+  在卡片背景外包一层系统水波纹，既保留原有卡片样式，又能让用户明确感知点击。
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <!-- 用同圆角矩形做遮罩，避免水波纹在卡片四角画出方形高亮 -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/dp_8" />
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/bg_showlog_card" />
+</ripple>

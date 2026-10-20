@@ -5,14 +5,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,6 +28,7 @@ import com.xq.dialoglogshow.core.repository.HttpLogRepository;
 import com.xq.dialoglogshow.ui.adapter.HttpLogFlatAdapter;
 import com.xq.dialoglogshow.ui.adapter.HttpLogGroupAdapter;
 import com.xq.dialoglogshow.ui.dialog.HttpLogDetailDialog;
+import com.xq.dialoglogshow.ui.dialog.SearchKeywordDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,6 +61,12 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
     private int mCurrentFilter = FILTER_ALL;
     private String mSearchKeyword = "";
 
+    /**
+     * 查询代次：日期或排序快速切换时，旧查询可能晚于新查询返回；
+     * 只允许最新代次的结果落地，避免旧日期/旧排序的数据覆盖当前界面。
+     */
+    private int mQueryGeneration;
+
     private final List<HttpLogRecord> mRawList = new ArrayList<>();
     private final List<HttpLogRecord> mFilteredList = new ArrayList<>();
 
@@ -70,14 +74,13 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
     private HttpLogGroupAdapter mGroupAdapter;
 
     private TextView mTvCurrentDate;
-    private TextView mTvTotalSummary;
-    private TextView mBtnSegFlat;
-    private TextView mBtnSegGroup;
-    private TextView mBtnToggleSort;
+    private ShowLogToggleSwitch mViewModeSwitch;
+    private ShowLogToggleSwitch mSortSwitch;
+    private View mBtnSearch;
+    private TextView mTvSearchKeyword;
     private TextView mTabFilterAll;
     private TextView mTabFilter2xx;
     private TextView mTabFilterError;
-    private EditText mEtSearch;
     private RecyclerView mRvLogs;
     private ProgressBar mPbLoading;
     private TextView mTvEmptyView;
@@ -112,14 +115,13 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
 
     private void initViews() {
         mTvCurrentDate = findViewById(R.id.tv_current_date);
-        mTvTotalSummary = findViewById(R.id.tv_total_summary);
-        mBtnSegFlat = findViewById(R.id.btn_seg_flat);
-        mBtnSegGroup = findViewById(R.id.btn_seg_group);
-        mBtnToggleSort = findViewById(R.id.btn_toggle_sort);
+        mViewModeSwitch = findViewById(R.id.btn_view_mode_switch);
+        mSortSwitch = findViewById(R.id.btn_sort_switch);
+        mBtnSearch = findViewById(R.id.btn_search);
+        mTvSearchKeyword = findViewById(R.id.tv_search_keyword);
         mTabFilterAll = findViewById(R.id.tab_filter_all);
         mTabFilter2xx = findViewById(R.id.tab_filter_2xx);
         mTabFilterError = findViewById(R.id.tab_filter_error);
-        mEtSearch = findViewById(R.id.et_search_filter);
         mRvLogs = findViewById(R.id.rv_http_logs);
         mPbLoading = findViewById(R.id.pb_loading);
         mTvEmptyView = findViewById(R.id.tv_empty_view);
@@ -150,28 +152,40 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
             showDatePicker();
         });
 
-        // 分段视图选择：扁平列表
-        mBtnSegFlat.setOnClickListener(v -> {
-            if (isThrottled() || !mIsGroupMode) return;
-            mIsGroupMode = false;
-            updateViewModeSegmentedUI();
+        // 视图模式开关：左侧列表、右侧分组，点击任意一侧即切换
+        mViewModeSwitch.setLabels(
+                getContext().getString(R.string.showlog_view_flat_short),
+                getContext().getString(R.string.showlog_group));
+        mViewModeSwitch.setChecked(false, false);
+        // 开关切换是纯 UI 状态变更，且 applyFilterAndRender 幂等，不参与全局点击防抖；
+        // 否则用户刚点过日期/搜索后立刻切换，会被统一节流回滚，表现为开关“点不动”。
+        mViewModeSwitch.setOnCheckedChangeListener((view, isChecked) -> {
+            if (mIsGroupMode == isChecked) return;
+            mIsGroupMode = isChecked;
             applyFilterAndRender();
         });
 
-        // 分段视图选择：接口折叠分组
-        mBtnSegGroup.setOnClickListener(v -> {
-            if (isThrottled() || mIsGroupMode) return;
-            mIsGroupMode = true;
-            updateViewModeSegmentedUI();
-            applyFilterAndRender();
-        });
-
-        // 时间正倒序切换按钮
-        mBtnToggleSort.setOnClickListener(v -> {
-            if (isThrottled()) return;
-            mIsSortAsc = !mIsSortAsc;
-            updateSortButtonUI();
+        // 时间排序开关：左侧倒序、右侧正序
+        mSortSwitch.setLabels(
+                getContext().getString(R.string.showlog_sort_desc),
+                getContext().getString(R.string.showlog_sort_asc));
+        mSortSwitch.setChecked(false, false);
+        // 排序切换同样不做全局节流；重复查询由 mQueryGeneration 保证只有最后一次结果落地
+        mSortSwitch.setOnCheckedChangeListener((view, isChecked) -> {
+            if (mIsSortAsc == isChecked) return;
+            mIsSortAsc = isChecked;
             loadDataForCurrentDay();
+        });
+
+        // 搜索入口：主界面只保留图标，输入与确定/取消/清除都在独立弹框内完成
+        mBtnSearch.setOnClickListener(v -> {
+            if (isThrottled()) return;
+            showSearchDialog();
+        });
+        // 已有关键字胶囊点击后重新打开搜索弹框，方便修改或清除
+        mTvSearchKeyword.setOnClickListener(v -> {
+            if (isThrottled()) return;
+            showSearchDialog();
         });
 
         // 状态筛选 Tab 1：全部
@@ -195,25 +209,8 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
             applyFilterAndRender();
         });
 
-        // 搜索框过滤监听
-        mEtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mSearchKeyword = s != null ? s.toString().trim() : "";
-                applyFilterAndRender();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        updateViewModeSegmentedUI();
-        updateSortButtonUI();
+        // 首屏先按 0 条渲染一次 Tab，避免异步加载完成前出现空白标签
+        updateFilterTabsUI(0, 0, 0);
     }
 
     private void setupAdapters() {
@@ -247,11 +244,16 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
         mPbLoading.setVisibility(View.VISIBLE);
         mTvEmptyView.setVisibility(View.GONE);
 
+        // 每次发起查询都递增代次；回调只在代次仍然最新时才允许更新界面
+        final int generation = ++mQueryGeneration;
         long[] range = getDayRange(mCurrentCalendar);
         HttpLogRepository.getInstance().queryLogsAsync(range[0], range[1], mIsSortAsc, new HttpLogRepository.QueryCallback() {
             @Override
             public void onSuccess(@NonNull List<HttpLogRecord> records) {
                 post(() -> {
+                    if (generation != mQueryGeneration) {
+                        return;
+                    }
                     mPbLoading.setVisibility(View.GONE);
                     mRawList.clear();
                     mRawList.addAll(records);
@@ -262,6 +264,9 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
             @Override
             public void onError(@NonNull Throwable throwable) {
                 post(() -> {
+                    if (generation != mQueryGeneration) {
+                        return;
+                    }
                     mPbLoading.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "加载日志异常: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 });
@@ -275,41 +280,26 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
                 && today.get(Calendar.DAY_OF_YEAR) == mCurrentCalendar.get(Calendar.DAY_OF_YEAR);
 
         String dateStr = mDateFormat.format(mCurrentCalendar.getTime());
-        mTvCurrentDate.setText(isToday ? "📅 " + dateStr + " (今天) ▾" : "📅 " + dateStr + " ▾");
-    }
-
-    private void updateViewModeSegmentedUI() {
-        if (!mIsGroupMode) {
-            mBtnSegFlat.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
-            mBtnSegFlat.setTextColor(Color.parseColor("#FF0F172A"));
-            mBtnSegFlat.setTypeface(null, android.graphics.Typeface.BOLD);
-
-            mBtnSegGroup.setBackgroundColor(Color.TRANSPARENT);
-            mBtnSegGroup.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
-            mBtnSegGroup.setTypeface(null, android.graphics.Typeface.NORMAL);
-        } else {
-            mBtnSegGroup.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
-            mBtnSegGroup.setTextColor(Color.parseColor("#FF0F172A"));
-            mBtnSegGroup.setTypeface(null, android.graphics.Typeface.BOLD);
-
-            mBtnSegFlat.setBackgroundColor(Color.TRANSPARENT);
-            mBtnSegFlat.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
-            mBtnSegFlat.setTypeface(null, android.graphics.Typeface.NORMAL);
-        }
-    }
-
-    private void updateSortButtonUI() {
-        mBtnToggleSort.setText(mIsSortAsc ? R.string.showlog_sort_asc_label : R.string.showlog_sort_desc_label);
+        mTvCurrentDate.setText(getContext().getString(
+                isToday ? R.string.showlog_date_today : R.string.showlog_date_selected, dateStr));
     }
 
     private void applyFilterAndRender() {
         mFilteredList.clear();
-        int totalRaw = mRawList.size();
+        int matchedTotal = 0;
         int successCount = 0;
         int failedCount = 0;
+        // 关键字只转换一次，避免在日志量大时对每条记录重复做大小写转换
+        String lowerKeyword = mSearchKeyword.toLowerCase(Locale.ROOT);
 
         for (HttpLogRecord record : mRawList) {
+            // 先应用搜索条件：Tab 计数必须与搜索结果一致，否则会出现“成功 (2)”但点进去为空
+            if (!matchesSearchKeyword(record, lowerKeyword)) {
+                continue;
+            }
+
             boolean isSuccess = record.success;
+            matchedTotal++;
             if (isSuccess) {
                 successCount++;
             } else {
@@ -323,26 +313,17 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
             if (mCurrentFilter == FILTER_ERROR && isSuccess) {
                 continue;
             }
-
-            // 搜索关键字筛选
-            if (!mSearchKeyword.isEmpty()) {
-                String kw = mSearchKeyword.toLowerCase(Locale.ROOT);
-                boolean matchUrl = record.url != null && record.url.toLowerCase(Locale.ROOT).contains(kw);
-                boolean matchHost = record.host != null && record.host.toLowerCase(Locale.ROOT).contains(kw);
-                boolean matchPath = record.path != null && record.path.toLowerCase(Locale.ROOT).contains(kw);
-                boolean matchStatus = String.valueOf(record.statusCode).contains(kw);
-                boolean matchMsg = record.message != null && record.message.toLowerCase(Locale.ROOT).contains(kw);
-                if (!matchUrl && !matchHost && !matchPath && !matchStatus && !matchMsg) {
-                    continue;
-                }
-            }
             mFilteredList.add(record);
         }
 
-        mTvTotalSummary.setText(totalRaw + "条");
-        updateFilterTabsUI(totalRaw, successCount, failedCount);
+        updateFilterTabsUI(matchedTotal, successCount, failedCount);
+        updateSearchKeywordChip();
 
         if (mFilteredList.isEmpty()) {
+            // 有搜索或状态筛选时，“暂无日志记录”会误导用户；改为明确提示是筛选结果为空
+            boolean hasActiveFilter = !mSearchKeyword.isEmpty() || mCurrentFilter != FILTER_ALL;
+            mTvEmptyView.setText(hasActiveFilter
+                    ? R.string.showlog_empty_filter_tip : R.string.showlog_empty_tip);
             mTvEmptyView.setVisibility(View.VISIBLE);
             mRvLogs.setVisibility(View.GONE);
             return;
@@ -360,10 +341,27 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
         }
     }
 
+    /**
+     * 判断记录是否命中当前搜索关键字。
+     * 为什么这样做：搜索范围覆盖用户最常定位接口的 URL、Host、Path、状态码与错误信息五个维度；
+     * 关键字为空时不做任何过滤，保证主列表默认全量展示。
+     */
+    private static boolean matchesSearchKeyword(@NonNull HttpLogRecord record, @NonNull String lowerKeyword) {
+        if (lowerKeyword.isEmpty()) {
+            return true;
+        }
+        boolean matchUrl = record.url != null && record.url.toLowerCase(Locale.ROOT).contains(lowerKeyword);
+        boolean matchHost = record.host != null && record.host.toLowerCase(Locale.ROOT).contains(lowerKeyword);
+        boolean matchPath = record.path != null && record.path.toLowerCase(Locale.ROOT).contains(lowerKeyword);
+        boolean matchStatus = String.valueOf(record.statusCode).contains(lowerKeyword);
+        boolean matchMsg = record.message != null && record.message.toLowerCase(Locale.ROOT).contains(lowerKeyword);
+        return matchUrl || matchHost || matchPath || matchStatus || matchMsg;
+    }
+
     private void updateFilterTabsUI(int total, int success, int error) {
-        mTabFilterAll.setText("全部 (" + total + ")");
-        mTabFilter2xx.setText("成功 (" + success + ")");
-        mTabFilterError.setText("失败/异常 (" + error + ")");
+        mTabFilterAll.setText(getContext().getString(R.string.showlog_filter_all_count, total));
+        mTabFilter2xx.setText(getContext().getString(R.string.showlog_filter_success_count, success));
+        mTabFilterError.setText(getContext().getString(R.string.showlog_filter_failure_count, error));
 
         mTabFilterAll.setBackgroundResource(R.drawable.bg_showlog_tab_unselected);
         mTabFilterAll.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
@@ -381,20 +379,70 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
         switch (mCurrentFilter) {
             case FILTER_ALL:
                 mTabFilterAll.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
-                mTabFilterAll.setTextColor(Color.parseColor("#FF0F172A"));
+                mTabFilterAll.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_on_accent));
                 mTabFilterAll.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;
             case FILTER_2XX:
                 mTabFilter2xx.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
-                mTabFilter2xx.setTextColor(Color.parseColor("#FF0F172A"));
+                mTabFilter2xx.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_on_accent));
                 mTabFilter2xx.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;
             case FILTER_ERROR:
                 mTabFilterError.setBackgroundResource(R.drawable.bg_showlog_tab_error_selected);
-                mTabFilterError.setTextColor(Color.WHITE);
+                mTabFilterError.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_primary));
                 mTabFilterError.setTypeface(null, android.graphics.Typeface.BOLD);
                 break;
         }
+    }
+
+    /**
+     * 将当前搜索关键字同步到主界面胶囊。
+     * 为什么这样做：搜索框已经被收敛到独立弹框，主界面需要一个常驻但低干扰的提示，
+     * 让用户随时知道当前列表处于筛选状态；没有关键字时隐藏，避免占用列表高度。
+     */
+    private void updateSearchKeywordChip() {
+        if (mSearchKeyword == null || mSearchKeyword.isEmpty()) {
+            mTvSearchKeyword.setVisibility(View.GONE);
+            return;
+        }
+        mTvSearchKeyword.setVisibility(View.VISIBLE);
+        mTvSearchKeyword.setText(getContext().getString(R.string.showlog_search_keyword, mSearchKeyword));
+    }
+
+    /**
+     * 打开独立搜索弹框。
+     * 为什么这样做：主界面只保留搜索图标，避免常驻输入框抢占焦点、弹出键盘并压缩日志列表空间；
+     * 搜索动作统一通过回调回到主视图，保证弹框关闭后列表立即按新关键字刷新。
+     */
+    private void showSearchDialog() {
+        SearchKeywordDialog dialog = new SearchKeywordDialog(
+                getContext(),
+                mSearchKeyword,
+                new SearchKeywordDialog.OnSearchActionListener() {
+                    @Override
+                    public void onConfirm(@NonNull String keyword) {
+                        applySearchKeyword(keyword);
+                    }
+
+                    @Override
+                    public void onClear() {
+                        applySearchKeyword("");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // 取消不改变当前搜索条件，保持主界面原状
+                    }
+                });
+        dialog.show();
+    }
+
+    /**
+     * 应用搜索关键字并刷新列表；空字符串等价于清除筛选。
+     */
+    private void applySearchKeyword(@Nullable String keyword) {
+        mSearchKeyword = keyword != null ? keyword.trim() : "";
+        applyFilterAndRender();
     }
 
     @NonNull
@@ -548,8 +596,7 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
                 if (!mIsSortAsc && !mIsGroupMode && mSearchKeyword.isEmpty() && mCurrentFilter == FILTER_ALL) {
                     mRawList.add(0, record);
                     mFlatAdapter.addFirst(record);
-                    mTvTotalSummary.setText(mRawList.size() + "条");
-                    updateFilterTabsUI(mRawList.size(), calculate2xxCount(mRawList), calculateFailedCount(mRawList));
+                    updateFilterTabsUI(mRawList.size(), calculateSuccessCount(mRawList), calculateFailedCount(mRawList));
                     mTvEmptyView.setVisibility(View.GONE);
                     mRvLogs.setVisibility(View.VISIBLE);
                 } else {
@@ -560,10 +607,15 @@ public final class HttpLogConsoleView extends FrameLayout implements HttpLogRepo
         });
     }
 
-    private int calculate2xxCount(@NonNull List<HttpLogRecord> list) {
+    /**
+     * 统计业务成功数量。
+     * 为什么这样做：筛选逻辑以 record.success 为准，计数也必须使用同一口径，
+     * 否则会出现“成功 Tab 计数与列表实际条数不一致”的问题。
+     */
+    private int calculateSuccessCount(@NonNull List<HttpLogRecord> list) {
         int count = 0;
         for (HttpLogRecord r : list) {
-            if (r.statusCode >= 200 && r.statusCode < 300) count++;
+            if (r.success) count++;
         }
         return count;
     }

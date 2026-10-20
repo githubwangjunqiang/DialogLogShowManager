@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  为什么这样做：选中主 Tab 需要与下方内容面板形成“文件夹页签”的一体感。
+  顶部两角圆角、四边蓝色描边；底部再叠加 1dp 与内容面板同色的覆盖层，
+  抹掉 Tab 自己的底边描边，让选中 Tab 的底边直接开口接入内容面板。
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 选中态主体：内容面板同色底 + 蓝色圆角描边 -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners
+                android:topLeftRadius="@dimen/dp_10"
+                android:topRightRadius="@dimen/dp_10" />
+            <solid android:color="@color/showlog_bg_surface" />
+            <stroke
+                android:width="@dimen/dp_1"
+                android:color="@color/showlog_action_btn" />
+        </shape>
+    </item>
+
+    <!-- 底部覆盖层：高度 1dp、宽度撑满，用于打开底边并与内容面板无缝衔接 -->
+    <item android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <size android:height="@dimen/dp_1" />
+            <solid android:color="@color/showlog_bg_surface" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,115 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  根 FrameLayout 透明，允许关闭挂钩悬挂在弹框卡片顶边之上。
+  为什么这样做：挂钩底边与卡片顶边重叠 1dp，并用与卡片同色、底部开口的矢量边框覆盖卡片顶边描边，
+  让关闭按钮看起来是从卡片外框延伸出来的一部分，而不是悬浮的独立按钮。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_hub"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_showlog_dialog"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/dp_12"
-    android:paddingTop="@dimen/dp_12"
-    android:paddingEnd="@dimen/dp_12"
-    android:paddingBottom="@dimen/dp_8">
+    android:layout_height="match_parent">
 
-    <!-- 1. 顶栏：调试中枢总标题 + 关闭按钮 -->
-    <RelativeLayout
+    <!-- 弹框主卡片：顶部留出 36dp 给挂钩按钮 -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_36"
+        android:background="@drawable/bg_showlog_dialog"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/dp_12"
+        android:paddingTop="@dimen/dp_12"
+        android:paddingEnd="@dimen/dp_12"
+        android:paddingBottom="@dimen/dp_8">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+        <!-- 一级 Tab 与内容面板共用同一块区域，选中 Tab 的底边直接开口接入下方内容面板 -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <View
-                android:layout_width="@dimen/dp_8"
-                android:layout_height="@dimen/dp_8"
-                android:background="@drawable/bg_showlog_tab_selected" />
+            <!-- 内容面板：顶部直角、底部圆角，顶部描边在选中 Tab 下方会被 Tab 背景覆盖 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/dp_36"
+                android:background="@drawable/bg_showlog_hub_content"
+                android:padding="@dimen/dp_8">
 
-            <TextView
-                android:id="@+id/tv_hub_main_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_8"
-                android:text="@string/showlog_hub_title"
-                android:textColor="@color/showlog_text_primary"
-                android:textSize="@dimen/sp_16"
-                android:textStyle="bold" />
-        </LinearLayout>
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vp_hub_pages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
+
+            <!-- 主 Tab 栏：高度 37dp，底部 1dp 故意压住内容面板顶边，以便选中态覆盖该段描边 -->
+            <LinearLayout
+                android:id="@+id/layout_hub_tab_bar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_37"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tab_hub_network"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/showlog_hub_tab_network"
+                    android:textColor="@color/showlog_action_btn"
+                    android:textSize="@dimen/sp_13"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tab_hub_device"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/showlog_hub_tab_device"
+                    android:textColor="@color/showlog_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+
+                <TextView
+                    android:id="@+id/tab_hub_custom"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="@string/showlog_hub_tab_custom"
+                    android:textColor="@color/showlog_text_secondary"
+                    android:textSize="@dimen/sp_13" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- 挂钩关闭按钮：视觉尺寸 36×37dp，底边与卡片顶边重叠 1dp；点击热区由代码用 TouchDelegate 扩大 -->
+    <FrameLayout
+        android:id="@+id/btn_close_hub_container"
+        android:layout_width="@dimen/dp_36"
+        android:layout_height="@dimen/dp_37"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="@dimen/dp_12"
+        android:background="@drawable/bg_showlog_close_hook"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/btn_close_hub"
-            android:layout_width="@dimen/dp_32"
-            android:layout_height="@dimen/dp_32"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
+            android:layout_gravity="center"
             android:contentDescription="@string/show_sdk_close"
-            android:padding="@dimen/dp_6"
-            android:src="@drawable/ic_showlog_close" />
-    </RelativeLayout>
+            android:src="@drawable/ic_showlog_close"
+            android:tint="@color/showlog_status_5xx" />
+    </FrameLayout>
 
-    <!-- 2. 顶级同级胶囊分段导航栏 (网络日志 / 设备信息 / 自定义扩展) -->
-    <LinearLayout
-        android:id="@+id/layout_hub_segmented_bar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_36"
-        android:layout_marginTop="@dimen/dp_10"
-        android:background="@drawable/bg_showlog_segmented_container"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="@dimen/dp_2">
-
-        <TextView
-            android:id="@+id/tab_hub_network"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_selected"
-            android:gravity="center"
-            android:text="@string/showlog_hub_tab_network"
-            android:textColor="#FF0F172A"
-            android:textSize="@dimen/sp_12"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tab_hub_device"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/dp_2"
-            android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_unselected"
-            android:gravity="center"
-            android:text="@string/showlog_hub_tab_device"
-            android:textColor="@color/showlog_text_secondary"
-            android:textSize="@dimen/sp_12" />
-
-        <TextView
-            android:id="@+id/tab_hub_custom"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/dp_2"
-            android:layout_weight="1"
-            android:background="@drawable/bg_showlog_tab_unselected"
-            android:gravity="center"
-            android:text="@string/showlog_hub_tab_custom"
-            android:textColor="@color/showlog_text_secondary"
-            android:textSize="@dimen/sp_12" />
-    </LinearLayout>
-
-    <!-- 分隔细线 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/dp_8"
-        android:background="#33334155" />
-
-    <!-- 3. 主视口：ViewPager2 支持手势左右平滑滑动与瞬切 -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vp_hub_pages"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/dp_4"
-        android:layout_weight="1" />
-</LinearLayout>
+</FrameLayout>

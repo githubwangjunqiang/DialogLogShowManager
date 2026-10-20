@@ -129,6 +129,8 @@
     <!-- 全新控制台专用文案 -->
     <string name="showlog_console_title">网络调试控制台</string>
     <string name="showlog_today">今天</string>
+    <string name="showlog_date_today">📅 %1$s (今天) ▾</string>
+    <string name="showlog_date_selected">📅 %1$s ▾</string>
     <string name="showlog_prev_day">前一天</string>
     <string name="showlog_next_day">后一天</string>
     <string name="showlog_total_summary">共 %1$d 条 (失败 %2$d)</string>
@@ -136,13 +138,20 @@
     <string name="showlog_sort_asc">时间正序</string>
     <string name="showlog_view_flat">列表视图</string>
     <string name="showlog_view_group">接口分组</string>
-    <string name="showlog_search_hint">搜索 URL / Path / Host / 状态码</string>
+    <string name="showlog_search_hint">搜索 URL / Path / Host / 状态码 / 错误信息</string>
     <string name="showlog_filter_all">全部</string>
     <string name="showlog_filter_2xx">2xx 成功</string>
     <string name="showlog_filter_error">错误 / 异常</string>
+    <string name="showlog_filter_all_count">全部 (%1$d)</string>
+    <string name="showlog_filter_success_count">成功 (%1$d)</string>
+    <string name="showlog_filter_failure_count">失败/异常 (%1$d)</string>
+    <string name="showlog_success">成功</string>
+    <string name="showlog_failure">失败</string>
+    <string name="showlog_path_root">/</string>
     <string name="showlog_clear_today">清空当天</string>
     <string name="showlog_clear_all">清空全部</string>
     <string name="showlog_empty_tip">暂无网络日志记录</string>
+    <string name="showlog_empty_filter_tip">当前筛选条件下没有网络日志</string>
     <string name="showlog_loading">加载中...</string>
     <string name="showlog_group_calls">%1$d 次调用</string>
     <string name="showlog_group_latest">最新: %1$d (%2$d ms)</string>
@@ -164,6 +173,14 @@
     <string name="showlog_sort_asc_label">⬆ 时间正序 (最早在前)</string>
     <string name="showlog_view_flat_short">📋 列表</string>
     <string name="showlog_view_group_short">🗂️ 接口分组</string>
+    <!-- 滑动开关里的短标签：与“列表”等宽，避免开关滑块与文字错位 -->
+    <string name="showlog_group">🗂 分组</string>
+    <string name="showlog_search">搜索</string>
+    <string name="showlog_search_network_log">搜索网络日志</string>
+    <string name="showlog_search_keyword">🔍 %1$s</string>
+    <string name="showlog_confirm">确定</string>
+    <string name="showlog_clear">清除</string>
+    <string name="showlog_clear_logs">🗑️ 清理</string>
 
     <!-- 主中枢调试看板文案 -->
     <string name="showlog_hub_title">ShowLog 调试中枢</string>

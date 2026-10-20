@@ -4,105 +4,89 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- 1. 顶部操作栏：日期快速切换、总数统计、清理按钮 -->
-    <RelativeLayout
+    <!-- 1. 顶部操作栏：日期切换 + 搜索入口 + 清理；不再显示与列表重复的条数徽标 -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingBottom="@dimen/dp_6">
 
-        <!-- 左侧：日期前一天/当前日期(日历挑选)/后一天 -->
+        <!-- 左侧：前一天三角 / 日期 / 后一天三角 -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_date_prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_showlog_pill"
-                android:paddingStart="@dimen/dp_8"
-                android:paddingTop="@dimen/dp_4"
-                android:paddingEnd="@dimen/dp_8"
-                android:paddingBottom="@dimen/dp_4"
-                android:text="@string/showlog_prev_day"
-                android:textColor="@color/showlog_text_secondary"
-                android:textSize="@dimen/sp_11" />
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/showlog_prev_day"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_showlog_triangle_left" />
 
             <TextView
                 android:id="@+id/tv_current_date"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_6"
-                android:layout_marginEnd="@dimen/dp_6"
+                android:layout_marginStart="@dimen/dp_2"
+                android:layout_marginEnd="@dimen/dp_2"
+                android:layout_weight="1"
                 android:background="@drawable/bg_showlog_pill"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
                 android:paddingStart="@dimen/dp_8"
                 android:paddingTop="@dimen/dp_4"
                 android:paddingEnd="@dimen/dp_8"
                 android:paddingBottom="@dimen/dp_4"
-                android:text="📅 2026-10-19 ▾"
                 android:textColor="@color/showlog_action_btn"
                 android:textSize="@dimen/sp_11"
                 android:textStyle="bold" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/btn_date_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_showlog_pill"
-                android:paddingStart="@dimen/dp_8"
-                android:paddingTop="@dimen/dp_4"
-                android:paddingEnd="@dimen/dp_8"
-                android:paddingBottom="@dimen/dp_4"
-                android:text="@string/showlog_next_day"
-                android:textColor="@color/showlog_text_secondary"
-                android:textSize="@dimen/sp_11" />
+                android:layout_width="@dimen/dp_32"
+                android:layout_height="@dimen/dp_32"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/showlog_next_day"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_showlog_triangle_right" />
         </LinearLayout>
 
-        <!-- 右侧：统计徽标与清理按钮 -->
-        <LinearLayout
+        <!-- 右侧：搜索入口 + 清理 -->
+        <ImageView
+            android:id="@+id/btn_search"
+            android:layout_width="@dimen/dp_32"
+            android:layout_height="@dimen/dp_32"
+            android:layout_marginStart="@dimen/dp_4"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/showlog_search"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_showlog_search" />
+
+        <TextView
+            android:id="@+id/btn_action_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginStart="@dimen/dp_4"
+            android:background="@drawable/bg_showlog_pill"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_4"
+            android:paddingEnd="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_4"
+            android:text="@string/showlog_clear_logs"
+            android:textColor="@color/showlog_status_5xx"
+            android:textSize="@dimen/sp_11"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_total_summary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_8"
-                android:background="@drawable/bg_showlog_pill"
-                android:paddingStart="@dimen/dp_6"
-                android:paddingTop="@dimen/dp_2"
-                android:paddingEnd="@dimen/dp_6"
-                android:paddingBottom="@dimen/dp_2"
-                android:text="0条"
-                android:textColor="@color/showlog_text_secondary"
-                android:textSize="@dimen/sp_11" />
-
-            <TextView
-                android:id="@+id/btn_action_clear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_showlog_pill"
-                android:gravity="center"
-                android:paddingStart="@dimen/dp_10"
-                android:paddingTop="@dimen/dp_4"
-                android:paddingEnd="@dimen/dp_10"
-                android:paddingBottom="@dimen/dp_4"
-                android:text="🗑️ 清理"
-                android:textColor="@color/showlog_status_5xx"
-                android:textSize="@dimen/sp_11"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </RelativeLayout>
-
-    <!-- 2. 二级控制栏：胶囊分段视图选择器 + 时间正倒序切换按钮 -->
+    <!-- 2. 视图模式与时间排序：各自收敛为单个左右滑动开关 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -110,80 +94,45 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <!-- 扁平列表 / 接口分组 分段选择器 -->
-        <LinearLayout
-            android:id="@+id/layout_view_mode_segmented"
-            android:layout_width="wrap_content"
+        <com.xq.dialoglogshow.ui.view.ShowLogToggleSwitch
+            android:id="@+id/btn_view_mode_switch"
+            android:layout_width="@dimen/dp_132"
             android:layout_height="@dimen/dp_32"
-            android:background="@drawable/bg_showlog_segmented_container"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="@dimen/dp_2">
+            android:background="@drawable/bg_showlog_toggle_track"
+            android:padding="@dimen/dp_2" />
 
-            <TextView
-                android:id="@+id/btn_seg_flat"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_showlog_tab_selected"
-                android:gravity="center"
-                android:paddingStart="@dimen/dp_12"
-                android:paddingEnd="@dimen/dp_12"
-                android:text="@string/showlog_view_flat_short"
-                android:textColor="#FF0F172A"
-                android:textSize="@dimen/sp_11"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_seg_group"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_showlog_tab_unselected"
-                android:gravity="center"
-                android:paddingStart="@dimen/dp_12"
-                android:paddingEnd="@dimen/dp_12"
-                android:text="@string/showlog_view_group_short"
-                android:textColor="@color/showlog_text_secondary"
-                android:textSize="@dimen/sp_11" />
-        </LinearLayout>
-
-        <!-- 弹性间距 -->
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <!-- 时间正序/倒序指示切换按钮 -->
-        <TextView
-            android:id="@+id/btn_toggle_sort"
-            android:layout_width="wrap_content"
+        <com.xq.dialoglogshow.ui.view.ShowLogToggleSwitch
+            android:id="@+id/btn_sort_switch"
+            android:layout_width="@dimen/dp_112"
             android:layout_height="@dimen/dp_32"
-            android:background="@drawable/bg_showlog_pill"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/dp_10"
-            android:paddingEnd="@dimen/dp_10"
-            android:text="@string/showlog_sort_desc_label"
-            android:textColor="@color/showlog_text_primary"
-            android:textSize="@dimen/sp_11" />
+            android:background="@drawable/bg_showlog_toggle_track"
+            android:padding="@dimen/dp_2" />
     </LinearLayout>
 
-    <!-- 3. 搜索框 -->
-    <EditText
-        android:id="@+id/et_search_filter"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_36"
-        android:layout_marginTop="@dimen/dp_8"
-        android:background="@drawable/bg_showlog_search"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="@dimen/dp_8"
-        android:hint="@string/showlog_search_hint"
-        android:imeOptions="actionDone"
-        android:inputType="text"
+    <!-- 3. 当前搜索关键字：仅在有搜索条件时显示，点击可重新编辑；
+         使用 wrap_content 保持胶囊形态，避免看起来又变回一个常驻搜索输入框 -->
+    <TextView
+        android:id="@+id/tv_search_keyword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_6"
+        android:background="@drawable/bg_showlog_pill"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
         android:maxLines="1"
-        android:paddingStart="@dimen/dp_10"
-        android:paddingEnd="@dimen/dp_10"
-        android:textColor="@color/showlog_text_primary"
-        android:textColorHint="@color/showlog_text_secondary"
-        android:textSize="@dimen/sp_12" />
+        android:paddingStart="@dimen/dp_8"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingEnd="@dimen/dp_8"
+        android:paddingBottom="@dimen/dp_4"
+        android:textColor="@color/showlog_action_btn"
+        android:textSize="@dimen/sp_11"
+        android:visibility="gone" />
 
     <!-- 4. 彩色状态分类 Tab 栏 -->
     <LinearLayout
@@ -198,9 +147,10 @@
             android:layout_height="@dimen/dp_30"
             android:layout_weight="1"
             android:background="@drawable/bg_showlog_tab_selected"
+            android:ellipsize="end"
             android:gravity="center"
-            android:text="全部 (0)"
-            android:textColor="#FF0F172A"
+            android:maxLines="1"
+            android:textColor="@color/showlog_text_on_accent"
             android:textSize="@dimen/sp_11"
             android:textStyle="bold" />
 
@@ -211,8 +161,9 @@
             android:layout_marginStart="@dimen/dp_6"
             android:layout_weight="1"
             android:background="@drawable/bg_showlog_tab_unselected"
+            android:ellipsize="end"
             android:gravity="center"
-            android:text="2xx 成功 (0)"
+            android:maxLines="1"
             android:textColor="@color/showlog_status_2xx"
             android:textSize="@dimen/sp_11" />
 
@@ -223,8 +174,9 @@
             android:layout_marginStart="@dimen/dp_6"
             android:layout_weight="1"
             android:background="@drawable/bg_showlog_tab_unselected"
+            android:ellipsize="end"
             android:gravity="center"
-            android:text="错误/异常 (0)"
+            android:maxLines="1"
             android:textColor="@color/showlog_status_5xx"
             android:textSize="@dimen/sp_11" />
     </LinearLayout>

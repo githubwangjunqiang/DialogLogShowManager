@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  为什么这样做：滑块需要在文字下方且宽度随控件动态变化，子 View 在 onSizeChanged 中改宽高会因布局周期问题不生效；
+  因此滑块完全交给 ShowLogToggleSwitch 在 dispatchDraw 中绘制，这里只保留左右两个等宽文本区域。
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 左右文案区：等宽铺满，点击任意一半即可切换 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/toggle_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/showlog_text_on_accent"
+            android:textSize="@dimen/sp_11"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/toggle_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/showlog_text_secondary"
+            android:textSize="@dimen/sp_11" />
+    </LinearLayout>
+</merge>

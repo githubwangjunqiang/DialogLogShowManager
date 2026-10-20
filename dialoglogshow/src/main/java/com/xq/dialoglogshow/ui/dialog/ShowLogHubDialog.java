@@ -3,8 +3,10 @@ package com.xq.dialoglogshow.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,9 +28,10 @@ import com.xq.dialoglogshow.ui.view.HttpLogConsoleView;
  * ShowLog 统一全景调试中枢主弹窗 (ShowLog Hub)。
  * 为什么这样做：
  * 1. 方案一落地：将「🌐 网络日志」、「📱 设备信息」与「🧩 自定义扩展」提升为完全同等级的三大核心类目；
- * 2. 顶部采用极简胶囊分段导航器，支持点击瞬切与左右滑动；
- * 3. 内部自动保持状态与上次浏览记忆，极大提升联调效率；
- * 4. 具备严格的 350ms 全局防抖保护与异常兜底。
+ * 2. 顶部采用与内容面板一体的页签式导航：选中 Tab 以蓝色圆角描边和同色底接入下方内容面板；
+ * 3. 关闭按钮改为从卡片外框延伸出的红色挂钩，并通过 TouchDelegate 扩大点击热区；
+ * 4. 内部自动保持状态与上次浏览记忆，极大提升联调效率；
+ * 5. 具备严格的 350ms 全局防抖保护与异常兜底。
  */
 public final class ShowLogHubDialog extends Dialog {
 
@@ -85,8 +88,10 @@ public final class ShowLogHubDialog extends Dialog {
         mTabHubCustom = findViewById(R.id.tab_hub_custom);
         mVpPages = findViewById(R.id.vp_hub_pages);
 
-        // 关闭按钮
-        findViewById(R.id.btn_close_hub).setOnClickListener(v -> dismiss());
+        // 关闭事件绑定到整个挂钩容器，图标本身不再单独响应，避免只有 20dp 图标可点
+        View closeHook = findViewById(R.id.btn_close_hub_container);
+        closeHook.setOnClickListener(v -> dismiss());
+        expandCloseHookTouchArea(closeHook);
 
         // 动态设置自定义面板的标题
         String customTitle = CustomPanelManager.getInstance().getTitle();
@@ -157,6 +162,9 @@ public final class ShowLogHubDialog extends Dialog {
             }
         });
 
+        // 禁用手势横向滑动，仅允许点击 Tab 切换
+        mVpPages.setUserInputEnabled(false);
+
         // 初始化选中初始 Tab
         mVpPages.setCurrentItem(mInitialTab, false);
         updateSegmentedTabsUI(mInitialTab);
@@ -177,15 +185,42 @@ public final class ShowLogHubDialog extends Dialog {
     }
 
     private void resetTab(TextView tab) {
-        tab.setBackgroundResource(R.drawable.bg_showlog_tab_unselected);
+        // 非选中 Tab 不保留任何背景，避免出现与选中态相似的视觉噪声
+        tab.setBackgroundResource(0);
         tab.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_text_secondary));
         tab.setTypeface(null, android.graphics.Typeface.NORMAL);
     }
 
     private void highlightTab(TextView tab) {
-        tab.setBackgroundResource(R.drawable.bg_showlog_tab_selected);
-        tab.setTextColor(Color.parseColor("#FF0F172A"));
+        // 选中态使用“蓝色圆角描边 + 内容面板同色底 + 底部开口”，与下方内容面板拼成一体
+        tab.setBackgroundResource(R.drawable.bg_showlog_hub_tab_selected);
+        tab.setTextColor(ContextCompat.getColor(getContext(), R.color.showlog_action_btn));
         tab.setTypeface(null, android.graphics.Typeface.BOLD);
+    }
+
+    /**
+     * 扩大关闭挂钩的点击热区。
+     * 为什么这样做：视觉挂钩只有 36×37dp，直接点击容易落空；通过 TouchDelegate 向左右与下方扩展热区，
+     * 在不改变视觉尺寸的前提下把可点击范围提升到约 48×45dp。
+     */
+    private void expandCloseHookTouchArea(@NonNull View hook) {
+        View root = findViewById(R.id.root_hub);
+        if (root == null) {
+            return;
+        }
+        root.post(() -> {
+            Rect hitRect = new Rect();
+            hook.getHitRect(hitRect);
+            int expandHorizontal = dpToPx(6);
+            int expandBottom = dpToPx(8);
+            hitRect.inset(-expandHorizontal, 0);
+            hitRect.bottom += expandBottom;
+            root.setTouchDelegate(new TouchDelegate(hitRect, hook));
+        });
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getContext().getResources().getDisplayMetrics().density);
     }
 
     private boolean isThrottled() {

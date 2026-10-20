@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,6 +53,9 @@ public final class HttpLogGroupAdapter extends RecyclerView.Adapter<HttpLogGroup
         holder.tvGroupHost.setText(group.host);
         holder.tvGroupCount.setText(context.getString(R.string.showlog_group_calls, group.totalCount));
         holder.tvGroupLatestInfo.setText(context.getString(R.string.showlog_group_latest, group.latestStatusCode, group.latestDurationMs));
+        // 分组摘要沿用业务 success 口径：最新一次失败时标红，避免折叠状态下漏看异常接口
+        holder.tvGroupLatestInfo.setTextColor(ContextCompat.getColor(context,
+                group.latestSuccess ? R.color.showlog_text_secondary : R.color.showlog_status_5xx));
 
         holder.tvExpandIndicator.setText(group.isExpanded ? "▲" : "▼");
         holder.rvChildren.setVisibility(group.isExpanded ? View.VISIBLE : View.GONE);
